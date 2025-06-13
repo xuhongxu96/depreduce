@@ -1,0 +1,6 @@
+815823 newfstatat(AT_FDCWD, "/data/h445xu/repo/bazel-dep-reduce/WORKSPACE", 0xc00017f488, 0) = -1 ENOENT (No such file or directory)
+815823 newfstatat(AT_FDCWD, "/data/h445xu/repo/bazel-dep-reduce/WORKSPACE.bazel", 0xc00017f558, 0) = -1 ENOENT (No such file or directory)
+815824 <... nanosleep resumed>NULL)     = 0
+815823 newfstatat(AT_FDCWD, "/data/h445xu/repo/WORKSPACE",  <unfinished ...>
+815824 nanosleep({tv_sec=0, tv_nsec=20000},  <unfinished ...>
+815823 <... newfstatat resumed>0xc00017f628, 0) = -1 ENOENT (No such file or directory)

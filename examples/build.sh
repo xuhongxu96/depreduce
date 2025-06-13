@@ -1,3 +1,2 @@
-bazel clean --expunge
 bazel build //...
 bazel shutdown
