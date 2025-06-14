@@ -20,7 +20,7 @@ mod line_utils {
     pub fn parse_unfinished_line(line: &str, line_no: u32) -> Option<UnfinishedSyscallDesp> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"(\d+) ([a-z0-9_?]+)(.*?)[ ][<]unfinished[ ][.][.][.][>]").unwrap();
+                Regex::new(r"(\d+) ([a-z0-9_?]+)(.*)[ ][<]unfinished[ ][.][.][.][>]").unwrap();
         };
 
         if !line.ends_with("<unfinished ...>") {
@@ -29,7 +29,7 @@ mod line_utils {
             Some(UnfinishedSyscallDesp {
                 pid: captures[1].parse().unwrap(),
                 syscall: captures[2].to_string(),
-                partial_args: captures[3].to_string(),
+                partial_args: captures[3].trim_start().to_string(),
                 line_no,
             })
         } else {
@@ -40,7 +40,7 @@ mod line_utils {
     pub fn parse_resumed_line(line: &str, line_no: u32) -> Option<ResumedSyscallDesp> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"(\d+) [<][.][.][.][ ]([a-z0-9_?]+) resumed[>](.*?)\s+[=]\s+(.*?)$")
+                Regex::new(r"(\d+) [<][.][.][.][ ]([a-z0-9_?]+) resumed[>](.*)\s+[=]\s+(.*?)$")
                     .unwrap();
         };
 
@@ -50,7 +50,7 @@ mod line_utils {
             Some(ResumedSyscallDesp {
                 pid: captures[1].parse().unwrap(),
                 syscall: captures[2].to_string(),
-                partial_args: captures[3].to_string(),
+                partial_args: captures[3].trim_end().to_string(),
                 ret: captures[4].to_string(),
                 line_no,
             })
@@ -61,14 +61,14 @@ mod line_utils {
 
     pub fn parse_full_line(line: &str, line_no: u32) -> Option<SyscallDesp> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\d+) ([a-z0-9_?]+)(.*?)\s+[=]\s+(.*?)$").unwrap();
+            static ref RE: Regex = Regex::new(r"(\d+) ([a-z0-9_?]+)(.*)\s+[=]\s+(.*?)$").unwrap();
         };
 
         if let Some(captures) = RE.captures(line) {
             Some(SyscallDesp {
                 pid: captures[1].parse().unwrap(),
                 syscall: captures[2].to_string(),
-                args: captures[3].to_string(),
+                args: captures[3].trim().to_string(),
                 ret: captures[4].to_string(),
                 line_no,
             })
@@ -216,6 +216,19 @@ mod tests {
     fn test_parse_empty() {
         let res: Vec<_> = parse_strace_from_content("".as_bytes()).collect();
         assert_eq!(res, vec![]);
+    }
+
+    #[test]
+    fn test_parse_bug25061301() {
+        let line = "2964881 write(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153) = 153";
+        let res: Vec<_> = parse_strace_from_content(line.as_bytes()).collect();
+        assert_eq!(res, vec![SyscallLine::Full(SyscallDesp { 
+            pid: 2964881, 
+            syscall: "write".to_string(), 
+            args: "(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153)".to_string(), 
+            ret: "153".to_string(), 
+            line_no: 1 
+        })]);
     }
 
     #[test]
