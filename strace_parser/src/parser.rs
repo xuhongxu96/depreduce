@@ -1,48 +1,8 @@
+use crate::syscall_line::*;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-
-#[derive(PartialEq, Debug)]
-pub struct UnfinishedSyscallDesp {
-    pid: u64,
-    syscall: String,
-    partial_args: String,
-    line_no: u32,
-}
-
-#[derive(PartialEq, Debug)]
-pub struct ResumedSyscallDesp {
-    pid: u64,
-    syscall: String,
-    partial_args: String,
-    ret: String,
-    line_no: u32,
-}
-
-#[derive(PartialEq, Debug)]
-pub struct SyscallDesp {
-    pid: u64,
-    syscall: String,
-    args: String,
-    ret: String,
-    line_no: u32,
-}
-
-#[derive(PartialEq, Debug)]
-pub struct ErrorSyscallDesp {
-    line_no: u32,
-    line: String,
-    msg: String,
-}
-
-#[derive(PartialEq, Debug)]
-pub enum SyscallLine {
-    Full(SyscallDesp),
-    Unfinished(UnfinishedSyscallDesp),
-    Resumed(ResumedSyscallDesp),
-    Error(ErrorSyscallDesp),
-}
 
 pub struct StraceParseResult<R> {
     reader: BufReader<R>,
