@@ -145,7 +145,7 @@ pub fn parse_strace_from_content(content: &[u8]) -> StraceParseResult<&[u8]> {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::{self, read_to_string};
+    use std::fs::{self};
     use std::io::Write;
     use std::path::Path;
 

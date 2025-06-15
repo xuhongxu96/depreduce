@@ -24,6 +24,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32a282da65faaf38286cf3be983213fcf1d2e2a58700e808f83f4ea9a4804bc0"
 
 [[package]]
+name = "normalize-path"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5438dd2b2ff4c6df6e1ce22d825ed2fa93ee2922235cc45186991717f0a892d"
+
+[[package]]
 name = "regex"
 version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -57,5 +63,6 @@ name = "strace_parser"
 version = "0.1.0"
 dependencies = [
  "lazy_static",
+ "normalize-path",
  "regex",
 ]
