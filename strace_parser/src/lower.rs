@@ -279,6 +279,49 @@ fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
     }
 }
 
+pub struct StatementIterator<T>
+where
+    T: Iterator<Item = SyscallDesp>,
+{
+    iter: T,
+    buffer: Vec<syntax::Statement>,
+    pid: u64,
+}
+
+impl<T> Iterator for StatementIterator<T>
+where
+    T: Iterator<Item = SyscallDesp>,
+{
+    type Item = (u64, syntax::Statement);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            while !self.buffer.is_empty() {
+                let stmt = self.buffer.remove(0);
+                if stmt != syntax::Statement::Nop {
+                    return Some((self.pid, stmt));
+                }
+            }
+            if let Some(syscall_desp) = self.iter.next() {
+                self.buffer = parse_syscall_desp(&syscall_desp);
+                self.pid = syscall_desp.pid;
+            } else {
+                return None;
+            }
+        }
+    }
+}
+
+fn parse_syscall_desps<'a>(
+    syscall_desp: impl IntoIterator<Item = SyscallDesp>,
+) -> StatementIterator<impl Iterator<Item = SyscallDesp>> {
+    StatementIterator {
+        iter: syscall_desp.into_iter(),
+        buffer: Vec::new(),
+        pid: 0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -335,14 +378,10 @@ mod tests {
             .write(true)
             .open(expected_data_path)
             .unwrap();
-        for line in combine_syscall_lines(parse_strace_from_path(data_path.to_str().unwrap())) {
-            let stmt = parse_syscall_desp(&line);
-            for s in stmt {
-                if s == syntax::Statement::Nop {
-                    continue;
-                }
-                writeln!(f, "{} {:?}", line.pid, s).unwrap();
-            }
+        for (pid, stmt) in parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
+            data_path.to_str().unwrap(),
+        ))) {
+            writeln!(f, "{} {:?}", pid, stmt).unwrap();
         }
     }
 }
