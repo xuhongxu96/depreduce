@@ -143,4 +143,32 @@ mod tests {
 
         assert_eq!(res, expected);
     }
+
+    #[test]
+    fn test_large_file() {
+        use crate::{parser::parse_strace_from_path};
+        use std::fs::{self};
+        use std::io::Write;
+        use std::path::Path;
+
+        let data_path = Path::new(file!())
+            .parent()
+            .unwrap()
+            .join("test_data/strace.log");
+        let expected_data_path = Path::new(file!())
+            .parent()
+            .unwrap()
+            .join("test_data/strace.combined.expected.out");
+        let mut f = fs::OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(expected_data_path)
+            .unwrap();
+        for line in combine_syscall_lines(parse_strace_from_path(
+            data_path.to_str().unwrap(),
+        )) {
+            writeln!(f, "{:?}", line).unwrap();
+        }
+    }
 }

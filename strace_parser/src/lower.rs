@@ -158,6 +158,42 @@ fn to_produce(
     }
 }
 
+fn to_link(
+    syscall_desp: &SyscallDesp,
+    d0_index: Option<usize>,
+    p0_index: usize,
+    d1_index: Option<usize>,
+    p1_index: usize,
+) -> syntax::Statement {
+    let fd0 = get_fd(&syscall_desp.args, d0_index);
+    let fd1 = get_fd(&syscall_desp.args, d1_index);
+    match (
+        to_at_expr(&syscall_desp.args, fd0, p0_index),
+        to_at_expr(&syscall_desp.args, fd1, p1_index),
+    ) {
+        (Some(e0), Some(e1)) => syntax::Statement::Link(e0, e1),
+        _ => syntax::Statement::Nop,
+    }
+}
+
+fn to_copy(
+    syscall_desp: &SyscallDesp,
+    d0_index: Option<usize>,
+    p0_index: usize,
+    d1_index: Option<usize>,
+    p1_index: usize,
+) -> syntax::Statement {
+    let fd0 = get_fd(&syscall_desp.args, d0_index);
+    let fd1 = get_fd(&syscall_desp.args, d1_index);
+    match (
+        to_at_expr(&syscall_desp.args, fd0, p0_index),
+        to_at_expr(&syscall_desp.args, fd1, p1_index),
+    ) {
+        (Some(e0), Some(e1)) => syntax::Statement::Copy(e0, e1),
+        _ => syntax::Statement::Nop,
+    }
+}
+
 fn to_del_path(
     syscall_desp: &SyscallDesp,
     d_index: Option<usize>,
@@ -200,6 +236,14 @@ fn to_newfd(
     }
 }
 
+fn to_begin_task(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if syscall_desp.args.contains("[34mSUBCOMMAND") {
+        syntax::Statement::BeginTask(syscall_desp.args.clone())
+    } else {
+        syntax::Statement::Nop
+    }
+}
+
 fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
     match syscall_desp.syscall.as_str() {
         "access" => vec![to_consume(&syscall_desp, None, 0)],
@@ -225,14 +269,8 @@ fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
         "lsetxattr" => vec![to_consume(&syscall_desp, None, 0)],
         "lstat" => vec![to_consume(&syscall_desp, None, 0)],
         "stat" => vec![to_consume(&syscall_desp, None, 0)],
-        "link" => vec![
-            to_produce(&syscall_desp, None, 1),
-            to_consume(&syscall_desp, None, 0),
-        ],
-        "linkat" => vec![
-            to_produce(&syscall_desp, Some(2), 3),
-            to_consume(&syscall_desp, Some(0), 1),
-        ],
+        "link" => vec![to_link(&syscall_desp, None, 0, None, 1)],
+        "linkat" => vec![to_link(&syscall_desp, Some(0), 1, Some(2), 3)],
         "mkdir" => vec![to_produce(&syscall_desp, None, 0)],
         "mkdirat" => vec![to_produce(&syscall_desp, Some(0), 1)],
         "mknod" => vec![to_produce(&syscall_desp, None, 0)],
@@ -251,23 +289,23 @@ fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
         "readlinkat" => vec![to_consume(&syscall_desp, Some(0), 1)],
         "removexattr" => vec![to_consume(&syscall_desp, None, 0)],
         "rename" => vec![
+            to_copy(&syscall_desp, None, 0, None, 1),
             to_del_path(&syscall_desp, None, 0),
-            to_produce(&syscall_desp, None, 1),
         ],
         "renameat" => vec![
+            to_copy(&syscall_desp, Some(0), 1, Some(2), 3),
             to_del_path(&syscall_desp, Some(0), 1),
-            to_produce(&syscall_desp, Some(2), 3),
         ],
         "rmdir" => vec![to_del_path(&syscall_desp, None, 0)],
-        "symlink" => vec![to_produce(&syscall_desp, None, 1)],
-        "symlinkat" => vec![to_produce(&syscall_desp, Some(1), 2)],
+        "symlink" => vec![to_link(&syscall_desp, None, 0, None, 1)],
+        "symlinkat" => vec![to_link(&syscall_desp, None, 0, Some(1), 2)],
         "unlink" => vec![to_del_path(&syscall_desp, None, 0)],
         "unlinkat" => vec![to_del_path(&syscall_desp, Some(0), 1)],
         "utime" => vec![to_consume(&syscall_desp, None, 0)],
         "utimensat" => vec![to_consume(&syscall_desp, Some(0), 1)],
         "utimes" => vec![to_consume(&syscall_desp, None, 0)],
         "vfork" => vec![to_newproc(&syscall_desp)],
-        "write" => vec![to_nop()],
+        "write" => vec![to_begin_task(&syscall_desp)],
         "writev" => vec![to_nop()],
         _ => {
             println!(
@@ -279,32 +317,40 @@ fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
     }
 }
 
+pub struct TraceIR {
+    pub statement: syntax::Statement,
+    pub syscall: SyscallDesp,
+}
+
 pub struct StatementIterator<T>
 where
     T: Iterator<Item = SyscallDesp>,
 {
     iter: T,
     buffer: Vec<syntax::Statement>,
-    pid: u64,
+    syscall: SyscallDesp,
 }
 
 impl<T> Iterator for StatementIterator<T>
 where
     T: Iterator<Item = SyscallDesp>,
 {
-    type Item = (u64, syntax::Statement);
+    type Item = TraceIR;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             while !self.buffer.is_empty() {
                 let stmt = self.buffer.remove(0);
                 if stmt != syntax::Statement::Nop {
-                    return Some((self.pid, stmt));
+                    return Some(TraceIR {
+                        statement: stmt,
+                        syscall: self.syscall.clone(),
+                    });
                 }
             }
             if let Some(syscall_desp) = self.iter.next() {
                 self.buffer = parse_syscall_desp(&syscall_desp);
-                self.pid = syscall_desp.pid;
+                self.syscall = syscall_desp;
             } else {
                 return None;
             }
@@ -318,7 +364,7 @@ fn parse_syscall_desps<'a>(
     StatementIterator {
         iter: syscall_desp.into_iter(),
         buffer: Vec::new(),
-        pid: 0,
+        syscall: SyscallDesp::default(),
     }
 }
 
@@ -378,10 +424,15 @@ mod tests {
             .write(true)
             .open(expected_data_path)
             .unwrap();
-        for (pid, stmt) in parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
+        for ir in parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
             data_path.to_str().unwrap(),
         ))) {
-            writeln!(f, "{} {:?}", pid, stmt).unwrap();
+            writeln!(
+                f,
+                "Line {}: {} {} {:?}",
+                ir.syscall.line_no, ir.syscall.pid, ir.syscall.syscall, ir.statement
+            )
+            .unwrap();
         }
     }
 }

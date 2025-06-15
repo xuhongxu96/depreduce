@@ -15,7 +15,7 @@ pub struct ResumedSyscallDesp {
     pub line_no: u32,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub struct SyscallDesp {
     pub pid: u64,
     pub syscall: String,

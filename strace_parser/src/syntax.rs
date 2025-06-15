@@ -1,11 +1,4 @@
 #[derive(PartialEq, Debug, Clone)]
-pub enum Eff {
-    Cons,
-    Expunge,
-    Prod,
-}
-
-#[derive(PartialEq, Debug, Clone)]
 pub enum FdVar {
     CWD,
     Fd(String),
@@ -28,13 +21,11 @@ pub enum Expr {
 pub enum Statement {
     Let(FdVar, Expr),
     Del(Expr),
+    Link(Expr, Expr),
+    Copy(Expr, Expr),
     Consume(Expr),
     Produce(Expr),
-    Input(String, String),
-    Output(String, String),
-    DependsOn(String, String),
     Newproc(String),
     BeginTask(String),
-    EndTask(String),
     Nop,
 }
