@@ -1,7 +1,7 @@
 #[derive(PartialEq, Debug, Clone)]
 pub enum FdVar {
     CWD,
-    Fd(String),
+    Fd(i64),
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -25,7 +25,7 @@ pub enum Statement {
     Copy(Expr, Expr),
     Consume(Expr),
     Produce(Expr),
-    Newproc(String),
+    Newproc(i64),
     BeginTask(String),
     Nop,
 }

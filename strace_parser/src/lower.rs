@@ -43,7 +43,7 @@ fn to_path_expr(args: &str, p_index: usize) -> Option<syntax::Expr> {
 fn to_fdvar(fd: Option<&str>) -> syntax::FdVar {
     match fd {
         None | Some("AT_FDCWD") => syntax::FdVar::CWD,
-        Some(f) => syntax::FdVar::Fd(f.to_string()),
+        Some(f) => syntax::FdVar::Fd(extract_ret_int(f)),
     }
 }
 
@@ -83,6 +83,19 @@ fn get_fd(args: &str, index: Option<usize>) -> Option<&str> {
     }
 }
 
+fn extract_ret_int(ret: &str) -> i64 {
+    let mut res = ret;
+    if ret.contains(" ENOENT") {
+        res = &ret[..ret.find(" ENOENT").unwrap()];
+    }
+
+    res = res.trim();
+    res = res.strip_prefix("(").unwrap_or(res);
+    res = res.strip_suffix(")").unwrap_or(res);
+
+    return res.parse().unwrap();
+}
+
 fn to_nop() -> syntax::Statement {
     syntax::Statement::Nop
 }
@@ -95,7 +108,7 @@ fn to_chdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_newproc(syscall_desp: &SyscallDesp) -> syntax::Statement {
-    syntax::Statement::Newproc(syscall_desp.ret.clone())
+    syntax::Statement::Newproc(extract_ret_int(syscall_desp.ret.as_str()))
 }
 
 fn to_delfd(syscall_desp: &SyscallDesp) -> syntax::Statement {
@@ -105,8 +118,8 @@ fn to_delfd(syscall_desp: &SyscallDesp) -> syntax::Statement {
 fn to_dupfd_fcntl(syscall_desp: &SyscallDesp) -> syntax::Statement {
     if has_dupfd(&syscall_desp.args) {
         syntax::Statement::Let(
-            to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 0))),
-            to_fdvar_expr(Some(&syscall_desp.ret)),
+            to_fdvar(Some(&syscall_desp.ret)),
+            to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
         )
     } else {
         syntax::Statement::Nop
@@ -115,15 +128,15 @@ fn to_dupfd_fcntl(syscall_desp: &SyscallDesp) -> syntax::Statement {
 
 fn to_dupfd_dup(syscall_desp: &SyscallDesp) -> syntax::Statement {
     syntax::Statement::Let(
-        to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 0))),
-        to_fdvar_expr(Some(&syscall_desp.ret)),
+        to_fdvar(Some(&syscall_desp.ret)),
+        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
     )
 }
 
 fn to_dupfd_dup2(syscall_desp: &SyscallDesp) -> syntax::Statement {
     syntax::Statement::Let(
-        to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 0))),
-        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 1))),
+        to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 1))),
+        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
     )
 }
 
@@ -244,7 +257,7 @@ fn to_begin_task(syscall_desp: &SyscallDesp) -> syntax::Statement {
     }
 }
 
-fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
+pub fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> {
     match syscall_desp.syscall.as_str() {
         "access" => vec![to_consume(&syscall_desp, None, 0)],
         "chdir" => vec![to_chdir(&syscall_desp)],
@@ -358,7 +371,7 @@ where
     }
 }
 
-fn parse_syscall_desps<'a>(
+pub fn parse_syscall_desps(
     syscall_desp: impl IntoIterator<Item = SyscallDesp>,
 ) -> StatementIterator<impl Iterator<Item = SyscallDesp>> {
     StatementIterator {
@@ -387,7 +400,7 @@ mod tests {
         assert_eq!(
             statements[0],
             Statement::Let(
-                syntax::FdVar::Fd("3".to_string()),
+                syntax::FdVar::Fd(3),
                 syntax::Expr::At(
                     syntax::FdVar::CWD,
                     syntax::Path::Path("file.txt".to_string())
