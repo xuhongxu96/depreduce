@@ -1,6 +1,9 @@
+pub type ProcessId = i64;
+pub type FileDescriptor = i64;
+
 #[derive(PartialEq, Debug, Clone)]
 pub struct UnfinishedSyscallDesp {
-    pub pid: u64,
+    pub pid: ProcessId,
     pub syscall: String,
     pub partial_args: String,
     pub line_no: u32,
@@ -8,7 +11,7 @@ pub struct UnfinishedSyscallDesp {
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ResumedSyscallDesp {
-    pub pid: u64,
+    pub pid: ProcessId,
     pub syscall: String,
     pub partial_args: String,
     pub ret: String,
@@ -17,7 +20,7 @@ pub struct ResumedSyscallDesp {
 
 #[derive(PartialEq, Debug, Clone, Default)]
 pub struct SyscallDesp {
-    pub pid: u64,
+    pub pid: ProcessId,
     pub syscall: String,
     pub args: String,
     pub ret: String,

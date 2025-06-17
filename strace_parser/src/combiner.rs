@@ -6,7 +6,7 @@ where
     T: Iterator<Item = SyscallLine>,
 {
     iter: T,
-    buffered_unfinished_lines: HashMap<u64, UnfinishedSyscallDesp>,
+    buffered_unfinished_lines: HashMap<ProcessId, UnfinishedSyscallDesp>,
 }
 
 impl<T> Iterator for SyscallLineCombiner<T>

@@ -1,14 +1,12 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, LinkedList};
 
 use normalize_path::NormalizePath;
 
 use crate::{
     lower::TraceIR,
     syntax::{self},
+    syscall_line::{FileDescriptor, ProcessId, SyscallDesp},
 };
-
-type ProcessId = u64;
-type FileDescriptor = u64;
 
 #[derive(PartialEq, Debug, Clone)]
 enum FileOperation {
@@ -19,7 +17,7 @@ enum FileOperation {
 
 #[derive(PartialEq, Debug, Clone, Default)]
 struct ProcessState {
-    fd_maps: HashMap<i64, String>,
+    fd_maps: HashMap<FileDescriptor, String>,
     cwd: String,
     parent: Option<ProcessId>,
     operations: Vec<FileOperation>,
@@ -37,11 +35,12 @@ struct PathProps {
 struct State {
     processes: HashMap<ProcessId, ProcessState>,
     paths: HashMap<String, PathProps>,
+    recent_sandboxed_newprocs: LinkedList<SyscallDesp>,
 }
 
 impl State {
     fn get_process(&mut self, pid: ProcessId) -> &mut ProcessState {
-        self.processes.entry(pid).or_insert(ProcessState::default())
+        self.processes.get_mut(&pid).unwrap()
     }
 
     fn get_cwd(&self, pid: ProcessId) -> String {
@@ -110,9 +109,13 @@ impl State {
 
         match (fd_var, expr) {
             (FdVar::Fd(f1), Expr::V(FdVar::Fd(f2))) => {
+                if *f1 == -1 {
+                    return;
+                }
                 let fd_maps = &mut self.get_process(pid).fd_maps;
-                let target_path = fd_maps.get(f2).unwrap();
-                fd_maps.insert(*f1, target_path.clone());
+                if let Some(target_path) = fd_maps.get(f2) {
+                    fd_maps.insert(*f1, target_path.clone());
+                }
             }
             (FdVar::CWD, Expr::P(Path::Path(path))) => {
                 self.get_process(pid).cwd = path.clone();
@@ -121,6 +124,9 @@ impl State {
                 Some(Path::Path(path)) => match fd_var {
                     FdVar::CWD => self.get_process(pid).cwd = path.to_string(),
                     FdVar::Fd(fd) => {
+                        if *fd == -1 {
+                            return;
+                        }
                         self.get_process(pid).fd_maps.insert(*fd, path.to_string());
                     }
                 },
@@ -261,25 +267,86 @@ impl State {
                 .push(FileOperation::Produce(path1.clone()));
         }
     }
+
+    fn interpert_newproc(&mut self, syscall: &SyscallDesp, new_pid: ProcessId) {
+        if new_pid < 100 {
+            self.recent_sandboxed_newprocs.push_back(syscall.clone());
+        } else {
+            let parent_state = self.processes.get(&syscall.pid).unwrap();
+            self.processes.insert(
+                new_pid,
+                ProcessState {
+                    fd_maps: parent_state.fd_maps.clone(),
+                    cwd: parent_state.cwd.clone(),
+                    parent: Some(syscall.pid),
+                    operations: Vec::new(),
+                },
+            );
+        }
+    }
+
+    fn analyze_ir(&mut self, ir: TraceIR) {
+        use syntax::Statement;
+
+        match ir.statement {
+            Statement::Let(fd_var, expr) => self.interpret_let(ir.syscall.pid, &fd_var, &expr),
+            Statement::Del(expr) => self.interpret_del(ir.syscall.pid, &expr),
+            Statement::Link(expr, expr1) => self.interpret_link(ir.syscall.pid, &expr, &expr1),
+            Statement::Copy(expr, expr1) => self.interpret_copy(ir.syscall.pid, &expr, &expr1),
+            Statement::Consume(expr) => self.interpret_consume(ir.syscall.pid, &expr),
+            Statement::Produce(expr) => self.interpret_produce(ir.syscall.pid, &expr),
+            Statement::Newproc(new_pid) => {
+                self.interpert_newproc(&ir.syscall, new_pid.try_into().unwrap())
+            }
+            Statement::BeginTask(_) => {}
+            Statement::Nop => {}
+        }
+    }
 }
 
-fn analyze(irs: impl IntoIterator<Item = TraceIR>) {
-    use syntax::Statement;
+fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) {
+    // FIXME: can we avoid collecting into a Vec?
+    let mut irs: Vec<_> = irs.into_iter().collect();
+    irs.sort_by(|a, b| a.syscall.line_no.cmp(&b.syscall.line_no));
+
+    let cwd = std::path::Path::new(cwd)
+        .canonicalize()
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
 
     let mut state = State::default();
 
     for ir in irs {
-        match ir.statement {
-            Statement::Let(fd_var, expr) => state.interpret_let(ir.syscall.pid, &fd_var, &expr),
-            Statement::Del(expr) => state.interpret_del(ir.syscall.pid, &expr),
-            Statement::Link(expr, expr1) => state.interpret_link(ir.syscall.pid, &expr, &expr1),
-            Statement::Copy(expr, expr1) => state.interpret_copy(ir.syscall.pid, &expr, &expr1),
-            Statement::Consume(expr) => state.interpret_consume(ir.syscall.pid, &expr),
-            Statement::Produce(expr) => state.interpret_produce(ir.syscall.pid, &expr),
-            Statement::Newproc(_) => continue,
-            Statement::BeginTask(_) => continue,
-            Statement::Nop => continue,
+        if !state.processes.contains_key(&ir.syscall.pid) {
+            if state.recent_sandboxed_newprocs.is_empty() {
+                state.processes.insert(
+                    ir.syscall.pid,
+                    ProcessState {
+                        fd_maps: HashMap::new(),
+                        cwd: cwd.to_string(),
+                        parent: None,
+                        operations: Vec::new(),
+                    },
+                );
+            } else {
+                let first_sandboxed = state.recent_sandboxed_newprocs.pop_front().unwrap();
+                let parent_state = state.get_process(first_sandboxed.pid);
+                let fd_maps = parent_state.fd_maps.clone();
+                let cwd = parent_state.cwd.clone();
+                state.processes.insert(
+                    ir.syscall.pid,
+                    ProcessState {
+                        fd_maps: fd_maps,
+                        cwd: cwd,
+                        parent: Some(first_sandboxed.pid),
+                        operations: Vec::new(),
+                    },
+                );
+            }
         }
+
+        state.analyze_ir(ir);
     }
 }
 
@@ -310,8 +377,11 @@ mod tests {
         //     .write(true)
         //     .open(expected_data_path)
         //     .unwrap();
-        analyze(parse_syscall_desps(combine_syscall_lines(
-            parse_strace_from_path(data_path.to_str().unwrap()),
-        )));
+        analyze(
+            parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
+                data_path.to_str().unwrap(),
+            ))),
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+        );
     }
 }

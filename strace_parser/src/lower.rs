@@ -264,6 +264,7 @@ pub fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> 
         "chmod" => vec![to_consume(&syscall_desp, None, 0)],
         "chown" => vec![to_consume(&syscall_desp, None, 0)],
         "clone" => vec![to_newproc(&syscall_desp)],
+        "clone3" => vec![to_newproc(&syscall_desp)],
         "close" => vec![to_delfd(&syscall_desp)],
         "dup" => vec![to_dupfd_dup(&syscall_desp)],
         "dup2" => vec![to_dupfd_dup2(&syscall_desp)],
@@ -330,6 +331,7 @@ pub fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> 
     }
 }
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct TraceIR {
     pub statement: syntax::Statement,
     pub syscall: SyscallDesp,

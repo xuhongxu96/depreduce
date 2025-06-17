@@ -29,3 +29,13 @@ pub enum Statement {
     BeginTask(String),
     Nop,
 }
+
+impl Statement {
+    pub fn is_nop(&self) -> bool {
+        matches!(self, Statement::Nop)
+    }
+
+    pub fn is_newproc(&self) -> bool {
+        matches!(self, Statement::Newproc(_))
+    }
+}
