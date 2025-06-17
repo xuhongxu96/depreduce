@@ -22,7 +22,7 @@ fn has_trunc(args: &str) -> bool {
 }
 
 fn has_creat(args: &str) -> bool {
-    args.contains("O_TRUNC")
+    args.contains("O_CREAT")
 }
 
 fn has_clone_fs(args: &str) -> bool {
@@ -68,8 +68,8 @@ fn is_open_consumed(args: &str) -> bool {
     ) {
         (true, _, _, _, _) => true,         // O_RDONLY
         (_, true, _, true, _) => false,     // O_WRONLY|O_TRUNC
-        (_, _, true, false, false) => true, // O_RDWRD
-        (_, _, true, _, true) => false,     // O_RDWRD|O_CREAT
+        (_, _, true, false, false) => true, // O_RDWR
+        (_, _, true, _, true) => false,     // O_RDWR|O_CREAT
         (_, true, _, _, true) => false,     // O_WRONLY|O_CREAT
         (_, true, _, false, false) => true, // O_WRONLY
         _ => true,

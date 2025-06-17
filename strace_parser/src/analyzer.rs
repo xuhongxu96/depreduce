@@ -164,12 +164,6 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-                    path: path.clone(),
-                    links: HashSet::new(),
-                    copied_from: String::new(),
-                    deleted: false,
-                });
                 self.get_process(pid)
                     .operations
                     .push(FileOperation::Consume(path.clone()));
@@ -183,12 +177,15 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-                    path: path.clone(),
-                    links: HashSet::new(),
-                    copied_from: String::new(),
-                    deleted: false,
-                });
+                self.paths
+                    .entry(path.clone())
+                    .or_insert_with(|| PathProps {
+                        path: path.clone(),
+                        links: HashSet::new(),
+                        copied_from: String::new(),
+                        deleted: false,
+                    })
+                    .deleted = false;
                 self.get_process(pid)
                     .operations
                     .push(FileOperation::Produce(path.clone()));
@@ -198,35 +195,26 @@ impl State {
     }
 
     fn interpret_link(&mut self, pid: ProcessId, expr: &syntax::Expr, expr1: &syntax::Expr) {
-        use syntax::{Expr, Path};
+        use syntax::Path;
 
         if let (Some(Path::Path(path)), Some(Path::Path(link))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let path_prop = self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-                path: path.clone(),
+            let link_prop = self.paths.entry(link.clone()).or_insert_with(|| PathProps {
+                path: link.clone(),
                 links: HashSet::new(),
                 copied_from: String::new(),
                 deleted: false,
             });
-            let indirect_links = path_prop.links.clone();
-            path_prop.links.insert(link.clone());
-            let links = path_prop.links.clone();
+            link_prop.links.insert(path.clone());
 
-            let link_prop = self.paths.entry(link.clone()).or_insert_with(|| PathProps {
-                path: link.clone(),
-                links: links,
-                copied_from: String::new(),
-                deleted: false,
-            });
+            // self.paths.entry(path.clone()).or_insert_with(|| PathProps {
+            //     path: path.clone(),
+            //     links: HashSet::new(),
+            //     copied_from: String::new(),
+            //     deleted: false,
+            // });
 
-            for indirect_link in indirect_links {
-                self.paths
-                    .get_mut(&indirect_link)
-                    .unwrap()
-                    .links
-                    .insert(link.clone());
-            }
             self.get_process(pid)
                 .operations
                 .push(FileOperation::Consume(path.clone()));
@@ -237,27 +225,22 @@ impl State {
     }
 
     fn interpret_copy(&mut self, pid: ProcessId, expr: &syntax::Expr, expr1: &syntax::Expr) {
-        use syntax::{Expr, Path};
+        use syntax::Path;
 
         if let (Some(Path::Path(path)), Some(Path::Path(path1))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let path_prop = self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-                path: path.clone(),
-                links: HashSet::new(),
-                copied_from: String::new(),
-                deleted: false,
-            });
-
-            let path1_prop = self
+            let path_props = self
                 .paths
                 .entry(path1.clone())
                 .or_insert_with(|| PathProps {
                     path: path1.clone(),
                     links: HashSet::new(),
-                    copied_from: path.clone(),
+                    copied_from: String::new(),
                     deleted: false,
                 });
+            path_props.copied_from = path.clone();
+            path_props.deleted = false;
 
             self.get_process(pid)
                 .operations
@@ -304,7 +287,7 @@ impl State {
     }
 }
 
-fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) {
+fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
     // FIXME: can we avoid collecting into a Vec?
     let mut irs: Vec<_> = irs.into_iter().collect();
     irs.sort_by(|a, b| a.syscall.line_no.cmp(&b.syscall.line_no));
@@ -348,6 +331,8 @@ fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) {
 
         state.analyze_ir(ir);
     }
+
+    state
 }
 
 #[cfg(test)]
@@ -367,21 +352,27 @@ mod tests {
             .parent()
             .unwrap()
             .join("test_data/strace.log");
-        // let expected_data_path = Path::new(file!())
-        //     .parent()
-        //     .unwrap()
-        //     .join("test_data/strace.ir.expected.out");
-        // let mut f = fs::OpenOptions::new()
-        //     .create(true)
-        //     .truncate(true)
-        //     .write(true)
-        //     .open(expected_data_path)
-        //     .unwrap();
-        analyze(
+        let expected_data_path = Path::new(file!())
+            .parent()
+            .unwrap()
+            .join("test_data/strace.paths.expected.out");
+        let mut f = fs::OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(expected_data_path)
+            .unwrap();
+        let state = analyze(
             parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
                 data_path.to_str().unwrap(),
             ))),
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
         );
+
+        let mut paths = state.paths.iter().collect::<Vec<_>>();
+        paths.sort_by(|(a, _), (b, _)| a.cmp(b));
+        paths.iter().for_each(|(_, props)| {
+            writeln!(f, "{:?}", props).unwrap();
+        });
     }
 }
