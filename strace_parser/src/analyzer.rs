@@ -6,13 +6,14 @@ use crate::{
     lower::TraceIR,
     syntax::{self},
     syscall_line::{FileDescriptor, ProcessId, SyscallDesp},
+    vfs::{INode as VFSINode, Node as VFSNode, VFS},
 };
 
 #[derive(PartialEq, Debug, Clone)]
 enum FileOperation {
-    Consume(String),
-    Produce(String),
-    Delete(String),
+    Consume(Result<(String, VFSINode), String>),
+    Produce(Result<(String, VFSINode), String>),
+    Delete(Result<(String, VFSNode), String>),
 }
 
 #[derive(PartialEq, Debug, Clone, Default)]
@@ -24,17 +25,9 @@ struct ProcessState {
 }
 
 #[derive(PartialEq, Debug, Clone, Default)]
-struct PathProps {
-    path: String,
-    links: HashSet<String>,
-    copied_from: String,
-    deleted: bool,
-}
-
-#[derive(PartialEq, Debug, Clone, Default)]
 struct State {
     processes: HashMap<ProcessId, ProcessState>,
-    paths: HashMap<String, PathProps>,
+    vfs: VFS,
 }
 
 impl State {
@@ -46,6 +39,20 @@ impl State {
         self.processes
             .get(&pid)
             .map_or_else(|| "/CWD".to_string(), |p| p.cwd.clone())
+    }
+
+    fn get_absolute_path(&self, pid: ProcessId, path: &str) -> String {
+        if path.starts_with('/') {
+            // absolute path
+            path.to_string()
+        } else {
+            let cwd = self.get_cwd(pid);
+            std::path::Path::new(&cwd)
+                .join(path)
+                .normalize()
+                .to_string_lossy()
+                .to_string()
+        }
     }
 
     fn get_parent_dir(&self, pid: ProcessId, d: &syntax::FdVar) -> Option<String> {
@@ -144,18 +151,58 @@ impl State {
             Expr::V(FdVar::CWD) => {}
             _ => match self.eval_expr(pid, expr) {
                 Some(syntax::Path::Path(path)) => {
+                    let vfs_node = self.remove_inode(pid, &path);
+
                     self.get_process(pid)
                         .operations
-                        .push(FileOperation::Delete(path.clone()));
-
-                    if let Some(path_props) = self.paths.get_mut(&path) {
-                        path_props.links.clear();
-                        path_props.deleted = true;
-                    }
+                        .push(FileOperation::Delete(vfs_node));
                 }
                 _ => {}
             },
         }
+    }
+
+    fn get_or_create_inode(
+        &mut self,
+        pid: ProcessId,
+        path: &str,
+    ) -> Result<(String, VFSINode), String> {
+        let path = self.get_absolute_path(pid, path);
+        match self.vfs.get_inode_by_path(&path) {
+            Some(inode) => Ok((path, inode)),
+            None => {
+                // TODO: allowlist for path within the project
+                Err(format!("File not found: {}", path))
+            }
+        }
+    }
+
+    fn create_inode(&mut self, pid: ProcessId, path: &str) -> (String, VFSINode) {
+        (
+            path.to_string(),
+            self.vfs
+                .create_node_recursively(&self.get_absolute_path(pid, path)),
+        )
+    }
+
+    fn remove_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
+        self.vfs
+            .remove_node_recursively(&self.get_absolute_path(pid, path))
+            .map(|inode| (path.to_string(), inode))
+    }
+
+    fn create_symlink_inode(
+        &mut self,
+        pid: ProcessId,
+        path: &str,
+        target: &str,
+    ) -> Result<(String, VFSINode), String> {
+        self.vfs
+            .create_symlink(
+                &self.get_absolute_path(pid, path),
+                &self.get_absolute_path(pid, target),
+            )
+            .map(|inode| (path.to_string(), inode))
     }
 
     fn interpret_consume(&mut self, pid: ProcessId, expr: &syntax::Expr) {
@@ -163,9 +210,10 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
+                let inode = self.get_or_create_inode(pid, &path);
                 self.get_process(pid)
                     .operations
-                    .push(FileOperation::Consume(path.clone()));
+                    .push(FileOperation::Consume(inode));
             }
             _ => {}
         }
@@ -176,17 +224,10 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                let path_props = self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-                    path: path.clone(),
-                    links: HashSet::new(),
-                    copied_from: String::new(),
-                    deleted: false,
-                });
-                path_props.deleted = false;
-                path_props.copied_from.clear();
+                let inode = self.create_inode(pid, &path);
                 self.get_process(pid)
                     .operations
-                    .push(FileOperation::Produce(path.clone()));
+                    .push(FileOperation::Produce(Ok(inode)));
             }
             _ => {}
         }
@@ -195,23 +236,18 @@ impl State {
     fn interpret_link(&mut self, pid: ProcessId, expr: &syntax::Expr, expr1: &syntax::Expr) {
         use syntax::Path;
 
-        if let (Some(Path::Path(path)), Some(Path::Path(link))) =
+        if let (Some(Path::Path(target_path)), Some(Path::Path(link))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let link_prop = self.paths.entry(link.clone()).or_insert_with(|| PathProps {
-                path: link.clone(),
-                links: HashSet::new(),
-                copied_from: String::new(),
-                deleted: false,
-            });
-            link_prop.links.insert(path.clone());
+            let target_inode = self.get_or_create_inode(pid, &target_path);
+            let link_inode = self.create_symlink_inode(pid, &link, &target_path);
 
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Consume(path.clone()));
+                .push(FileOperation::Consume(target_inode));
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Produce(link.clone()));
+                .push(FileOperation::Produce(link_inode));
         }
     }
 
@@ -221,28 +257,19 @@ impl State {
         if let (Some(Path::Path(path)), Some(Path::Path(path1))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let path_props = self
-                .paths
-                .entry(path1.clone())
-                .or_insert_with(|| PathProps {
-                    path: path1.clone(),
-                    links: HashSet::new(),
-                    copied_from: String::new(),
-                    deleted: false,
-                });
-            path_props.copied_from = path.clone();
-            path_props.deleted = false;
+            let inode = self.get_or_create_inode(pid, &path);
+            let inode1 = self.create_inode(pid, &path1);
 
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Consume(path.clone()));
+                .push(FileOperation::Consume(inode));
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Produce(path1.clone()));
+                .push(FileOperation::Produce(Ok(inode1)));
         }
     }
 
-    fn interpert_newproc(&mut self, syscall: &SyscallDesp, new_pid: ProcessId) {
+    fn interpret_newproc(&mut self, syscall: &SyscallDesp, new_pid: ProcessId) {
         let parent_state = self.processes.get(&syscall.pid).unwrap();
         self.processes.insert(
             new_pid,
@@ -266,7 +293,7 @@ impl State {
             Statement::Consume(expr) => self.interpret_consume(ir.syscall.pid, &expr),
             Statement::Produce(expr) => self.interpret_produce(ir.syscall.pid, &expr),
             Statement::Newproc(new_pid) => {
-                self.interpert_newproc(&ir.syscall, new_pid.try_into().unwrap())
+                self.interpret_newproc(&ir.syscall, new_pid.try_into().unwrap())
             }
             Statement::BeginTask(_) => {}
             Statement::Nop => {}
@@ -340,12 +367,6 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
         );
 
-        let mut paths = state.paths.iter().collect::<Vec<_>>();
-        paths.sort_by(|(a, _), (b, _)| a.cmp(b));
-        paths.iter().for_each(|(_, props)| {
-            writeln!(f, "{:?}", props).unwrap();
-        });
-
         let mut processes = state.processes.iter().collect::<Vec<_>>();
         processes.sort_by(|(a, _), (b, _)| a.cmp(b));
         processes.iter().for_each(|(pid, props)| {
@@ -355,6 +376,31 @@ mod tests {
                 pid, props.parent, props.cwd
             )
             .unwrap();
+
+            for op in &props.operations {
+                match op {
+                    FileOperation::Consume(res) => {
+                        writeln!(f, "  Consume: {:?}", res).unwrap();
+                    }
+                    FileOperation::Produce(res) => {
+                        writeln!(f, "  Produce: {:?}", res).unwrap();
+                    }
+                    FileOperation::Delete(res) => {
+                        writeln!(f, "  Delete: {:?}", res).unwrap();
+                    }
+                }
+            }
         });
+
+        let inode = state
+            .vfs
+            .get_inode_by_path(
+                "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/bazel-bin",
+            )
+            .unwrap();
+        assert_eq!(
+            &state.vfs.resolve_link_path(inode),
+            "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin"
+        );
     }
 }
