@@ -206,13 +206,6 @@ impl State {
             });
             link_prop.links.insert(path.clone());
 
-            // self.paths.entry(path.clone()).or_insert_with(|| PathProps {
-            //     path: path.clone(),
-            //     links: HashSet::new(),
-            //     copied_from: String::new(),
-            //     deleted: false,
-            // });
-
             self.get_process(pid)
                 .operations
                 .push(FileOperation::Consume(path.clone()));
