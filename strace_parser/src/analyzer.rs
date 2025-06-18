@@ -35,7 +35,6 @@ struct PathProps {
 struct State {
     processes: HashMap<ProcessId, ProcessState>,
     paths: HashMap<String, PathProps>,
-    recent_sandboxed_newprocs: LinkedList<SyscallDesp>,
 }
 
 impl State {
@@ -177,15 +176,14 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                self.paths
-                    .entry(path.clone())
-                    .or_insert_with(|| PathProps {
-                        path: path.clone(),
-                        links: HashSet::new(),
-                        copied_from: String::new(),
-                        deleted: false,
-                    })
-                    .deleted = false;
+                let path_props = self.paths.entry(path.clone()).or_insert_with(|| PathProps {
+                    path: path.clone(),
+                    links: HashSet::new(),
+                    copied_from: String::new(),
+                    deleted: false,
+                });
+                path_props.deleted = false;
+                path_props.copied_from.clear();
                 self.get_process(pid)
                     .operations
                     .push(FileOperation::Produce(path.clone()));
@@ -252,20 +250,16 @@ impl State {
     }
 
     fn interpert_newproc(&mut self, syscall: &SyscallDesp, new_pid: ProcessId) {
-        if new_pid < 100 {
-            self.recent_sandboxed_newprocs.push_back(syscall.clone());
-        } else {
-            let parent_state = self.processes.get(&syscall.pid).unwrap();
-            self.processes.insert(
-                new_pid,
-                ProcessState {
-                    fd_maps: parent_state.fd_maps.clone(),
-                    cwd: parent_state.cwd.clone(),
-                    parent: Some(syscall.pid),
-                    operations: Vec::new(),
-                },
-            );
-        }
+        let parent_state = self.processes.get(&syscall.pid).unwrap();
+        self.processes.insert(
+            new_pid,
+            ProcessState {
+                fd_maps: parent_state.fd_maps.clone(),
+                cwd: parent_state.cwd.clone(),
+                parent: Some(syscall.pid),
+                operations: Vec::new(),
+            },
+        );
     }
 
     fn analyze_ir(&mut self, ir: TraceIR) {
@@ -301,32 +295,16 @@ fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
     let mut state = State::default();
 
     for ir in irs {
-        if !state.processes.contains_key(&ir.syscall.pid) {
-            if state.recent_sandboxed_newprocs.is_empty() {
-                state.processes.insert(
-                    ir.syscall.pid,
-                    ProcessState {
-                        fd_maps: HashMap::new(),
-                        cwd: cwd.to_string(),
-                        parent: None,
-                        operations: Vec::new(),
-                    },
-                );
-            } else {
-                let first_sandboxed = state.recent_sandboxed_newprocs.pop_front().unwrap();
-                let parent_state = state.get_process(first_sandboxed.pid);
-                let fd_maps = parent_state.fd_maps.clone();
-                let cwd = parent_state.cwd.clone();
-                state.processes.insert(
-                    ir.syscall.pid,
-                    ProcessState {
-                        fd_maps: fd_maps,
-                        cwd: cwd,
-                        parent: Some(first_sandboxed.pid),
-                        operations: Vec::new(),
-                    },
-                );
-            }
+        if state.processes.is_empty() {
+            state.processes.insert(
+                ir.syscall.pid,
+                ProcessState {
+                    fd_maps: HashMap::new(),
+                    cwd: cwd.to_string(),
+                    parent: None,
+                    operations: Vec::new(),
+                },
+            );
         }
 
         state.analyze_ir(ir);
@@ -373,6 +351,17 @@ mod tests {
         paths.sort_by(|(a, _), (b, _)| a.cmp(b));
         paths.iter().for_each(|(_, props)| {
             writeln!(f, "{:?}", props).unwrap();
+        });
+
+        let mut processes = state.processes.iter().collect::<Vec<_>>();
+        processes.sort_by(|(a, _), (b, _)| a.cmp(b));
+        processes.iter().for_each(|(pid, props)| {
+            writeln!(
+                f,
+                "Process {} (Parent: {:?}) CWD: {:?}",
+                pid, props.parent, props.cwd
+            )
+            .unwrap();
         });
     }
 }

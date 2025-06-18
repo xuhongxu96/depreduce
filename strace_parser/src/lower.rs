@@ -96,6 +96,27 @@ fn extract_ret_int(ret: &str) -> i64 {
     return res.parse().unwrap();
 }
 
+fn extract_newproc_ret_int(ret: &str) -> i64 {
+    // Examples:
+    //
+    // For `2711930<daemonize>`, we want to extract `2711930`.
+    // For `2<linux-sandbox> /* 2716051 in strace's PID NS */`, we want to extract `2716051`.
+
+    if ret.contains("/*") && ret.contains("in strace's PID NS") {
+        // Extract the number after `/*` and before `in strace's PID NS`.
+        let start = ret.find("/*").unwrap() + 2;
+        let end = ret.find("in strace's PID NS").unwrap();
+        ret[start..end].trim().parse().unwrap()
+    } else if ret.contains('<') {
+        // Extract the number before `<`.
+        let end = ret.find('<').unwrap();
+        ret[..end].trim().parse().unwrap()
+    } else {
+        // If no special format, just parse it as an integer.
+        extract_ret_int(ret)
+    }
+}
+
 fn to_nop() -> syntax::Statement {
     syntax::Statement::Nop
 }
@@ -108,7 +129,7 @@ fn to_chdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_newproc(syscall_desp: &SyscallDesp) -> syntax::Statement {
-    syntax::Statement::Newproc(extract_ret_int(syscall_desp.ret.as_str()))
+    syntax::Statement::Newproc(extract_newproc_ret_int(syscall_desp.ret.as_str()))
 }
 
 fn to_delfd(syscall_desp: &SyscallDesp) -> syntax::Statement {
@@ -392,6 +413,8 @@ mod tests {
     fn test_parse_syscall_desp() {
         let syscall_desp = SyscallDesp {
             pid: 1234,
+            cmd: "test_cmd".to_string(),
+            resumed_cmd: None,
             syscall: "openat".to_string(),
             args: "AT_FDCWD, \"file.txt\", O_RDONLY".to_string(),
             ret: "3".to_string(),

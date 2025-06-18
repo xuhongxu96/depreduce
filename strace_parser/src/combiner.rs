@@ -33,6 +33,12 @@ where
                             assert_eq!(unfinished.syscall, resumed_syscall_desp.syscall);
                             return Some(SyscallDesp {
                                 pid: resumed_syscall_desp.pid,
+                                cmd: unfinished.cmd.clone(),
+                                resumed_cmd: if unfinished.cmd == resumed_syscall_desp.cmd {
+                                    None
+                                } else {
+                                    Some(resumed_syscall_desp.cmd.clone())
+                                },
                                 syscall: resumed_syscall_desp.syscall,
                                 args: format!(
                                     "{}{}",
@@ -74,6 +80,8 @@ mod tests {
             vec![
                 SyscallLine::Full(SyscallDesp {
                     pid: 815823,
+                    cmd: "a".to_string(),
+                    resumed_cmd: None,
                     syscall: "newfstatat".to_string(),
                     args: "(AT_FDCWD, \"/data/h445xu/repo/bazel-dep-reduce/WORKSPACE\", 0xc00017f488, 0)".to_string(),
                     ret: "-1 ENOENT (No such file or directory)".to_string(),
@@ -81,6 +89,8 @@ mod tests {
                 }),
                 SyscallLine::Full(SyscallDesp {
                     pid: 815823,
+                    cmd: "a".to_string(),
+                    resumed_cmd: None,
                     syscall: "newfstatat".to_string(),
                     args: "(AT_FDCWD, \"/data/h445xu/repo/bazel-dep-reduce/WORKSPACE.bazel\", 0xc00017f558, 0)".to_string(),
                     ret: "-1 ENOENT (No such file or directory)".to_string(),
@@ -88,6 +98,7 @@ mod tests {
                 }),
                 SyscallLine::Resumed(ResumedSyscallDesp {
                     pid: 815824,
+                    cmd: "b".to_string(),
                     syscall: "nanosleep".to_string(),
                     partial_args: "NULL)".to_string(),
                     ret: "0".to_string(),
@@ -95,18 +106,21 @@ mod tests {
                 }),
                 SyscallLine::Unfinished(UnfinishedSyscallDesp {
                     pid: 815823,
+                    cmd: "a".to_string(),
                     syscall: "newfstatat".to_string(),
                     partial_args: "(AT_FDCWD, \"/data/h445xu/repo/WORKSPACE\", ".to_string(),
                     line_no: 4
                 }),
                 SyscallLine::Unfinished(UnfinishedSyscallDesp {
                     pid: 815824,
+                    cmd: "b".to_string(),
                     syscall: "nanosleep".to_string(),
                     partial_args: "({tv_sec=0, tv_nsec=20000}, ".to_string(),
                     line_no: 5
                 }),
                 SyscallLine::Resumed(ResumedSyscallDesp {
                     pid: 815823,
+                    cmd: "a".to_string(),
                     syscall: "newfstatat".to_string(),
                     partial_args: "0xc00017f628, 0)".to_string(),
                     ret: "-1 ENOENT (No such file or directory)".to_string(),
@@ -118,6 +132,8 @@ mod tests {
         let expected = vec![
             SyscallDesp {
                 pid: 815823,
+                cmd: "a".to_string(),
+                resumed_cmd: None,
                 syscall: "newfstatat".to_string(),
                 args:
                     "(AT_FDCWD, \"/data/h445xu/repo/bazel-dep-reduce/WORKSPACE\", 0xc00017f488, 0)"
@@ -127,6 +143,8 @@ mod tests {
             },
             SyscallDesp { 
                 pid: 815823, 
+                cmd: "a".to_string(),
+                resumed_cmd: None,
                 syscall: "newfstatat".to_string(), 
                 args: "(AT_FDCWD, \"/data/h445xu/repo/bazel-dep-reduce/WORKSPACE.bazel\", 0xc00017f558, 0)".to_string(), 
                 ret: "-1 ENOENT (No such file or directory)".to_string(), 
@@ -134,6 +152,8 @@ mod tests {
             }, 
             SyscallDesp { 
                 pid: 815823,  
+                cmd: "a".to_string(),
+                resumed_cmd: None,
                 syscall: "newfstatat".to_string(), 
                 args: "(AT_FDCWD, \"/data/h445xu/repo/WORKSPACE\", 0xc00017f628, 0)".to_string(), 
                 ret: "-1 ENOENT (No such file or directory)".to_string(), 
