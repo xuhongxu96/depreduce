@@ -424,5 +424,16 @@ mod tests {
             &state.vfs.resolve_link_path(inode),
             "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin",
         );
+
+        let inode = state
+            .vfs
+            .get_inode_by_path(
+                "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/main/main.cpp",
+            )
+            .unwrap();
+        assert_eq!(
+            &state.vfs.resolve_link_path(inode),
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/main.cpp",
+        );
     }
 }
