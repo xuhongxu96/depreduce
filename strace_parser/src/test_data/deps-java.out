@@ -1,0 +1,590 @@
+
+4384: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+
+4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 457: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/external/rules_java+/toolchains/platformclasspath.jar
+
+4356: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+
+4324: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb.jdeps
+  -> 4356: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 4357: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4358: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class
+  -> 4355: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com
+
+4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+
+4448: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4447: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+
+5078: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/testlogs
+  -> 227: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
+  -> 4458: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
+  -> 490: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
+
+54: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-native-header.jar
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 50: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example
+  -> 49: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 52: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 51: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba
+
+4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+
+4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+
+4358: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+
+55: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba.jdeps
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 50: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 52: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class
+  -> 49: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com
+  -> 51: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba
+
+4447: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+
+4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+
+49: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+
+4326: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb.jar_manifest_proto
+  -> 4357: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4356: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4355: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4358: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+
+4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+
+4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+
+5075: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out
+  -> 227: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
+  -> 4458: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
+  -> 490: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
+
+50: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+
+4449: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4448: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4447: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+
+4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+
+4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 457: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/external/rules_java+/toolchains/platformclasspath.jar
+
+4385: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example/Main.class
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+
+4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+
+4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+
+4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+
+4386: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.jar
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 4384: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+  -> 4383: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com
+  -> 4385: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example/Main.class
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+
+56: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba.jar_manifest_proto
+  -> 52: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class
+  -> 51: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 49: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 50: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+
+4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+
+4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 457: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/external/rules_java+/toolchains/platformclasspath.jar
+
+4383: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+
+4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 457: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/external/rules_java+/toolchains/platformclasspath.jar
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+
+4388: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.jdeps
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4385: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example/Main.class
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 4383: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4384: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+
+4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+
+5077: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/_tmp/actions
+  -> 4458: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
+  -> 490: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
+  -> 227: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
+
+4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+
+4451: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example/libb
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4450: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example/liba
+  -> 4448: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4447: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4449: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+
+5076: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/_tmp
+  -> 490: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
+  -> 227: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
+  -> 4458: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
+
+52: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+
+51: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+
+4355: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+
+4323: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb.jar
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4358: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class
+  -> 4356: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example
+  -> 4357: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4355: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+
+4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+
+4325: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-native-header.jar
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 4355: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com
+  -> 4357: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+  -> 4358: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class
+  -> 4356: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+
+4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+
+4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+
+53: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba.jar
+  -> 52: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class
+  -> 44: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_sources
+  -> 45: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_tmp/native_headers
+  -> 50: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example
+  -> 49: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com
+  -> 51: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba
+  -> 48: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java
+  -> 42: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/_javac/liba/libliba_classes
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 39: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba
+
+4450: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example/liba
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4449: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com/example
+  -> 4446: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main
+  -> 4439: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/bin
+  -> 4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4445: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/management
+  -> 4448: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src/com
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4442: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy
+  -> 4444: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/unlimited
+  -> 4438: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jfr
+  -> 4440: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4441: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4447: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/_main/src
+  -> 4443: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/conf/security/policy/limited
+
+4387: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main-native-header.jar
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 4383: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+  -> 4384: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4385: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example/Main.class
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+
+4357: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb
+  -> 4315: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java
+  -> 4351: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_classes
+  -> 4353: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_sources
+  -> 4354: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/_javac/libb/liblibb_tmp/native_headers
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4316: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb
+
+4437: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/jli
+  -> 4434: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib
+  -> 4432: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include
+  -> 4433: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/include/linux
+  -> 4431: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk
+  -> 4429: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles_manifest
+  -> 4436: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/security
+  -> 4435: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles/rules_java++toolchains+local_jdk/lib/server
+  -> 4430: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.runfiles
+
+4389: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/Main.jar_manifest_proto
+  -> 507: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java
+  -> 47: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src
+  -> 4372: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin
+  -> 4378: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_tmp/native_headers
+  -> 4383: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com
+  -> 4382: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jar
+  -> 4377: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_sources
+  -> 4385: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example/Main.class
+  -> 4380: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/libb/liblibb-hjar.jdeps
+  -> 4381: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jar
+  -> 4384: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes/com/example
+  -> 4379: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/src/com/example/liba/libliba-hjar.jdeps
+  -> 4375: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/bin/_javac/Main/Main_classes

@@ -179,19 +179,18 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
         .split('/')
         .last()
         .map(|last| format!("{}/bazel-{}/external", state.cwd, last))
-        .unwrap();
-    let external_path = state
-        .vfs
-        .resolve_link_path(state.vfs.get_index_by_path(&external_path).unwrap())
-        .unwrap();
+        .map(|p| state.vfs.get_index_by_path(&p))
+        .flatten()
+        .map(|i| state.vfs.resolve_link_path(i).ok())
+        .flatten();
 
-    stack.push(res.get_path_index(&state.cwd).unwrap());
+    stack.push(res.add_path(state.cwd.clone()));
     while let Some(path_index_in_graph) = stack.pop() {
         if attentioned_paths.contains(&path_index_in_graph) {
             continue;
         }
         let path = res.get_path(path_index_in_graph).unwrap();
-        if path == &external_path {
+        if path.as_str() == external_path.as_deref().unwrap_or("") {
             continue; // skip bazel external paths
         }
 
@@ -201,7 +200,7 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
         let children = state.vfs.get_children(path_index_in_vfs).unwrap();
         for (_, child_index) in children {
             if let Ok(child_path) = state.vfs.resolve_link_path(*child_index) {
-                res.get_path_index(&child_path).map(|p| stack.push(p));
+                stack.push(res.add_path(child_path));
             }
         }
     }
@@ -254,6 +253,15 @@ mod tests {
             "test_data/strace.log",
             "test_data/deps.out",
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+        );
+    }
+
+    #[test]
+    fn test_dep_extractor_java() {
+        dump_deps(
+            "test_data/strace-java.log",
+            "test_data/deps-java.out",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
         );
     }
 }
