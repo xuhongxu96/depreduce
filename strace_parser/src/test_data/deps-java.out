@@ -1,19 +1,4 @@
 
-28: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
-
-29: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/_tmp
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
-
-30: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/_tmp/actions
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main
-
 31: /home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/execroot/_main/bazel-out/k8-fastbuild/testlogs
   -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/MODULE.bazel
   -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project

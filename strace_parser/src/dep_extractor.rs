@@ -84,7 +84,6 @@ impl DependencyGraph {
 
     fn simplify(&mut self, paths: impl IntoIterator<Item = usize>) {
         let paths: HashSet<usize> = paths.into_iter().collect();
-        // let indices: Vec<usize> = self.deps.keys().cloned().collect();
         for index in &paths {
             self.cache_final_dependencies(*index, &paths);
         }
@@ -185,6 +184,11 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
         .flatten()
         .map(|i| state.vfs.resolve_link_path(i).ok())
         .flatten();
+    let out_path = Some(format!("{}/bazel-out", state.cwd))
+        .map(|p| state.vfs.get_index_by_path(&p))
+        .flatten()
+        .map(|i| state.vfs.resolve_link_path(i).ok())
+        .flatten();
 
     stack.push(res.add_path(state.cwd.clone()));
     while let Some(path_index_in_graph) = stack.pop() {
@@ -192,7 +196,9 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
             continue;
         }
         let path = res.get_path(path_index_in_graph).unwrap();
-        if path.as_str() == external_path.as_deref().unwrap_or("") {
+        if path.as_str() == external_path.as_deref().unwrap_or("")
+            || path.as_str() == out_path.as_deref().unwrap_or("")
+        {
             continue; // skip bazel external paths
         }
 

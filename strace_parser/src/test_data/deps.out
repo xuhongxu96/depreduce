@@ -1,35 +1,8 @@
 
-28: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main
-
-29: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/_tmp
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main
-
-30: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/_tmp/actions
-  -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/MODULE.bazel
-  -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project
-  -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main
-
 31: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/testlogs
   -> 1: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/MODULE.bazel
   -> 10: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project
   -> 23: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main
-
-6138: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin/libb
-  -> 6135: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/stable-status.txt
-  -> 6136: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/volatile-status.txt
-
-6139: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin/libb/_objs
-  -> 6135: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/stable-status.txt
-  -> 6136: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/volatile-status.txt
-
-6140: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin/libb/_objs/libb
-  -> 6135: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/stable-status.txt
-  -> 6136: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/volatile-status.txt
 
 6161: /home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin/libb/_objs/libb/b.pic.o
   -> 67: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb
