@@ -224,7 +224,7 @@ impl VFS {
         }
     }
 
-    pub fn to_path(&self, inode: INode) -> String {
+    pub fn to_path(&self, inode: INode) -> Result<String, String> {
         let mut path = String::new();
         let mut current_inode = inode;
 
@@ -236,19 +236,19 @@ impl VFS {
                 path.insert_str(0, &node.name);
                 current_inode = node.parent;
             } else {
-                break; // Inode not found
+                return Err(format!("INode {} not found", current_inode));
             }
         }
 
-        if path.is_empty() {
+        Ok(if path.is_empty() {
             "/".to_string() // Root path
         } else {
             path.insert(0, '/');
             path
-        }
+        })
     }
 
-    pub fn resolve_link_path(&self, inode: INode) -> String {
+    pub fn resolve_link_path(&self, inode: INode) -> Result<String, String> {
         let mut path = String::new();
         let mut current_inode = inode;
 
@@ -268,16 +268,16 @@ impl VFS {
                 path.insert_str(0, &node.name);
                 current_inode = node.parent;
             } else {
-                break; // Inode not found
+                return Err(format!("INode {} not found", current_inode));
             }
         }
 
-        if path.is_empty() {
+        Ok(if path.is_empty() {
             "/".to_string() // Root path
         } else {
             path.insert(0, '/');
             path
-        }
+        })
     }
 }
 
@@ -405,8 +405,8 @@ mod tests {
         let target_inode = vfs.create_node_recursively("/target");
         let symlink_inode = vfs.create_symlink("/link", "/target").unwrap();
         let a_inode = vfs.create_node_recursively("/link/a");
-        assert_eq!(vfs.resolve_link_path(symlink_inode), "/target");
-        assert_eq!(vfs.resolve_link_path(a_inode), "/target/a");
-        assert_eq!(vfs.resolve_link_path(0), "/");
+        assert_eq!(vfs.resolve_link_path(symlink_inode).unwrap(), "/target");
+        assert_eq!(vfs.resolve_link_path(a_inode).unwrap(), "/target/a");
+        assert_eq!(vfs.resolve_link_path(0).unwrap(), "/");
     }
 }

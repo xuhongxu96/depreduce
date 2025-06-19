@@ -390,9 +390,10 @@ mod tests {
 
             let write_realpath = |f: &mut dyn Write, res: &Result<(String, VFSINode), String>| {
                 if let Ok((path, inode)) = res {
-                    let realpath = state.vfs.resolve_link_path(*inode);
-                    if realpath != *path {
-                        writeln!(f, "    RealPath: {}", realpath).unwrap();
+                    if let Ok(realpath) = state.vfs.resolve_link_path(*inode) {
+                        if realpath != *path {
+                            writeln!(f, "    RealPath: {}", realpath).unwrap();
+                        }
                     }
                 }
             };
@@ -421,7 +422,7 @@ mod tests {
             )
             .unwrap();
         assert_eq!(
-            &state.vfs.resolve_link_path(inode),
+            &state.vfs.resolve_link_path(inode).unwrap(),
             "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin",
         );
 
@@ -432,7 +433,7 @@ mod tests {
             )
             .unwrap();
         assert_eq!(
-            &state.vfs.resolve_link_path(inode),
+            &state.vfs.resolve_link_path(inode).unwrap(),
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/main.cpp",
         );
     }
