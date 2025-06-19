@@ -245,6 +245,10 @@ fn model_open(
     d_index: Option<usize>,
     p_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd = get_fd(&syscall_desp.args, d_index);
     match to_at_expr(&syscall_desp.args, fd, p_index) {
         None => syntax::Statement::Nop,
@@ -263,6 +267,10 @@ fn to_newfd(
     d_index: Option<usize>,
     p_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd = get_fd(&syscall_desp.args, d_index);
     match to_at_expr(&syscall_desp.args, fd, p_index) {
         None => syntax::Statement::Nop,
