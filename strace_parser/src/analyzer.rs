@@ -6,7 +6,7 @@ use crate::{
     lower::TraceIR,
     syntax::{self},
     syscall_line::{FileDescriptor, ProcessId, SyscallDesp},
-    vfs::{Node as VFSNode, NodeIndex as VFSNodeIndex, VFS},
+    vfs::{NodeIndex as VFSNodeIndex, VFS},
 };
 
 #[derive(PartialEq, Debug, Clone)]
@@ -378,7 +378,7 @@ pub fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
 mod tests {
     use super::*;
     use crate::lower::parse_syscall_desps;
-    use crate::syntax::{self, Expr, FdVar, Path, Statement};
+    
 
     fn dump_analysis(input_strace_path: &str, output_path: &str, cwd: &str) -> State {
         use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};

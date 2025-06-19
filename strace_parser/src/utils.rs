@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 
 use normalize_path::NormalizePath;
 
