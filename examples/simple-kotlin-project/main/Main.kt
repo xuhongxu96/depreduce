@@ -1,7 +1,6 @@
 package main
 
 import liba.ClassA
-import libb.ClassB
 
 class Main {
     companion object {

@@ -6,36 +6,37 @@ use crate::{
     lower::TraceIR,
     syntax::{self},
     syscall_line::{FileDescriptor, ProcessId, SyscallDesp},
-    vfs::{INode as VFSINode, Node as VFSNode, VFS},
+    vfs::{Node as VFSNode, NodeIndex as VFSNodeIndex, VFS},
 };
 
 #[derive(PartialEq, Debug, Clone)]
-enum FileOperation {
-    Consume(Result<(String, VFSINode), String>),
-    Produce(Result<(String, VFSINode), String>),
+pub enum FileOperation {
+    Consume(Result<(String, VFSNodeIndex), String>),
+    Produce(Result<(String, VFSNodeIndex), String>),
     Delete(Result<(String, VFSNode), String>),
+    BeginTask(String),
 }
 
 #[derive(PartialEq, Debug, Clone, Default)]
-struct ProcessState {
-    fd_maps: HashMap<FileDescriptor, String>,
-    cwd: String,
-    parent: Option<ProcessId>,
-    operations: Vec<FileOperation>,
+pub struct ProcessState {
+    pub fd_maps: HashMap<FileDescriptor, String>,
+    pub cwd: String,
+    pub parent: Option<ProcessId>,
+    pub operations: Vec<FileOperation>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-struct State {
-    processes: HashMap<ProcessId, ProcessState>,
-    vfs: VFS,
-    cwd: String,
+pub struct State {
+    pub processes: HashMap<ProcessId, ProcessState>,
+    pub vfs: VFS,
+    pub cwd: String,
 }
 
 impl State {
-    fn get_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSINode), String> {
+    fn get_index(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNodeIndex), String> {
         let path = self.get_absolute_path(pid, path);
-        match self.vfs.get_inode_by_path(&path) {
-            Some(inode) => Ok((path, inode)),
+        match self.vfs.get_index_by_path(&path) {
+            Some(index) => Ok((path, index)),
             None => {
                 if path.starts_with(&self.cwd) {
                     Ok((path.to_string(), self.vfs.create_node_recursively(&path)))
@@ -46,7 +47,7 @@ impl State {
         }
     }
 
-    fn create_inode(&mut self, pid: ProcessId, path: &str) -> (String, VFSINode) {
+    fn create_index(&mut self, pid: ProcessId, path: &str) -> (String, VFSNodeIndex) {
         (
             path.to_string(),
             self.vfs
@@ -54,24 +55,24 @@ impl State {
         )
     }
 
-    fn remove_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
+    fn remove_index(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
         self.vfs
             .remove_node_recursively(&self.get_absolute_path(pid, path))
-            .map(|inode| (path.to_string(), inode))
+            .map(|index| (path.to_string(), index))
     }
 
-    fn create_symlink_inode(
+    fn create_symlink_index(
         &mut self,
         pid: ProcessId,
         path: &str,
         target: &str,
-    ) -> Result<(String, VFSINode), String> {
+    ) -> Result<(String, VFSNodeIndex), String> {
         self.vfs
             .create_symlink(
                 &self.get_absolute_path(pid, path),
                 &self.get_absolute_path(pid, target),
             )
-            .map(|inode| (path.to_string(), inode))
+            .map(|index| (path.to_string(), index))
     }
 }
 
@@ -204,7 +205,7 @@ impl State {
             Expr::V(FdVar::CWD) => {}
             _ => match self.eval_expr(pid, expr) {
                 Some(syntax::Path::Path(path)) => {
-                    let vfs_node = self.remove_inode(pid, &path);
+                    let vfs_node = self.remove_index(pid, &path);
 
                     self.get_process(pid)
                         .operations
@@ -220,10 +221,10 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                let inode = self.get_inode(pid, &path);
+                let index = self.get_index(pid, &path);
                 self.get_process(pid)
                     .operations
-                    .push(FileOperation::Consume(inode));
+                    .push(FileOperation::Consume(index));
             }
             _ => {}
         }
@@ -234,10 +235,10 @@ impl State {
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                let inode = self.create_inode(pid, &path);
+                let index = self.create_index(pid, &path);
                 self.get_process(pid)
                     .operations
-                    .push(FileOperation::Produce(Ok(inode)));
+                    .push(FileOperation::Produce(Ok(index)));
             }
             _ => {}
         }
@@ -249,17 +250,17 @@ impl State {
         if let (Some(Path::Path(target_path)), Some(Path::Path(link))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let target_inode = self.get_inode(pid, &target_path);
-            let link_inode = self.create_symlink_inode(pid, &link, &target_path);
+            let target_index = self.get_index(pid, &target_path);
+            let link_index = self.create_symlink_index(pid, &link, &target_path);
 
             // FIXME: Shall we record the link operation?
             //
             // self.get_process(pid)
             //     .operations
-            //     .push(FileOperation::Consume(target_inode));
+            //     .push(FileOperation::Consume(target_index));
             // self.get_process(pid)
             //     .operations
-            //     .push(FileOperation::Produce(link_inode));
+            //     .push(FileOperation::Produce(link_index));
         }
     }
 
@@ -269,15 +270,15 @@ impl State {
         if let (Some(Path::Path(path)), Some(Path::Path(path1))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let inode = self.get_inode(pid, &path);
-            let inode1 = self.create_inode(pid, &path1);
+            let index = self.get_index(pid, &path);
+            let index1 = self.create_index(pid, &path1);
 
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Consume(inode));
+                .push(FileOperation::Consume(index));
             self.get_process(pid)
                 .operations
-                .push(FileOperation::Produce(Ok(inode1)));
+                .push(FileOperation::Produce(Ok(index1)));
         }
     }
 
@@ -294,6 +295,12 @@ impl State {
         );
     }
 
+    fn interpret_begin_task(&mut self, pid: ProcessId, task_name: &str) {
+        self.get_process(pid)
+            .operations
+            .push(FileOperation::BeginTask(task_name.to_string()));
+    }
+
     fn analyze_ir(&mut self, ir: TraceIR) {
         use syntax::Statement;
 
@@ -307,7 +314,9 @@ impl State {
             Statement::Newproc(new_pid) => {
                 self.interpret_newproc(&ir.syscall, new_pid.try_into().unwrap())
             }
-            Statement::BeginTask(_) => {}
+            Statement::BeginTask(task_name) => {
+                self.interpret_begin_task(ir.syscall.pid, &task_name);
+            }
             Statement::Nop => {}
         }
     }
@@ -352,21 +361,14 @@ mod tests {
     use crate::lower::parse_syscall_desps;
     use crate::syntax::{self, Expr, FdVar, Path, Statement};
 
-    #[test]
-    fn test_analyze() {
+    fn dump_analysis(input_strace_path: &str, output_path: &str, cwd: &str) -> State {
         use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};
         use std::fs::{self};
         use std::io::Write;
         use std::path::Path;
 
-        let data_path = Path::new(file!())
-            .parent()
-            .unwrap()
-            .join("test_data/strace.log");
-        let expected_data_path = Path::new(file!())
-            .parent()
-            .unwrap()
-            .join("test_data/strace.paths.expected.out");
+        let data_path = Path::new(file!()).parent().unwrap().join(input_strace_path);
+        let expected_data_path = Path::new(file!()).parent().unwrap().join(output_path);
         let mut f = fs::OpenOptions::new()
             .create(true)
             .truncate(true)
@@ -377,7 +379,7 @@ mod tests {
             parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
                 data_path.to_str().unwrap(),
             ))),
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+            cwd,
         );
 
         let mut processes = state.processes.iter().collect::<Vec<_>>();
@@ -390,15 +392,16 @@ mod tests {
             )
             .unwrap();
 
-            let write_realpath = |f: &mut dyn Write, res: &Result<(String, VFSINode), String>| {
-                if let Ok((path, inode)) = res {
-                    if let Ok(realpath) = state.vfs.resolve_link_path(*inode) {
-                        if realpath != *path {
-                            writeln!(f, "    RealPath: {}", realpath).unwrap();
+            let write_realpath =
+                |f: &mut dyn Write, res: &Result<(String, VFSNodeIndex), String>| {
+                    if let Ok((path, index)) = res {
+                        if let Ok(realpath) = state.vfs.resolve_link_path(*index) {
+                            if realpath != *path {
+                                writeln!(f, "    RealPath: {}", realpath).unwrap();
+                            }
                         }
                     }
-                }
-            };
+                };
 
             for op in &props.operations {
                 match op {
@@ -413,30 +416,53 @@ mod tests {
                     FileOperation::Delete(res) => {
                         writeln!(f, "  Delete: {:?}", res).unwrap();
                     }
+                    FileOperation::BeginTask(task_name) => {
+                        writeln!(f, "  Begin Task: {}", task_name).unwrap();
+                    }
                 }
             }
         });
 
-        let inode = state
+        state
+    }
+
+    #[test]
+    fn test_analyze_cxx() {
+        let state = dump_analysis(
+            "test_data/strace.log",
+            "test_data/strace.paths.expected.out",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+        );
+
+        let index = state
             .vfs
-            .get_inode_by_path(
+            .get_index_by_path(
                 "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/bazel-bin",
             )
             .unwrap();
         assert_eq!(
-            &state.vfs.resolve_link_path(inode).unwrap(),
+            &state.vfs.resolve_link_path(index).unwrap(),
             "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin",
         );
 
-        let inode = state
+        let index = state
             .vfs
-            .get_inode_by_path(
+            .get_index_by_path(
                 "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/main/main.cpp",
             )
             .unwrap();
         assert_eq!(
-            &state.vfs.resolve_link_path(inode).unwrap(),
+            &state.vfs.resolve_link_path(index).unwrap(),
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/main.cpp",
+        );
+    }
+
+    #[test]
+    fn test_analyze_java() {
+        let state = dump_analysis(
+            "test_data/strace-java.log",
+            "test_data/strace-java.paths.expected.out",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
         );
     }
 }
