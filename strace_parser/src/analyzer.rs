@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, LinkedList};
+use std::collections::HashMap;
 
 use normalize_path::NormalizePath;
 
@@ -24,13 +24,66 @@ struct ProcessState {
     operations: Vec<FileOperation>,
 }
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone)]
 struct State {
     processes: HashMap<ProcessId, ProcessState>,
     vfs: VFS,
+    cwd: String,
 }
 
 impl State {
+    fn get_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSINode), String> {
+        let path = self.get_absolute_path(pid, path);
+        match self.vfs.get_inode_by_path(&path) {
+            Some(inode) => Ok((path, inode)),
+            None => {
+                if path.starts_with(&self.cwd) {
+                    Ok((path.to_string(), self.vfs.create_node_recursively(&path)))
+                } else {
+                    Err(format!("File not found: {}", path))
+                }
+            }
+        }
+    }
+
+    fn create_inode(&mut self, pid: ProcessId, path: &str) -> (String, VFSINode) {
+        (
+            path.to_string(),
+            self.vfs
+                .create_node_recursively(&self.get_absolute_path(pid, path)),
+        )
+    }
+
+    fn remove_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
+        self.vfs
+            .remove_node_recursively(&self.get_absolute_path(pid, path))
+            .map(|inode| (path.to_string(), inode))
+    }
+
+    fn create_symlink_inode(
+        &mut self,
+        pid: ProcessId,
+        path: &str,
+        target: &str,
+    ) -> Result<(String, VFSINode), String> {
+        self.vfs
+            .create_symlink(
+                &self.get_absolute_path(pid, path),
+                &self.get_absolute_path(pid, target),
+            )
+            .map(|inode| (path.to_string(), inode))
+    }
+}
+
+impl State {
+    fn new(cwd: String) -> Self {
+        Self {
+            processes: HashMap::new(),
+            vfs: VFS::new(),
+            cwd: cwd,
+        }
+    }
+
     fn get_process(&mut self, pid: ProcessId) -> &mut ProcessState {
         self.processes.get_mut(&pid).unwrap()
     }
@@ -162,55 +215,12 @@ impl State {
         }
     }
 
-    fn get_or_create_inode(
-        &mut self,
-        pid: ProcessId,
-        path: &str,
-    ) -> Result<(String, VFSINode), String> {
-        let path = self.get_absolute_path(pid, path);
-        match self.vfs.get_inode_by_path(&path) {
-            Some(inode) => Ok((path, inode)),
-            None => {
-                // TODO: allowlist for path within the project
-                Err(format!("File not found: {}", path))
-            }
-        }
-    }
-
-    fn create_inode(&mut self, pid: ProcessId, path: &str) -> (String, VFSINode) {
-        (
-            path.to_string(),
-            self.vfs
-                .create_node_recursively(&self.get_absolute_path(pid, path)),
-        )
-    }
-
-    fn remove_inode(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
-        self.vfs
-            .remove_node_recursively(&self.get_absolute_path(pid, path))
-            .map(|inode| (path.to_string(), inode))
-    }
-
-    fn create_symlink_inode(
-        &mut self,
-        pid: ProcessId,
-        path: &str,
-        target: &str,
-    ) -> Result<(String, VFSINode), String> {
-        self.vfs
-            .create_symlink(
-                &self.get_absolute_path(pid, path),
-                &self.get_absolute_path(pid, target),
-            )
-            .map(|inode| (path.to_string(), inode))
-    }
-
     fn interpret_consume(&mut self, pid: ProcessId, expr: &syntax::Expr) {
         use syntax::Path;
 
         match self.eval_expr(pid, expr) {
             Some(Path::Path(path)) => {
-                let inode = self.get_or_create_inode(pid, &path);
+                let inode = self.get_inode(pid, &path);
                 self.get_process(pid)
                     .operations
                     .push(FileOperation::Consume(inode));
@@ -239,7 +249,7 @@ impl State {
         if let (Some(Path::Path(target_path)), Some(Path::Path(link))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let target_inode = self.get_or_create_inode(pid, &target_path);
+            let target_inode = self.get_inode(pid, &target_path);
             let link_inode = self.create_symlink_inode(pid, &link, &target_path);
 
             self.get_process(pid)
@@ -257,7 +267,7 @@ impl State {
         if let (Some(Path::Path(path)), Some(Path::Path(path1))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let inode = self.get_or_create_inode(pid, &path);
+            let inode = self.get_inode(pid, &path);
             let inode1 = self.create_inode(pid, &path1);
 
             self.get_process(pid)
@@ -312,21 +322,22 @@ fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
         .to_string_lossy()
         .to_string();
 
-    let mut state = State::default();
+    let mut state = State::new(cwd.clone());
+    if irs.is_empty() {
+        return state;
+    }
+
+    state.processes.insert(
+        irs[0].syscall.pid,
+        ProcessState {
+            fd_maps: HashMap::new(),
+            cwd: cwd,
+            parent: None,
+            operations: Vec::new(),
+        },
+    );
 
     for ir in irs {
-        if state.processes.is_empty() {
-            state.processes.insert(
-                ir.syscall.pid,
-                ProcessState {
-                    fd_maps: HashMap::new(),
-                    cwd: cwd.to_string(),
-                    parent: None,
-                    operations: Vec::new(),
-                },
-            );
-        }
-
         state.analyze_ir(ir);
     }
 
@@ -400,7 +411,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             &state.vfs.resolve_link_path(inode),
-            "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin"
+            "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/execroot/_main/bazel-out/k8-fastbuild/bin",
         );
     }
 }

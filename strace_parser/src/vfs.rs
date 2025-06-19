@@ -210,7 +210,7 @@ impl VFS {
         };
 
         for (_, child_inode) in children {
-            self.remove_inode_recursively(child_inode);
+            self.remove_inode_recursively(child_inode)?;
         }
 
         self.remove_inode(inode)
@@ -359,7 +359,7 @@ mod tests {
         vfs.create_node_recursively("/x/y/a/b/d");
 
         // remove
-        vfs.remove_node_recursively("/a/b");
+        vfs.remove_node_recursively("/a/b").unwrap();
         assert_eq!(vfs.get_inode_by_path("/a/b"), None);
         assert_eq!(vfs.get_inode_by_path("/a/b/c"), None);
         assert_eq!(vfs.get_inode_by_path("/a/b/d"), None);
@@ -377,7 +377,7 @@ mod tests {
         let inode_d = vfs.create_node_recursively("/a/b/d");
         let inode_z = vfs.create_node_recursively("/x/y/z");
 
-        let _ = vfs.remove_node_recursively("/a/b");
+        vfs.remove_node_recursively("/a/b").unwrap();
         assert_eq!(vfs.get_inode_by_path("/a/b"), None);
         assert_eq!(vfs.get_inode_by_path("/a/b/c"), None);
         assert_eq!(vfs.get_inode_by_path("/a/b/d"), None);

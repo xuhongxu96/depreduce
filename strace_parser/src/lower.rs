@@ -85,15 +85,22 @@ fn get_fd(args: &str, index: Option<usize>) -> Option<&str> {
 
 fn extract_ret_int(ret: &str) -> i64 {
     let mut res = ret;
-    if ret.contains(" ENOENT") {
-        res = &ret[..ret.find(" ENOENT").unwrap()];
+    if ret.contains(" ") {
+        res = &ret[..ret.find(" ").unwrap()];
+    }
+    if ret.contains("<") {
+        res = &ret[..ret.find("<").unwrap()];
     }
 
     res = res.trim();
     res = res.strip_prefix("(").unwrap_or(res);
     res = res.strip_suffix(")").unwrap_or(res);
 
-    return res.parse().unwrap();
+    if res.starts_with("0x") {
+        i64::from_str_radix(&res[2..], 16).unwrap()
+    } else {
+        res.parse().unwrap()
+    }
 }
 
 fn extract_newproc_ret_int(ret: &str) -> i64 {
@@ -122,6 +129,10 @@ fn to_nop() -> syntax::Statement {
 }
 
 fn to_chdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     match to_path_expr(&syscall_desp.args, 0) {
         None => syntax::Statement::Nop,
         Some(e) => syntax::Statement::Let(syntax::FdVar::CWD, e),
@@ -129,14 +140,26 @@ fn to_chdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_newproc(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     syntax::Statement::Newproc(extract_newproc_ret_int(syscall_desp.ret.as_str()))
 }
 
 fn to_delfd(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     syntax::Statement::Del(to_fdvar_expr(Some(&syscall_desp.args)))
 }
 
 fn to_dupfd_fcntl(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     if has_dupfd(&syscall_desp.args) {
         syntax::Statement::Let(
             to_fdvar(Some(&syscall_desp.ret)),
@@ -148,6 +171,10 @@ fn to_dupfd_fcntl(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_dupfd_dup(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     syntax::Statement::Let(
         to_fdvar(Some(&syscall_desp.ret)),
         to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
@@ -155,6 +182,10 @@ fn to_dupfd_dup(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_dupfd_dup2(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     syntax::Statement::Let(
         to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 1))),
         to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
@@ -162,6 +193,10 @@ fn to_dupfd_dup2(syscall_desp: &SyscallDesp) -> syntax::Statement {
 }
 
 fn to_fchdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     syntax::Statement::Let(
         syntax::FdVar::CWD,
         to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
@@ -173,6 +208,10 @@ fn to_consume(
     d_index: Option<usize>,
     p_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd = get_fd(&syscall_desp.args, d_index);
     match to_at_expr(&syscall_desp.args, fd, p_index) {
         None => syntax::Statement::Nop,
@@ -185,6 +224,10 @@ fn to_produce(
     d_index: Option<usize>,
     p_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd = get_fd(&syscall_desp.args, d_index);
     match to_at_expr(&syscall_desp.args, fd, p_index) {
         None => syntax::Statement::Nop,
@@ -199,6 +242,10 @@ fn to_link(
     d1_index: Option<usize>,
     p1_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd0 = get_fd(&syscall_desp.args, d0_index);
     let fd1 = get_fd(&syscall_desp.args, d1_index);
     match (
@@ -217,6 +264,10 @@ fn to_copy(
     d1_index: Option<usize>,
     p1_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd0 = get_fd(&syscall_desp.args, d0_index);
     let fd1 = get_fd(&syscall_desp.args, d1_index);
     match (
@@ -233,6 +284,10 @@ fn to_del_path(
     d_index: Option<usize>,
     p_index: usize,
 ) -> syntax::Statement {
+    if extract_ret_int(&syscall_desp.ret) == -1 {
+        return syntax::Statement::Nop;
+    }
+
     let fd = get_fd(&syscall_desp.args, d_index);
     match to_at_expr(&syscall_desp.args, fd, p_index) {
         None => syntax::Statement::Nop,
