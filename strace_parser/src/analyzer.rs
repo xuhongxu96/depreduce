@@ -388,13 +388,24 @@ mod tests {
             )
             .unwrap();
 
+            let write_realpath = |f: &mut dyn Write, res: &Result<(String, VFSINode), String>| {
+                if let Ok((path, inode)) = res {
+                    let realpath = state.vfs.resolve_link_path(*inode);
+                    if realpath != *path {
+                        writeln!(f, "    RealPath: {}", realpath).unwrap();
+                    }
+                }
+            };
+
             for op in &props.operations {
                 match op {
                     FileOperation::Consume(res) => {
                         writeln!(f, "  Consume: {:?}", res).unwrap();
+                        write_realpath(&mut f, res);
                     }
                     FileOperation::Produce(res) => {
                         writeln!(f, "  Produce: {:?}", res).unwrap();
+                        write_realpath(&mut f, res);
                     }
                     FileOperation::Delete(res) => {
                         writeln!(f, "  Delete: {:?}", res).unwrap();

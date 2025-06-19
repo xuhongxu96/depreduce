@@ -248,20 +248,36 @@ impl VFS {
         }
     }
 
-    pub fn resolve_link_path(&self, mut inode: INode) -> String {
-        // Follow symlinks until a non-symlink node is reached
-        loop {
-            match self.get_node_at(inode) {
-                Some(Node {
-                    props: NodeProps::Symlink(props),
-                    ..
-                }) => {
-                    inode = props.target;
+    pub fn resolve_link_path(&self, inode: INode) -> String {
+        let mut path = String::new();
+        let mut current_inode = inode;
+
+        while current_inode != 0 {
+            if let Some(node) = self.get_node_at(current_inode) {
+                match &node.props {
+                    NodeProps::Symlink(props) => {
+                        current_inode = props.target; // Follow symlink
+                        continue;
+                    }
+                    NodeProps::Normal(_) => {}
                 }
-                _ => break,
+
+                if !path.is_empty() {
+                    path.insert_str(0, "/");
+                }
+                path.insert_str(0, &node.name);
+                current_inode = node.parent;
+            } else {
+                break; // Inode not found
             }
         }
-        self.to_path(inode)
+
+        if path.is_empty() {
+            "/".to_string() // Root path
+        } else {
+            path.insert(0, '/');
+            path
+        }
     }
 }
 
@@ -388,9 +404,9 @@ mod tests {
         let mut vfs = VFS::new();
         let target_inode = vfs.create_node_recursively("/target");
         let symlink_inode = vfs.create_symlink("/link", "/target").unwrap();
-        let symlink_inode2 = vfs.create_symlink("/link2", "/link").unwrap();
+        let a_inode = vfs.create_node_recursively("/link/a");
         assert_eq!(vfs.resolve_link_path(symlink_inode), "/target");
-        assert_eq!(vfs.resolve_link_path(symlink_inode2), "/target");
+        assert_eq!(vfs.resolve_link_path(a_inode), "/target/a");
         assert_eq!(vfs.resolve_link_path(0), "/");
     }
 }
