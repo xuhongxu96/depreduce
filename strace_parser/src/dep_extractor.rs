@@ -6,13 +6,13 @@ use crate::{
     vfs::NodeIndex,
 };
 
-struct DependencyGraph {
-    paths: Vec<String>,
-    path_index_map: HashMap<String, usize>,
-    deps: HashMap<usize, HashSet<usize>>,
+pub struct DependencyGraph {
+    pub paths: Vec<String>,
+    pub path_index_map: HashMap<String, usize>,
+    pub deps: HashMap<usize, HashSet<usize>>,
 
-    final_dep_caches: HashMap<usize, HashSet<usize>>,
-    attentioned_paths: HashSet<usize>,
+    pub final_dep_caches: HashMap<usize, HashSet<usize>>,
+    pub attentioned_paths: HashSet<usize>,
 }
 
 impl DependencyGraph {
@@ -26,11 +26,11 @@ impl DependencyGraph {
         }
     }
 
-    fn get_path(&self, index: usize) -> Option<&String> {
+    pub fn get_path(&self, index: usize) -> Option<&String> {
         self.paths.get(index)
     }
 
-    fn get_path_index(&self, path: &str) -> Option<usize> {
+    pub fn get_path_index(&self, path: &str) -> Option<usize> {
         self.path_index_map.get(path).copied()
     }
 
@@ -94,7 +94,7 @@ impl DependencyGraph {
     }
 }
 
-fn extract_dependencies(state: &State) -> DependencyGraph {
+pub fn extract_dependencies(state: &State) -> DependencyGraph {
     let mut res = DependencyGraph::new();
 
     let mut consumed_files: HashSet<usize> = HashSet::new();
