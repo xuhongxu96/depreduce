@@ -13,7 +13,9 @@ use crate::{
 pub enum FileOperation {
     Consume(Result<(String, VFSNodeIndex), String>),
     Produce(Result<(String, VFSNodeIndex), String>),
-    Delete(Result<(String, VFSNode), String>),
+    Delete(Result<(String, VFSNodeIndex), String>),
+    LetFd((FileDescriptor, String)),
+    CloseFd(FileDescriptor),
     BeginTask(String),
 }
 
@@ -36,10 +38,11 @@ impl State {
     fn get_index(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNodeIndex), String> {
         let path = self.get_absolute_path(pid, path);
         match self.vfs.get_index_by_path(&path) {
-            Some(index) => Ok((path, index)),
+            Some(index) => Ok((self.vfs.resolve_link_path(index).unwrap(), index)),
             None => {
                 if path.starts_with(&self.cwd) {
-                    Ok((path.to_string(), self.vfs.create_node_recursively(&path)))
+                    let index = self.vfs.create_node_recursively(&path);
+                    Ok((path, index))
                 } else {
                     Err(format!("File not found: {}", path))
                 }
@@ -48,17 +51,23 @@ impl State {
     }
 
     fn create_index(&mut self, pid: ProcessId, path: &str) -> (String, VFSNodeIndex) {
-        (
-            path.to_string(),
-            self.vfs
-                .create_node_recursively(&self.get_absolute_path(pid, path)),
-        )
+        let abs_path = self.get_absolute_path(pid, path);
+        let index = self.vfs.create_node_recursively(&abs_path);
+        (abs_path, index)
     }
 
-    fn remove_index(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNode), String> {
-        self.vfs
-            .remove_node_recursively(&self.get_absolute_path(pid, path))
-            .map(|index| (path.to_string(), index))
+    fn remove_index(
+        &mut self,
+        pid: ProcessId,
+        path: &str,
+    ) -> Result<(String, VFSNodeIndex), String> {
+        let abs_path = self.get_absolute_path(pid, path);
+        if let Some(index) = self.vfs.get_index_by_path(&abs_path) {
+            self.vfs.remove_node_recursively(&abs_path)?;
+            Ok((abs_path, index))
+        } else {
+            Err(format!("File not found: {}", abs_path))
+        }
     }
 
     fn create_symlink_index(
@@ -173,8 +182,11 @@ impl State {
                     return;
                 }
                 let fd_maps = &mut self.get_process(pid).fd_maps;
-                if let Some(target_path) = fd_maps.get(f2) {
+                if let Some(target_path) = fd_maps.get(f2).cloned() {
                     fd_maps.insert(*f1, target_path.clone());
+                    self.get_process(pid)
+                        .operations
+                        .push(FileOperation::LetFd((*f1, target_path)));
                 }
             }
             (FdVar::CWD, Expr::P(Path::Path(path))) => {
@@ -182,12 +194,15 @@ impl State {
             }
             _ => match self.eval_expr(pid, expr) {
                 Some(Path::Path(path)) => match fd_var {
-                    FdVar::CWD => self.get_process(pid).cwd = path.to_string(),
+                    FdVar::CWD => self.get_process(pid).cwd = path,
                     FdVar::Fd(fd) => {
                         if *fd == -1 {
                             return;
                         }
                         self.get_process(pid).fd_maps.insert(*fd, path.to_string());
+                        self.get_process(pid)
+                            .operations
+                            .push(FileOperation::LetFd((*fd, path)));
                     }
                 },
                 _ => {}
@@ -201,6 +216,10 @@ impl State {
         match expr {
             Expr::V(FdVar::Fd(f)) => {
                 self.get_process(pid).fd_maps.remove(f);
+
+                self.get_process(pid)
+                    .operations
+                    .push(FileOperation::CloseFd(*f));
             }
             Expr::V(FdVar::CWD) => {}
             _ => match self.eval_expr(pid, expr) {
@@ -322,7 +341,7 @@ impl State {
     }
 }
 
-fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
+pub fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
     // FIXME: can we avoid collecting into a Vec? Maybe better to change the combiner to finish unfinished syscall first.
     let mut irs: Vec<_> = irs.into_iter().collect();
     irs.sort_by(|a, b| a.syscall.line_no.cmp(&b.syscall.line_no));
@@ -369,12 +388,6 @@ mod tests {
 
         let data_path = Path::new(file!()).parent().unwrap().join(input_strace_path);
         let expected_data_path = Path::new(file!()).parent().unwrap().join(output_path);
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
         let state = analyze(
             parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
                 data_path.to_str().unwrap(),
@@ -384,6 +397,13 @@ mod tests {
 
         let mut processes = state.processes.iter().collect::<Vec<_>>();
         processes.sort_by(|(a, _), (b, _)| a.cmp(b));
+
+        let mut f = fs::OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(expected_data_path)
+            .unwrap();
         processes.iter().for_each(|(pid, props)| {
             writeln!(
                 f,
@@ -415,6 +435,13 @@ mod tests {
                     }
                     FileOperation::Delete(res) => {
                         writeln!(f, "  Delete: {:?}", res).unwrap();
+                        write_realpath(&mut f, res);
+                    }
+                    FileOperation::LetFd((fd, path)) => {
+                        writeln!(f, "  Let FD: {} -> {}", fd, path).unwrap();
+                    }
+                    FileOperation::CloseFd(fd) => {
+                        writeln!(f, "  Close FD: {}", fd).unwrap();
                     }
                     FileOperation::BeginTask(task_name) => {
                         writeln!(f, "  Begin Task: {}", task_name).unwrap();

@@ -1,5 +1,6 @@
 mod analyzer;
 mod combiner;
+mod dep_extractor;
 mod lower;
 mod parser;
 mod syntax;

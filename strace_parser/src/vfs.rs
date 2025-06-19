@@ -4,12 +4,12 @@ pub type NodeIndex = usize;
 
 #[derive(PartialEq, Debug, Clone, Default)]
 pub struct NormalNodeProps {
-    children: HashMap<String, NodeIndex>,
+    pub children: HashMap<String, NodeIndex>,
 }
 
 #[derive(PartialEq, Debug, Clone, Default)]
 pub struct SymlinkNodeProps {
-    target: NodeIndex,
+    pub target: NodeIndex,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -20,10 +20,10 @@ pub enum NodeProps {
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Node {
-    index: NodeIndex,
-    name: String,
-    parent: NodeIndex,
-    props: NodeProps,
+    pub index: NodeIndex,
+    pub name: String,
+    pub parent: NodeIndex,
+    pub props: NodeProps,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -174,7 +174,7 @@ impl VFS {
         )
     }
 
-    pub fn remove_index(&mut self, index: NodeIndex) -> Result<Node, String> {
+    pub fn remove_index(&mut self, index: NodeIndex) -> Result<NodeIndex, String> {
         match &self.get_node_at(index).unwrap().props {
             NodeProps::Normal(normal_node_props) => {
                 if !normal_node_props.children.is_empty() {
@@ -187,16 +187,17 @@ impl VFS {
             NodeProps::Symlink(_) => {}
         }
 
-        let node = self.nodes.get_mut(index).unwrap().take().unwrap();
+        let (parent, name) = {
+            let node = self.get_node_at(index).unwrap();
+            (node.parent, node.name.clone())
+        };
 
-        self.get_children_mut(node.parent)
-            .unwrap()
-            .remove(&node.name);
+        self.get_children_mut(parent).unwrap().remove(&name);
 
-        return Ok(node);
+        return Ok(index);
     }
 
-    pub fn remove_node(&mut self, path: &str) -> Result<Node, String> {
+    pub fn remove_node(&mut self, path: &str) -> Result<NodeIndex, String> {
         if let Some(index) = self.get_index_by_path(path) {
             self.remove_index(index)
         } else {
@@ -204,7 +205,7 @@ impl VFS {
         }
     }
 
-    pub fn remove_index_recursively(&mut self, index: NodeIndex) -> Result<Node, String> {
+    pub fn remove_index_recursively(&mut self, index: NodeIndex) -> Result<NodeIndex, String> {
         // If the index has children, remove its content recursively first
         let children = if let Some(children) = self.get_children(index) {
             children.clone()
@@ -219,7 +220,7 @@ impl VFS {
         self.remove_index(index)
     }
 
-    pub fn remove_node_recursively(&mut self, path: &str) -> Result<Node, String> {
+    pub fn remove_node_recursively(&mut self, path: &str) -> Result<NodeIndex, String> {
         if let Some(index) = self.get_index_by_path(path) {
             self.remove_index_recursively(index)
         } else {
@@ -351,7 +352,7 @@ mod tests {
         );
 
         assert_eq!(vfs.get_index_by_path("/a/b/c"), Some(index_c));
-        assert_eq!(vfs.remove_node("/a/b/c").unwrap().index, index_c);
+        assert_eq!(vfs.remove_node("/a/b/c").unwrap(), index_c);
         assert_eq!(vfs.get_index_by_path("/a/b/c"), None);
         assert_eq!(
             vfs.remove_node("/a/b/c"),
@@ -360,7 +361,7 @@ mod tests {
 
         let index_b = vfs.get_index_by_path("/a/b").unwrap();
         assert_eq!(vfs.get_children(index_b).unwrap().len(), 0); // No children left after removal
-        assert_eq!(vfs.remove_node("/a/b").unwrap().index, index_b);
+        assert_eq!(vfs.remove_node("/a/b").unwrap(), index_b);
         assert_eq!(vfs.get_index_by_path("/a/b"), None);
 
         let index_a = vfs.get_index_by_path("/a").unwrap();

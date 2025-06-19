@@ -1,7 +1,9 @@
+use crate::syscall_line::FileDescriptor;
+
 #[derive(PartialEq, Debug, Clone)]
 pub enum FdVar {
     CWD,
-    Fd(i64),
+    Fd(FileDescriptor),
 }
 
 #[derive(PartialEq, Debug, Clone)]
