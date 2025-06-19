@@ -252,12 +252,14 @@ impl State {
             let target_inode = self.get_inode(pid, &target_path);
             let link_inode = self.create_symlink_inode(pid, &link, &target_path);
 
-            self.get_process(pid)
-                .operations
-                .push(FileOperation::Consume(target_inode));
-            self.get_process(pid)
-                .operations
-                .push(FileOperation::Produce(link_inode));
+            // FIXME: Shall we record the link operation?
+            //
+            // self.get_process(pid)
+            //     .operations
+            //     .push(FileOperation::Consume(target_inode));
+            // self.get_process(pid)
+            //     .operations
+            //     .push(FileOperation::Produce(link_inode));
         }
     }
 
