@@ -245,9 +245,8 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let data_path = Path::new(file!())
-            .parent()
-            .unwrap()
+        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
             .join("test_data/test_strace.log");
         let res: Vec<_> = parse_strace_from_path(data_path.to_str().unwrap()).collect();
         assert_eq!(
@@ -307,13 +306,11 @@ mod tests {
 
     #[test]
     fn test_parse_real_large_file() {
-        let data_path = Path::new(file!())
-            .parent()
-            .unwrap()
+        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
             .join("test_data/strace.log");
-        let expected_data_path = Path::new(file!())
-            .parent()
-            .unwrap()
+        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
             .join("test_data/strace.expected.out");
         let mut f = fs::OpenOptions::new()
             .create(true)

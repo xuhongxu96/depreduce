@@ -509,13 +509,11 @@ mod tests {
         use std::io::Write;
         use std::path::Path;
 
-        let data_path = Path::new(file!())
-            .parent()
-            .unwrap()
+        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
             .join("test_data/strace.log");
-        let expected_data_path = Path::new(file!())
-            .parent()
-            .unwrap()
+        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
             .join("test_data/strace.ir.expected.out");
         let mut f = fs::OpenOptions::new()
             .create(true)

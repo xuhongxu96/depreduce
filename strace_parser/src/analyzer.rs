@@ -378,7 +378,6 @@ pub fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
 mod tests {
     use super::*;
     use crate::lower::parse_syscall_desps;
-    
 
     fn dump_analysis(input_strace_path: &str, output_path: &str, cwd: &str) -> State {
         use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};
@@ -386,8 +385,12 @@ mod tests {
         use std::io::Write;
         use std::path::Path;
 
-        let data_path = Path::new(file!()).parent().unwrap().join(input_strace_path);
-        let expected_data_path = Path::new(file!()).parent().unwrap().join(output_path);
+        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
+            .join(input_strace_path);
+        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
+            .join(output_path);
         let state = analyze(
             parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
                 data_path.to_str().unwrap(),

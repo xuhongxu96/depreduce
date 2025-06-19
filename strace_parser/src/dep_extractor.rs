@@ -110,7 +110,9 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
         }
     };
 
-    for (pid, process) in &state.processes {
+    let mut processes: Vec<_> = state.processes.iter().collect();
+    processes.sort_by(|(a, _), (b, _)| a.cmp(b));
+    for (_, process) in processes {
         consumed_files.clear();
 
         let mut path2fd: HashMap<&str, (FileDescriptor, Option<NodeIndex>)> = HashMap::new();
@@ -221,8 +223,12 @@ mod tests {
         use std::io::Write;
         use std::path::Path;
 
-        let data_path = Path::new(file!()).parent().unwrap().join(input_strace_path);
-        let expected_data_path = Path::new(file!()).parent().unwrap().join(output_path);
+        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
+            .join(input_strace_path);
+        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src")
+            .join(output_path);
         let state = analyze(
             parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
                 data_path.to_str().unwrap(),
@@ -238,10 +244,16 @@ mod tests {
             .write(true)
             .open(expected_data_path)
             .unwrap();
-        for (i, path) in &dep_graph.final_dep_caches {
+
+        let mut caches: Vec<_> = dep_graph.final_dep_caches.iter().collect();
+        caches.sort_by(|a, b| a.0.cmp(b.0));
+
+        for (i, paths) in caches {
             writeln!(f, "\n{}: {}", i, dep_graph.get_path(*i).unwrap()).unwrap();
 
-            for dep in path {
+            let mut paths: Vec<_> = paths.iter().collect();
+            paths.sort();
+            for dep in paths {
                 writeln!(f, "  -> {}: {}", dep, dep_graph.get_path(*dep).unwrap()).unwrap();
             }
         }
