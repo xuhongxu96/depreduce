@@ -314,7 +314,7 @@ impl State {
 }
 
 fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
-    // FIXME: can we avoid collecting into a Vec?
+    // FIXME: can we avoid collecting into a Vec? Maybe better to change the combiner to finish unfinished syscall first.
     let mut irs: Vec<_> = irs.into_iter().collect();
     irs.sort_by(|a, b| a.syscall.line_no.cmp(&b.syscall.line_no));
 
