@@ -8,6 +8,7 @@ Dependency Reduction for Bazel
 `strace_parser` is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
 
 1. **`stat`/`lstat`/`statfs` syscalls were removed** because we don't know if the accessed file truly exists.
+1. **Syscalls returning -1** will be ignored.
 1. **`clone3` syscall was added** for tracing. Otherwise there will be missing `Newproc` operations.
 1. **`--decode-pids=pidns,comm` was added** as the arguments of `strace`, to resolve the pid within a separate namespace, which is the case of Bazel sandbox. Otherwise, the pid cannot match the pid in strace's namespace and prevent us from tracing the process relationship correctly.
 1. A **virtual filesystem** was implemented to track symlinks, of which Bazel sandboxes create a lot.
