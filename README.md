@@ -41,7 +41,20 @@ testing method to Bazel build system.
 
 ### How to Run `buildfuzz`
 
-> TBD
+```sh
+buildfuzz --input examples/simple-cxx-project \
+    --artifact examples/simple-cxx-project/bazel-bin \
+    --command buildfuzz/src/test_data/build.sh
+```
+
+The result is a JSONL file like below.
+
+```
+["a.o",["a.h","a.c"]]
+["b.o",["b.h","b.c"]]
+["main.o",["main.c","a.h","b.h"]]
+["main",["main.o","a.o","b.o"]]
+```
 
 ## Dynamic Dependency Analaysis via `strace`
 
