@@ -3,6 +3,36 @@ bazel-dep-reduce
 
 Dependency Reduction for Bazel
 
+## Dynamic Dependency Analysis via `buildfuzz`
+
+`buildfuzz` is basically the reproduction of the build fuzz testing algorithm proposed by 
+[`mkcheck`] (https://github.com/nandor/mkcheck) with some modifications:
+
+1. Use **custom touchers** instead of the `touch` file operation, which will **CHANGE** the file content but not affect the original functionality.
+1. **Restore** touched file content after every round. 
+1. **Rebuild** the project before every round.
+
+You may wonder why we bother this -- changing the source code instead of just touching them. 
+The reason is that Bazel has a very powerful dirtiness checking logic, which means, simply touching a file
+will not cause Bazel to rebuild.
+
+Do you think custom touchers just add comments into
+the source code? If so, you are wrong. We have to make
+custom touchers modify the source code that could further
+change the object file. Otherwise, we cannot track the 
+dependencies between the object files and the linked artifacts
+such as the executables. Bazel is too smart to re-link the
+object files without real changes of them.
+
+So, what we do with custom touchers is actually adding a dummy
+static thing such as static function into the source code. 
+It introduces some risks such as unused function warnings, 
+which may cause build failures if the project has settings 
+to treat warnings as errors.
+
+But in this way, we do make it possible to apply the build fuzz testing method 
+to Bazel build system.
+
 ## Dynamic Dependency Analaysis via `strace`
 
 `strace_parser` is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
@@ -74,3 +104,4 @@ The result is a JSONL file like below.
 
 [`buildfs`]: https://github.com/theosotr/buildfs
 [`BuildChecker`]: https://ieeexplore.ieee.org/document/10981616
+[`mkcheck`]: https://github.com/nandor/mkcheck
