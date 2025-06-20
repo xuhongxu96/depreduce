@@ -71,6 +71,7 @@ fn main() {
         "all" => vec![
             Box::new(buildfuzz::touchers::CToucher {}),
             Box::new(buildfuzz::touchers::JavaToucher {}),
+            Box::new(buildfuzz::touchers::KotlinToucher {}),
         ],
         _ => {
             eprintln!("Unknown toucher type: {}", args.touchers);
