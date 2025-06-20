@@ -1,3 +1,26 @@
+use std::collections::{HashMap, HashSet};
+
+pub struct DependencyGraph {
+    pub deps: HashMap<String, HashSet<String>>,
+}
+
+impl DependencyGraph {
+    pub fn to_sorted_vec(&self) -> Vec<(String, Vec<String>)> {
+        let mut deps: Vec<_> = self
+            .deps
+            .iter()
+            .map(|(k, v)| {
+                let mut paths: Vec<_> = v.iter().cloned().collect();
+                paths.sort();
+                (k.clone(), paths)
+            })
+            .collect();
+
+        deps.sort_by(|(a, _), (b, _)| a.cmp(b));
+        deps
+    }
+}
+
 #[macro_export]
 macro_rules! get_test_data_path {
     ($path:expr) => {{

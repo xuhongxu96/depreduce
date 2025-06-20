@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use utils::DependencyGraph;
+
 use crate::{
     analyzer::{FileOperation, State},
     syscall_line::FileDescriptor,
@@ -13,10 +15,6 @@ pub struct DependencyExtractor {
 
     final_dep_caches: HashMap<usize, HashSet<usize>>,
     attentioned_paths: HashSet<usize>,
-}
-
-pub struct DependencyGraph {
-    pub deps: HashMap<String, HashSet<String>>,
 }
 
 impl DependencyExtractor {
@@ -237,23 +235,6 @@ pub fn extract_dependencies(state: &State) -> DependencyExtractor {
 
     res.simplify(attentioned_paths);
     res
-}
-
-impl DependencyGraph {
-    pub fn to_sorted_vec(&self) -> Vec<(String, Vec<String>)> {
-        let mut deps: Vec<_> = self
-            .deps
-            .iter()
-            .map(|(k, v)| {
-                let mut paths: Vec<_> = v.iter().cloned().collect();
-                paths.sort();
-                (k.clone(), paths)
-            })
-            .collect();
-
-        deps.sort_by(|(a, _), (b, _)| a.cmp(b));
-        deps
-    }
 }
 
 #[cfg(test)]

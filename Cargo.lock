@@ -65,7 +65,8 @@ dependencies = [
 name = "buildfuzz"
 version = "0.1.0"
 dependencies = [
- "strace_parser",
+ "normalize-path",
+ "utils",
 ]
 
 [[package]]
