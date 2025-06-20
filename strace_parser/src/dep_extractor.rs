@@ -6,18 +6,22 @@ use crate::{
     vfs::NodeIndex,
 };
 
-pub struct DependencyGraph {
-    pub paths: Vec<String>,
-    pub path_index_map: HashMap<String, usize>,
-    pub deps: HashMap<usize, HashSet<usize>>,
+pub struct DependencyExtractor {
+    paths: Vec<String>,
+    path_index_map: HashMap<String, usize>,
+    deps: HashMap<usize, HashSet<usize>>,
 
-    pub final_dep_caches: HashMap<usize, HashSet<usize>>,
-    pub attentioned_paths: HashSet<usize>,
+    final_dep_caches: HashMap<usize, HashSet<usize>>,
+    attentioned_paths: HashSet<usize>,
 }
 
-impl DependencyGraph {
+pub struct DependencyGraph {
+    pub deps: HashMap<String, HashSet<String>>,
+}
+
+impl DependencyExtractor {
     fn new() -> Self {
-        DependencyGraph {
+        DependencyExtractor {
             paths: Vec::new(),
             path_index_map: HashMap::new(),
             deps: HashMap::new(),
@@ -50,7 +54,7 @@ impl DependencyGraph {
     }
 
     fn cache_final_dependencies(&mut self, index: usize, attentioned_paths: &HashSet<usize>) {
-        if let Some(cached) = self.final_dep_caches.get(&index) {
+        if let Some(_) = self.final_dep_caches.get(&index) {
             return;
         }
 
@@ -91,10 +95,28 @@ impl DependencyGraph {
         self.final_dep_caches
             .retain(|k, v| v.len() > 1 && self.attentioned_paths.contains(k));
     }
+
+    pub fn get_dependencies(&self) -> DependencyGraph {
+        let mut deps = HashMap::new();
+        for (i, paths) in &self.final_dep_caches {
+            let src = self.get_path(*i).unwrap();
+
+            deps.insert(
+                src.clone(),
+                paths
+                    .iter()
+                    .filter_map(|&dep| self.get_path(dep))
+                    .cloned()
+                    .collect(),
+            );
+        }
+
+        DependencyGraph { deps }
+    }
 }
 
-pub fn extract_dependencies(state: &State) -> DependencyGraph {
-    let mut res = DependencyGraph::new();
+pub fn extract_dependencies(state: &State) -> DependencyExtractor {
+    let mut res = DependencyExtractor::new();
 
     let mut consumed_files: HashSet<usize> = HashSet::new();
     let get_realpath = |path: &str, index: NodeIndex| {
@@ -217,69 +239,51 @@ pub fn extract_dependencies(state: &State) -> DependencyGraph {
     res
 }
 
+impl DependencyGraph {
+    pub fn to_sorted_vec(&self) -> Vec<(String, Vec<String>)> {
+        let mut deps: Vec<_> = self
+            .deps
+            .iter()
+            .map(|(k, v)| {
+                let mut paths: Vec<_> = v.iter().cloned().collect();
+                paths.sort();
+                (k.clone(), paths)
+            })
+            .collect();
+
+        deps.sort_by(|(a, _), (b, _)| a.cmp(b));
+        deps
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analyzer::analyze;
-    use crate::lower::parse_syscall_desps;
+    use utils::*;
 
-    fn dump_deps(input_strace_path: &str, output_path: &str, cwd: &str) {
-        use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};
-        use std::fs::{self};
-        use std::io::Write;
-        use std::path::Path;
+    fn dump_deps(input_strace_path: &str, output_path: &str) {
+        let state_content = read_test_data!(input_strace_path);
+        let state = State::from_json_lines(&state_content);
+        let dependency_extractor = extract_dependencies(&state);
+        let dep_graph = dependency_extractor.get_dependencies();
 
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join(input_strace_path);
-        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join(output_path);
-        let state = analyze(
-            parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
-                data_path.to_str().unwrap(),
-            ))),
-            cwd,
-        );
-
-        let dep_graph = extract_dependencies(&state);
-
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
-
-        let mut caches: Vec<_> = dep_graph.final_dep_caches.iter().collect();
-        caches.sort_by(|a, b| a.0.cmp(b.0));
-
-        for (i, paths) in caches {
-            writeln!(f, "\n{}: {}", i, dep_graph.get_path(*i).unwrap()).unwrap();
-
-            let mut paths: Vec<_> = paths.iter().collect();
-            paths.sort();
-            for dep in paths {
-                writeln!(f, "  -> {}: {}", dep, dep_graph.get_path(*dep).unwrap()).unwrap();
-            }
-        }
+        let content = to_json_lines(&dep_graph.to_sorted_vec());
+        assert_eq!(content, read_or_create_test_data!(output_path, &content));
     }
 
     #[test]
     fn test_dep_extractor() {
         dump_deps(
-            "test_data/strace.log",
-            "test_data/deps.out",
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+            "analyzer/strace-state-cxx.out",
+            "dep_extractor/deps-cxx.out",
         );
     }
 
     #[test]
     fn test_dep_extractor_java() {
         dump_deps(
-            "test_data/strace-java.log",
-            "test_data/deps-java.out",
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
+            "analyzer/strace-state-java.out",
+            "dep_extractor/deps-java.out",
         );
     }
 }

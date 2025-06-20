@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
+
 use crate::syscall_line::SyscallDesp;
-use crate::{syntax, utils};
+use crate::{strace_utils, syntax};
 
 fn has_dupfd(args: &str) -> bool {
     args.contains("F_DUPFD")
@@ -34,7 +36,7 @@ fn has_clone_files(args: &str) -> bool {
 }
 
 fn to_path_expr(args: &str, p_index: usize) -> Option<syntax::Expr> {
-    match utils::extract_pathname(args, p_index) {
+    match strace_utils::extract_pathname(args, p_index) {
         None => None,
         Some(p) => Some(syntax::Expr::P(p)),
     }
@@ -52,7 +54,7 @@ fn to_fdvar_expr(fd: Option<&str>) -> syntax::Expr {
 }
 
 fn to_at_expr(args: &str, fd: Option<&str>, p_index: usize) -> Option<syntax::Expr> {
-    match utils::extract_pathname(args, p_index) {
+    match strace_utils::extract_pathname(args, p_index) {
         None => None,
         Some(p) => Some(syntax::Expr::At(to_fdvar(fd), p)),
     }
@@ -79,7 +81,7 @@ fn is_open_consumed(args: &str) -> bool {
 fn get_fd(args: &str, index: Option<usize>) -> Option<&str> {
     match index {
         None => None,
-        Some(i) => Some(utils::extract_arg(args, i)),
+        Some(i) => Some(strace_utils::extract_arg(args, i)),
     }
 }
 
@@ -163,7 +165,7 @@ fn to_dupfd_fcntl(syscall_desp: &SyscallDesp) -> syntax::Statement {
     if has_dupfd(&syscall_desp.args) {
         syntax::Statement::Let(
             to_fdvar(Some(&syscall_desp.ret)),
-            to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
+            to_fdvar_expr(Some(strace_utils::extract_arg(&syscall_desp.args, 0))),
         )
     } else {
         syntax::Statement::Nop
@@ -177,7 +179,7 @@ fn to_dupfd_dup(syscall_desp: &SyscallDesp) -> syntax::Statement {
 
     syntax::Statement::Let(
         to_fdvar(Some(&syscall_desp.ret)),
-        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
+        to_fdvar_expr(Some(strace_utils::extract_arg(&syscall_desp.args, 0))),
     )
 }
 
@@ -187,8 +189,8 @@ fn to_dupfd_dup2(syscall_desp: &SyscallDesp) -> syntax::Statement {
     }
 
     syntax::Statement::Let(
-        to_fdvar(Some(utils::extract_arg(&syscall_desp.args, 1))),
-        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
+        to_fdvar(Some(strace_utils::extract_arg(&syscall_desp.args, 1))),
+        to_fdvar_expr(Some(strace_utils::extract_arg(&syscall_desp.args, 0))),
     )
 }
 
@@ -199,7 +201,7 @@ fn to_fchdir(syscall_desp: &SyscallDesp) -> syntax::Statement {
 
     syntax::Statement::Let(
         syntax::FdVar::CWD,
-        to_fdvar_expr(Some(utils::extract_arg(&syscall_desp.args, 0))),
+        to_fdvar_expr(Some(strace_utils::extract_arg(&syscall_desp.args, 0))),
     )
 }
 
@@ -413,7 +415,7 @@ pub fn parse_syscall_desp(syscall_desp: &SyscallDesp) -> Vec<syntax::Statement> 
     }
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct TraceIR {
     pub statement: syntax::Statement,
     pub syscall: SyscallDesp,
@@ -469,6 +471,7 @@ pub fn parse_syscall_desps(
 mod tests {
     use super::*;
     use crate::{syntax::Statement, syscall_line::SyscallDesp};
+    use utils::*;
 
     #[test]
     fn test_parse_syscall_desp() {
@@ -504,32 +507,27 @@ mod tests {
 
     #[test]
     fn test_large_file() {
-        use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};
-        use std::fs::{self};
-        use std::io::Write;
-        use std::path::Path;
+        let parsed_strace = read_test_data!("combiner/strace.out");
+        let syscalls: Vec<SyscallDesp> = from_json_lines(&parsed_strace).collect();
+        let res: Vec<_> = parse_syscall_desps(syscalls).collect();
+        let content = to_json_lines(&res);
 
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.log");
-        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.ir.expected.out");
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
-        for ir in parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
-            data_path.to_str().unwrap(),
-        ))) {
-            writeln!(
-                f,
-                "Line {}: {} {} {:?}",
-                ir.syscall.line_no, ir.syscall.pid, ir.syscall.syscall, ir.statement
-            )
-            .unwrap();
-        }
+        assert_eq!(
+            content,
+            read_or_create_test_data!("lower/strace.ir.out", &content)
+        );
+    }
+
+    #[test]
+    fn test_large_file_java() {
+        let parsed_strace = read_test_data!("combiner/strace-java.out");
+        let syscalls: Vec<SyscallDesp> = from_json_lines(&parsed_strace).collect();
+        let res: Vec<_> = parse_syscall_desps(syscalls).collect();
+        let content = to_json_lines(&res);
+
+        assert_eq!(
+            content,
+            read_or_create_test_data!("lower/strace-java.ir.out", &content)
+        );
     }
 }

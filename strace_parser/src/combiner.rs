@@ -71,6 +71,7 @@ pub fn combine_syscall_lines(
 
 #[cfg(test)]
 mod tests {
+    use utils::*;
     use super::combine_syscall_lines;
     use crate::syscall_line::*;
 
@@ -166,27 +167,27 @@ mod tests {
 
     #[test]
     fn test_large_file() {
-        use crate::{parser::parse_strace_from_path};
-        use std::fs::{self};
-        use std::io::Write;
-        use std::path::Path;
+        let parsed_strace = read_test_data!("parser/strace.out");
+        let syscall_lines: Vec<SyscallLine> = from_json_lines(&parsed_strace).collect();
+        let res: Vec<_> = combine_syscall_lines(syscall_lines).collect();
+        let content = to_json_lines(&res);
 
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.log");
-        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.combined.expected.out");
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
-        for line in combine_syscall_lines(parse_strace_from_path(
-            data_path.to_str().unwrap(),
-        )) {
-            writeln!(f, "{:?}", line).unwrap();
-        }
+        assert_eq!(
+            content,
+            read_or_create_test_data!("combiner/strace.out", &content)
+        );
+    }
+
+    #[test]
+    fn test_large_file_java() {
+        let parsed_strace = read_test_data!("parser/strace-java.out");
+        let syscall_lines: Vec<SyscallLine> = from_json_lines(&parsed_strace).collect();
+        let res: Vec<_> = combine_syscall_lines(syscall_lines).collect();
+        let content = to_json_lines(&res);
+
+        assert_eq!(
+            content,
+            read_or_create_test_data!("combiner/strace-java.out", &content)
+        );
     }
 }

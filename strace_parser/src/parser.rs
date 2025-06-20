@@ -20,7 +20,8 @@ mod line_utils {
     pub fn parse_unfinished_line(line: &str, line_no: u32) -> Option<UnfinishedSyscallDesp> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"(\d+)[<](.*?)[>] ([a-z0-9_?]+)(.*)[ ][<]unfinished[ ][.][.][.][>]").unwrap();
+                Regex::new(r"(\d+)[<](.*?)[>] ([a-z0-9_?]+)(.*)[ ][<]unfinished[ ][.][.][.][>]")
+                    .unwrap();
         };
 
         if !line.ends_with("<unfinished ...>") {
@@ -40,9 +41,10 @@ mod line_utils {
 
     pub fn parse_resumed_line(line: &str, line_no: u32) -> Option<ResumedSyscallDesp> {
         lazy_static! {
-            static ref RE: Regex =
-                Regex::new(r"(\d+)[<](.*?)[>] [<][.][.][.][ ]([a-z0-9_?]+) resumed[>](.*)\s+[=]\s+(.*?)$")
-                    .unwrap();
+            static ref RE: Regex = Regex::new(
+                r"(\d+)[<](.*?)[>] [<][.][.][.][ ]([a-z0-9_?]+) resumed[>](.*)\s+[=]\s+(.*?)$"
+            )
+            .unwrap();
         };
 
         if !line.contains(" resumed>") || !line.contains("<... ") {
@@ -63,7 +65,8 @@ mod line_utils {
 
     pub fn parse_full_line(line: &str, line_no: u32) -> Option<SyscallDesp> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\d+)[<](.*?)[>] ([a-z0-9_?]+)(.*)\s+[=]\s+(.*?)$").unwrap();
+            static ref RE: Regex =
+                Regex::new(r"(\d+)[<](.*?)[>] ([a-z0-9_?]+)(.*)\s+[=]\s+(.*?)$").unwrap();
         };
 
         if let Some(captures) = RE.captures(line) {
@@ -149,12 +152,9 @@ pub fn parse_strace_from_content(content: &[u8]) -> StraceParseResult<&[u8]> {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::{self};
-    use std::io::Write;
-    use std::path::Path;
-
     use super::line_utils::*;
     use super::*;
+    use utils::*;
 
     #[test]
     fn test_parse_unfinished_line() {
@@ -209,7 +209,10 @@ mod tests {
     #[test]
     fn test_parse_full_line() {
         assert_eq!(
-            parse_full_line("815824<time> nanosleep({tv_sec=0, tv_nsec=20000}, NULL) = 0", 0),
+            parse_full_line(
+                "815824<time> nanosleep({tv_sec=0, tv_nsec=20000}, NULL) = 0",
+                0
+            ),
             Some(SyscallDesp {
                 pid: 815824,
                 cmd: "time".to_string(),
@@ -229,25 +232,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_bug25061301() {
-        let line = "2964881<cmd> write(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153) = 153";
-        let res: Vec<_> = parse_strace_from_content(line.as_bytes()).collect();
-        assert_eq!(res, vec![SyscallLine::Full(SyscallDesp { 
-            pid: 2964881, 
-            cmd: "cmd".to_string(),
-            resumed_cmd: None,
-            syscall: "write".to_string(), 
-            args: "(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153)".to_string(), 
-            ret: "153".to_string(), 
-            line_no: 1 
-        })]);
-    }
-
-    #[test]
     fn test_parse() {
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/test_strace.log");
+        let data_path = get_test_data_path!("parser/test_strace.in");
         let res: Vec<_> = parse_strace_from_path(data_path.to_str().unwrap()).collect();
         assert_eq!(
             res,
@@ -305,21 +291,39 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_real_large_file() {
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.log");
-        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join("test_data/strace.expected.out");
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
-        for line in parse_strace_from_path(data_path.to_str().unwrap()) {
-            writeln!(f, "{:?}", line).unwrap();
-        }
+    fn test_parse_bug25061301() {
+        let line = "2964881<cmd> write(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153) = 153";
+        let res: Vec<_> = parse_strace_from_content(line.as_bytes()).collect();
+        let content = to_json_lines(&res);
+        assert_eq!(
+            content,
+            read_or_create_test_data!("parser/bug25061301.out", &content)
+        );
+    }
+
+    #[test]
+    fn test_large_file() {
+        let strace = read_test_data!("strace.log");
+
+        let res: Vec<_> = parse_strace_from_content(strace.as_bytes()).collect();
+        let content = to_json_lines(&res);
+
+        assert_eq!(
+            content,
+            read_or_create_test_data!("parser/strace.out", &content)
+        );
+    }
+
+    #[test]
+    fn test_large_file_java() {
+        let strace = read_test_data!("strace-java.log");
+
+        let res: Vec<_> = parse_strace_from_content(strace.as_bytes()).collect();
+        let content = to_json_lines(&res);
+
+        assert_eq!(
+            content,
+            read_or_create_test_data!("parser/strace-java.out", &content)
+        );
     }
 }

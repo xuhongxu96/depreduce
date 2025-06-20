@@ -8,3 +8,5 @@ lazy_static = "1.5.0"
 regex = "1.11.1"
 normalize-path = "0.2.1"
 clap = { version = "4.5.40", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
+utils = { path = "../utils" }

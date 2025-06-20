@@ -1,4 +1,3 @@
-
 use normalize_path::NormalizePath;
 
 use crate::syntax;
@@ -53,7 +52,7 @@ pub fn extract_pathname(args: &str, index: usize) -> Option<syntax::Path> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{syntax, utils::extract_pathname};
+    use crate::{strace_utils::extract_pathname, syntax};
 
     #[test]
     fn test_extract_pathname() {

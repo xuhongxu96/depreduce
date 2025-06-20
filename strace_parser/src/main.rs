@@ -1,22 +1,10 @@
-use std::fs;
-use std::io::Write;
-
 use clap::Parser;
 
-use crate::{
+use strace_parser::{
     analyzer::analyze, combiner::combine_syscall_lines, dep_extractor::extract_dependencies,
     lower::parse_syscall_desps, parser::parse_strace_from_path,
 };
-
-mod analyzer;
-mod combiner;
-mod dep_extractor;
-mod lower;
-mod parser;
-mod syntax;
-mod syscall_line;
-mod utils;
-mod vfs;
+use utils::to_json_lines;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -41,19 +29,10 @@ fn main() {
         args.cwd.as_str(),
     );
 
-    let dep_graph = extract_dependencies(&state);
+    let dependency_extractor = extract_dependencies(&state);
+    let dep_graph = dependency_extractor.get_dependencies();
+    let content = to_json_lines(&dep_graph.to_sorted_vec());
 
-    let mut f = fs::OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .open(args.output.as_str())
-        .unwrap();
-    for (i, path) in &dep_graph.final_dep_caches {
-        writeln!(f, "\n{}: {}", i, dep_graph.get_path(*i).unwrap()).unwrap();
-
-        for dep in path {
-            writeln!(f, "  -> {}: {}", dep, dep_graph.get_path(*dep).unwrap()).unwrap();
-        }
-    }
+    std::fs::write(&args.output, content).expect("Failed to write output file");
+    println!("Dependencies written to {}", args.output);
 }

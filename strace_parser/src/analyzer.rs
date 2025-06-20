@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use normalize_path::NormalizePath;
+use serde::{Deserialize, Serialize};
+use utils::{from_json_lines, to_json_lines};
 
 use crate::{
     lower::TraceIR,
@@ -9,7 +11,7 @@ use crate::{
     vfs::{NodeIndex as VFSNodeIndex, VFS},
 };
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum FileOperation {
     Consume(Result<(String, VFSNodeIndex), String>),
     Produce(Result<(String, VFSNodeIndex), String>),
@@ -19,7 +21,7 @@ pub enum FileOperation {
     BeginTask(String),
 }
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ProcessState {
     pub fd_maps: HashMap<FileDescriptor, String>,
     pub cwd: String,
@@ -35,6 +37,50 @@ pub struct State {
 }
 
 impl State {
+    pub fn to_json_lines(&self) -> String {
+        let mut processes: Vec<_> = self.processes.iter().collect();
+        processes.sort_by(|(a, _), (b, _)| a.cmp(b));
+        let processes_str = to_json_lines(&processes);
+
+        let vfs_str = self.vfs.to_json_lines();
+        format!(
+            "1,{},{}\n{}\n{}\n{}",
+            processes_str.lines().count(),
+            vfs_str.lines().count(),
+            self.cwd,
+            processes_str,
+            vfs_str
+        )
+    }
+
+    pub fn from_json_lines(json: &str) -> Self {
+        let mut lines = json.lines();
+        let header: Vec<_> = lines.next().unwrap().split(',').collect();
+        assert_eq!(header.len(), 3);
+        assert_eq!(header[0], "1");
+
+        let process_count: usize = header[1].parse().unwrap();
+        let vfs_count: usize = header[2].parse().unwrap();
+
+        let cwd = lines.next().unwrap().to_string();
+
+        let processes: HashMap<ProcessId, ProcessState> =
+            from_json_lines::<(ProcessId, ProcessState)>(
+                &lines
+                    .by_ref()
+                    .take(process_count)
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            )
+            .collect();
+        let vfs = VFS::from_json_lines(&lines.take(vfs_count).collect::<Vec<_>>().join("\n"));
+        Self {
+            processes,
+            vfs,
+            cwd,
+        }
+    }
+
     fn get_index(&mut self, pid: ProcessId, path: &str) -> Result<(String, VFSNodeIndex), String> {
         let path = self.get_absolute_path(pid, path);
         match self.vfs.get_index_by_path(&path) {
@@ -269,17 +315,8 @@ impl State {
         if let (Some(Path::Path(target_path)), Some(Path::Path(link))) =
             (self.eval_expr(pid, expr), self.eval_expr(pid, expr1))
         {
-            let target_index = self.get_index(pid, &target_path);
-            let link_index = self.create_symlink_index(pid, &link, &target_path);
-
-            // FIXME: Shall we record the link operation?
-            //
-            // self.get_process(pid)
-            //     .operations
-            //     .push(FileOperation::Consume(target_index));
-            // self.get_process(pid)
-            //     .operations
-            //     .push(FileOperation::Produce(link_index));
+            let _target_index = self.get_index(pid, &target_path);
+            let _link_index = self.create_symlink_index(pid, &link, &target_path);
         }
     }
 
@@ -377,81 +414,15 @@ pub fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::lower::parse_syscall_desps;
+    use utils::*;
 
     fn dump_analysis(input_strace_path: &str, output_path: &str, cwd: &str) -> State {
-        use crate::{combiner::combine_syscall_lines, parser::parse_strace_from_path};
-        use std::fs::{self};
-        use std::io::Write;
-        use std::path::Path;
+        let ir_content = read_test_data!(input_strace_path);
+        let irs: Vec<TraceIR> = from_json_lines(&ir_content).collect();
+        let state = analyze(irs, cwd);
 
-        let data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join(input_strace_path);
-        let expected_data_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src")
-            .join(output_path);
-        let state = analyze(
-            parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
-                data_path.to_str().unwrap(),
-            ))),
-            cwd,
-        );
-
-        let mut processes = state.processes.iter().collect::<Vec<_>>();
-        processes.sort_by(|(a, _), (b, _)| a.cmp(b));
-
-        let mut f = fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(expected_data_path)
-            .unwrap();
-        processes.iter().for_each(|(pid, props)| {
-            writeln!(
-                f,
-                "Process {} (Parent: {:?}) CWD: {:?}",
-                pid, props.parent, props.cwd
-            )
-            .unwrap();
-
-            let write_realpath =
-                |f: &mut dyn Write, res: &Result<(String, VFSNodeIndex), String>| {
-                    if let Ok((path, index)) = res {
-                        if let Ok(realpath) = state.vfs.resolve_link_path(*index) {
-                            if realpath != *path {
-                                writeln!(f, "    RealPath: {}", realpath).unwrap();
-                            }
-                        }
-                    }
-                };
-
-            for op in &props.operations {
-                match op {
-                    FileOperation::Consume(res) => {
-                        writeln!(f, "  Consume: {:?}", res).unwrap();
-                        write_realpath(&mut f, res);
-                    }
-                    FileOperation::Produce(res) => {
-                        writeln!(f, "  Produce: {:?}", res).unwrap();
-                        write_realpath(&mut f, res);
-                    }
-                    FileOperation::Delete(res) => {
-                        writeln!(f, "  Delete: {:?}", res).unwrap();
-                        write_realpath(&mut f, res);
-                    }
-                    FileOperation::LetFd((fd, path)) => {
-                        writeln!(f, "  Let FD: {} -> {}", fd, path).unwrap();
-                    }
-                    FileOperation::CloseFd(fd) => {
-                        writeln!(f, "  Close FD: {}", fd).unwrap();
-                    }
-                    FileOperation::BeginTask(task_name) => {
-                        writeln!(f, "  Begin Task: {}", task_name).unwrap();
-                    }
-                }
-            }
-        });
+        let content = state.to_json_lines();
+        assert_eq!(content, read_or_create_test_data!(output_path, &content));
 
         state
     }
@@ -459,8 +430,8 @@ mod tests {
     #[test]
     fn test_analyze_cxx() {
         let state = dump_analysis(
-            "test_data/strace.log",
-            "test_data/strace.paths.expected.out",
+            "lower/strace.ir.out",
+            "analyzer/strace-state-cxx.out",
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
         );
 
@@ -489,9 +460,9 @@ mod tests {
 
     #[test]
     fn test_analyze_java() {
-        let state = dump_analysis(
-            "test_data/strace-java.log",
-            "test_data/strace-java.paths.expected.out",
+        let _state = dump_analysis(
+            "lower/strace-java.ir.out",
+            "analyzer/strace-state-java.out",
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
         );
     }

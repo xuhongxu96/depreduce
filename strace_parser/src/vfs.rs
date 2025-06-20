@@ -1,24 +1,27 @@
 use std::collections::HashMap;
 
+use serde::{Deserialize, Serialize};
+use utils::{from_json_lines, to_json_lines};
+
 pub type NodeIndex = usize;
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct NormalNodeProps {
     pub children: HashMap<String, NodeIndex>,
 }
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct SymlinkNodeProps {
     pub target: NodeIndex,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum NodeProps {
     Normal(NormalNodeProps),
     Symlink(SymlinkNodeProps),
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Node {
     pub index: NodeIndex,
     pub name: String,
@@ -28,7 +31,7 @@ pub struct Node {
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct VFS {
-    nodes: Vec<Option<Node>>,
+    nodes: Vec<Node>,
 }
 
 impl Default for VFS {
@@ -38,16 +41,26 @@ impl Default for VFS {
 }
 
 impl VFS {
+    pub fn to_json_lines(&self) -> String {
+        to_json_lines(&self.nodes)
+    }
+
+    pub fn from_json_lines(json: &str) -> Self {
+        VFS {
+            nodes: from_json_lines::<Node>(json).collect(),
+        }
+    }
+
     pub fn new() -> Self {
         VFS {
-            nodes: vec![Some(Node {
+            nodes: vec![Node {
                 index: 0, // Root index
                 name: "/".to_string(),
                 parent: 0, // Root's parent is itself
                 props: NodeProps::Normal(NormalNodeProps {
                     children: HashMap::new(),
                 }),
-            })],
+            }],
         }
     }
 
@@ -96,11 +109,11 @@ impl VFS {
     }
 
     pub fn get_node_at(&self, index: NodeIndex) -> Option<&Node> {
-        self.nodes.get(index)?.as_ref()
+        self.nodes.get(index)
     }
 
     pub fn get_node_mut_at(&mut self, index: NodeIndex) -> Option<&mut Node> {
-        self.nodes.get_mut(index)?.as_mut()
+        self.nodes.get_mut(index)
     }
 
     pub fn create_node(
@@ -117,12 +130,12 @@ impl VFS {
             .or_insert(new_index);
 
         if real_index == new_index {
-            self.nodes.push(Some(Node {
+            self.nodes.push(Node {
                 index: new_index,
                 name: name.to_string(),
                 parent: parent_index,
                 props,
-            }));
+            });
         } else {
             match props {
                 NodeProps::Symlink(_) => {

@@ -1,7 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 pub type ProcessId = i64;
 pub type FileDescriptor = i64;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct UnfinishedSyscallDesp {
     pub pid: ProcessId,
     pub cmd: String,
@@ -10,7 +12,7 @@ pub struct UnfinishedSyscallDesp {
     pub line_no: u32,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct ResumedSyscallDesp {
     pub pid: ProcessId,
     pub cmd: String,
@@ -20,7 +22,7 @@ pub struct ResumedSyscallDesp {
     pub line_no: u32,
 }
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SyscallDesp {
     pub pid: ProcessId,
     pub cmd: String,
@@ -31,14 +33,14 @@ pub struct SyscallDesp {
     pub line_no: u32,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorSyscallDesp {
     pub line_no: u32,
     pub line: String,
     pub msg: String,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum SyscallLine {
     Full(SyscallDesp),
     Unfinished(UnfinishedSyscallDesp),
