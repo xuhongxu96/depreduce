@@ -33,25 +33,6 @@ struct Args {
     touchers: String,
 }
 
-fn find_gitignore(path: &str) -> Option<PathBuf> {
-    let mut current = std::path::Path::new(path);
-    while let Some(parent) = current.parent() {
-        let gitignore_path = parent.join(".gitignore");
-        if gitignore_path.exists() {
-            return Some(gitignore_path.canonicalize().unwrap());
-        }
-
-        let git_path = parent.join(".git");
-        if git_path.exists() {
-            return None; // If we reach a .git directory, stop searching
-        }
-
-        current = parent;
-    }
-
-    None
-}
-
 fn enumerate_files(path: &str, ignore: bool) -> HashSet<String> {
     let path = Path::new(path).canonicalize().unwrap();
 

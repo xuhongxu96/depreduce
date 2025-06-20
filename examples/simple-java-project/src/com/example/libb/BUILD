@@ -4,4 +4,7 @@ java_library(
     name = "libb",
     srcs = ["ClassB.java"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//src/com/example/liba",
+    ],
 )

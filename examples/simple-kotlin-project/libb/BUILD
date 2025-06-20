@@ -4,4 +4,7 @@ kt_jvm_library(
     name = "libb",
     srcs = ["ClassB.kt"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//liba",
+    ],
 )
