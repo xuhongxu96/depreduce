@@ -19,23 +19,14 @@ strace -s 300 \
 ## How to use `strace_parser`
 
 ```sh
-strace_parser \
-    -i /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/strace.log \
-    -c /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project \
-    -o result_deps.log
+strace_parser -i examples/simple-java-project/strace.log -c examples/simple-java-project -o result_deps.log
 ```
 
-Results look like:
+The result is a JSONL file like below.
 
 ```
-<id>: <Path>
-  -> <id>: <Dependency Path>
-  -> <id>: <Dependency Path>
-  -> <id>: <Dependency Path>
-
-<id>: <Path>
-  -> <id>: <Dependency Path>
-  -> <id>: <Dependency Path>
-
-...
+["a.o",["a.h","a.c"]]
+["b.o",["b.h","b.c"]]
+["main.o",["main.c","a.h","b.h"]]
+["main",["main.o","a.o","b.o"]]
 ```
