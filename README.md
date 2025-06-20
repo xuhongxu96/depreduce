@@ -33,6 +33,10 @@ to treat warnings as errors.
 But in this way, we do make it possible to apply the build fuzz testing method 
 to Bazel build system.
 
+### How to Run `buildfuzz`
+
+> TBD
+
 ## Dynamic Dependency Analaysis via `strace`
 
 `strace_parser` is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
@@ -102,6 +106,6 @@ The result is a JSONL file like below.
 ```
 
 
-[`buildfs`]: https://github.com/theosotr/buildfs
+[`buildfs`]: https://dl.acm.org/doi/10.1145/3428212
 [`BuildChecker`]: https://ieeexplore.ieee.org/document/10981616
-[`mkcheck`]: https://github.com/nandor/mkcheck
+[`mkcheck`]: https://ieeexplore.ieee.org/document/8812082
