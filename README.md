@@ -8,7 +8,8 @@ Dependency Reduction for Bazel
 `buildfuzz` is basically the reproduction of the build fuzz testing algorithm proposed by 
 [`mkcheck`] (https://github.com/nandor/mkcheck) with a new feature:
 
-1. Use **custom touchers** instead of the `touch` file operation, which will **CHANGE** the file content but not affect the original functionality.
+1. Use **custom touchers** instead of the `touch` file operation, 
+   which will **CHANGE** the file content but not affect the original functionality.
 1. **Restore** touched file content after every round.
 1. **Rebuild** the project before every round.
 
@@ -22,7 +23,8 @@ custom touchers modify the source code that could further
 change the object file. Otherwise, we cannot track the 
 dependencies between the object files and the linked artifacts
 such as the executables. Bazel is too smart to re-link the
-object files without real changes of them.
+object files without real changes of them. 
+See [Skyframe - Bazel] for details.
 
 So, what we do with custom touchers is actually adding a dummy
 static thing such as static function into the source code.
@@ -33,8 +35,9 @@ invalid syntaxes in some special contexts (e.g. a header file used as a database
 and so on.
 
 What's more, even if we added a new function into the source code, there could be 
-a chance that the change stop propagating to its dependents. In such cases, we
-would lose the tracking of dependencies and get inaccurate results.
+a chance that the change stop propagating to its dependents 
+(e.g. the unused function might be pruned in the object file).
+In such cases, we could lose the tracking of dependencies and get inaccurate results.
 
 Anyway, by using custom touchers, we do make it possible to apply the build fuzz 
 testing method to Bazel build system.
@@ -61,16 +64,19 @@ The result is a JSONL file like below.
 
 `strace_parser` is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
 
-1. **`stat`/`lstat`/`statfs` syscalls were removed** because we don't know if the accessed file truly exists.
-1. **Syscalls returning -1** will be ignored.
-1. **`clone3` syscall was added** for tracing. Otherwise there will be missing `Newproc` operations.
-1. **`--decode-pids=pidns,comm` was added** as the arguments of `strace`, to resolve the pid within a separate namespace, which is the case of Bazel sandbox. Otherwise, the pid cannot match the pid in strace's namespace and prevent us from tracing the process relationship correctly.
-1. A **virtual filesystem** was implemented to track symlinks, of which Bazel sandboxes create a lot.
-1. A **`to_link` operation was added** to DSL to support tracking symlinks.
+1. **`stat`/`lstat`/`statfs` syscalls were ignored** because we don't know if the accessed file truly exists, 
+   and they are mostly used to detect file changes, i.e., usually not a real sign of file consumption.
+1. **Syscalls returning -1** will be ignored, because they failed mostly for inexistent files.
+1. **`clone3` syscall was added** for tracing. Otherwise there will be many missing `Newproc` operations.
+1. **`--decode-pids=pidns,comm` was added** as the arguments of `strace`, to resolve the pid within a separate namespace, which is the case of Bazel sandboxing. Otherwise, the pids returned by `clone` or `fork` cannot match the pids traced by `strace` in its own namespace, which prevents us from tracing the process relationship correctly.
+1. A **virtual filesystem** was implemented to track symlinks. Bazel creates lots of symlinks because of sandboxing.
+1. A **`to_link` operation was added** to DSL (IR) to support tracking symlinks.
 
 
 Though [`buildfs`] claims their approach is applicable to other build systems including Bazel.
 The fact is, without our efforts, it is really hard to apply it to Bazel.
+
+See [Sandboxing - Bazel] for details about the sandboxing mechanism in Bazel.
 
 ### About Redundant Dependency Detection
 
@@ -129,3 +135,5 @@ The result is a JSONL file like below.
 [`buildfs`]: https://dl.acm.org/doi/10.1145/3428212
 [`BuildChecker`]: https://ieeexplore.ieee.org/document/10981616
 [`mkcheck`]: https://ieeexplore.ieee.org/document/8812082
+[Skyframe - Bazel]: https://bazel.build/reference/skyframe
+[Sandboxing - Bazel]: https://bazel.build/docs/sandboxing

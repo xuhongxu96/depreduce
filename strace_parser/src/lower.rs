@@ -259,6 +259,7 @@ fn to_link(
     }
 }
 
+// FIXME: this is actually a combination of `consume` and `produce`,
 fn to_copy(
     syscall_desp: &SyscallDesp,
     d0_index: Option<usize>,
