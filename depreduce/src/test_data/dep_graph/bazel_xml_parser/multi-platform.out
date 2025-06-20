@@ -6,9 +6,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/a.h:1:1",
                 name: "//liba:a.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -419,9 +421,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/linux.cc:1:1",
                 name: "//liba:linux.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -430,9 +434,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/mac.cc:1:1",
                 name: "//liba:mac.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -441,9 +447,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/win.cc:1:1",
                 name: "//liba:win.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -626,9 +634,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/main/main.cc:1:1",
                 name: "//main:main.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),

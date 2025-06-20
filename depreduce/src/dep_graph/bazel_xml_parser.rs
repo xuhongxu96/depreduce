@@ -15,7 +15,7 @@ pub struct SourceFile {
     pub name: String,
 
     #[serde(rename = "visibility-label")]
-    pub visibility: Option<VisibilityLabel>,
+    pub visibility: Option<Vec<VisibilityLabel>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -60,7 +60,7 @@ pub struct DictProp {
     pub name: String,
 
     #[serde(rename = "pair")]
-    pub pairs: Vec<Pair>,
+    pub pairs: Option<Vec<Pair>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -88,6 +88,12 @@ pub enum VariantProp {
 
     #[serde(rename = "boolean")]
     Boolean(StringProp),
+
+    #[serde(rename = "int")]
+    Int(StringProp),
+
+    #[serde(rename = "tristate")]
+    TriState(StringProp),
 
     #[serde(rename = "rule-input")]
     RuleInput(RuleIO),
@@ -203,5 +209,10 @@ mod tests {
             "multi-platform-deps.xml",
             "dep_graph/bazel_xml_parser/multi-platform.out",
         );
+    }
+
+    #[test]
+    fn test_parse_source_file_perses() {
+        run_parse_test("perses.xml", "dep_graph/bazel_xml_parser/perses.out");
     }
 }

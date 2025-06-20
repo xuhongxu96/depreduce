@@ -6,9 +6,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_cxx/core.cc:1:1",
                 name: "//core/core_cxx:core.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -17,9 +19,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_cxx/core.h:1:1",
                 name: "//core/core_cxx:core.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -162,9 +166,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_jni/core_jni.cc:1:1",
                 name: "//core/core_jni:core_jni.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -1025,9 +1031,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/core_pybind.cc:1:1",
                 name: "//core/core_py:core_pybind.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -1382,9 +1390,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/src/com/example/core/Core.java:1:1",
                 name: "//main/java:src/com/example/core/Core.java",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -1393,9 +1403,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/src/com/example/core/Main.java:1:1",
                 name: "//main/java:src/com/example/core/Main.java",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -1547,9 +1559,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/py/main.py:1:1",
                 name: "//main/py:main.py",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -1947,30 +1961,32 @@ Query {
                         Dict(
                             DictProp {
                                 name: "values",
-                                pairs: [
-                                    Pair {
-                                        items: Some(
-                                            [
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "host_cpu",
-                                                        ),
-                                                    },
-                                                ),
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "arm64_windows",
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
-                                        ),
-                                    },
-                                ],
+                                pairs: Some(
+                                    [
+                                        Pair {
+                                            items: Some(
+                                                [
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "host_cpu",
+                                                            ),
+                                                        },
+                                                    ),
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "arm64_windows",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            ),
+                                        },
+                                    ],
+                                ),
                             },
                         ),
                     ],
@@ -2027,30 +2043,32 @@ Query {
                         Dict(
                             DictProp {
                                 name: "values",
-                                pairs: [
-                                    Pair {
-                                        items: Some(
-                                            [
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "host_cpu",
-                                                        ),
-                                                    },
-                                                ),
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "x64_windows",
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
-                                        ),
-                                    },
-                                ],
+                                pairs: Some(
+                                    [
+                                        Pair {
+                                            items: Some(
+                                                [
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "host_cpu",
+                                                            ),
+                                                        },
+                                                    ),
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "x64_windows",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            ),
+                                        },
+                                    ],
+                                ),
                             },
                         ),
                     ],
@@ -2094,30 +2112,32 @@ Query {
                         Dict(
                             DictProp {
                                 name: "values",
-                                pairs: [
-                                    Pair {
-                                        items: Some(
-                                            [
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "define",
-                                                        ),
-                                                    },
-                                                ),
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "EXECUTOR=remote",
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
-                                        ),
-                                    },
-                                ],
+                                pairs: Some(
+                                    [
+                                        Pair {
+                                            items: Some(
+                                                [
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "define",
+                                                            ),
+                                                        },
+                                                    ),
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "EXECUTOR=remote",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            ),
+                                        },
+                                    ],
+                                ),
                             },
                         ),
                     ],
@@ -2415,9 +2435,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:errors.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2426,9 +2448,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors_posix.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:errors_posix.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2437,9 +2461,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors_windows.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:errors_windows.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2448,9 +2474,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/exit_code.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:exit_code.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2459,9 +2487,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:file.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2470,9 +2500,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:file.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2481,9 +2513,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_platform.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:file_platform.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2492,9 +2526,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_posix.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:file_posix.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2503,9 +2539,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_windows.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:file_windows.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -2991,9 +3029,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/logging.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:logging.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3002,9 +3042,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/logging.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:logging.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3013,9 +3055,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:path.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3024,9 +3068,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:path.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3035,9 +3081,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_platform.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:path_platform.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3046,9 +3094,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_posix.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:path_posix.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3057,9 +3107,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_windows.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:path_windows.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3155,9 +3207,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/port.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:port.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3166,9 +3220,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/port.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:port.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3303,9 +3359,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/strings.cc:1:1",
                 name: "@bazel_tools//src/main/cpp/util:strings.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3314,9 +3372,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/strings.h:1:1",
                 name: "@bazel_tools//src/main/cpp/util:strings.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3325,9 +3385,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/file.cc:1:1",
                 name: "@bazel_tools//src/main/native/windows:file.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3336,9 +3398,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/file.h:1:1",
                 name: "@bazel_tools//src/main/native/windows:file.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3650,9 +3714,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/process.cc:1:1",
                 name: "@bazel_tools//src/main/native/windows:process.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3661,9 +3727,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/process.h:1:1",
                 name: "@bazel_tools//src/main/native/windows:process.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3672,9 +3740,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/util.cc:1:1",
                 name: "@bazel_tools//src/main/native/windows:util.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3683,9 +3753,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/util.h:1:1",
                 name: "@bazel_tools//src/main/native/windows:util.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3834,9 +3906,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/bash_launcher.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:bash_launcher.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3845,9 +3919,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/bash_launcher.h:1:1",
                 name: "@bazel_tools//src/tools/launcher:bash_launcher.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -3856,9 +3932,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/dummy.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:dummy.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4020,9 +4098,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/java_launcher.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:java_launcher.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4031,9 +4111,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/java_launcher.h:1:1",
                 name: "@bazel_tools//src/tools/launcher:java_launcher.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4270,9 +4352,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:launcher.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4281,9 +4365,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher.h:1:1",
                 name: "@bazel_tools//src/tools/launcher:launcher.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4458,9 +4544,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher_main.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:launcher_main.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4622,9 +4710,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/python_launcher.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher:python_launcher.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4633,9 +4723,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/python_launcher.h:1:1",
                 name: "@bazel_tools//src/tools/launcher:python_launcher.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4784,9 +4876,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/data_parser.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher/util:data_parser.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//src/tools/launcher:__subpackages__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//src/tools/launcher:__subpackages__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4795,9 +4889,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/data_parser.h:1:1",
                 name: "@bazel_tools//src/tools/launcher/util:data_parser.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//src/tools/launcher:__subpackages__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//src/tools/launcher:__subpackages__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4806,9 +4902,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/dummy.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher/util:dummy.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//src/tools/launcher:__subpackages__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//src/tools/launcher:__subpackages__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4817,9 +4915,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/launcher_util.cc:1:1",
                 name: "@bazel_tools//src/tools/launcher/util:launcher_util.cc",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//src/tools/launcher:__subpackages__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//src/tools/launcher:__subpackages__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -4828,9 +4928,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/launcher_util.h:1:1",
                 name: "@bazel_tools//src/tools/launcher/util:launcher_util.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//src/tools/launcher:__subpackages__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//src/tools/launcher:__subpackages__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5015,9 +5117,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/non_volatile_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5026,9 +5130,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/redacted_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5037,9 +5143,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/volatile_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5618,9 +5726,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/launcher/launcher.exe:1:1",
                 name: "@bazel_tools//tools/launcher:launcher.exe",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:public",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:public",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5690,9 +5800,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/python/python_bootstrap_template.txt:1:1",
                 name: "@bazel_tools//tools/python:python_bootstrap_template.txt",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:public",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:public",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5815,9 +5927,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/attr.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/attr.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5826,9 +5940,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/buffer_info.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/buffer_info.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5837,9 +5953,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/cast.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/cast.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5848,9 +5966,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/chrono.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/chrono.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5859,9 +5979,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/complex.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/complex.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5870,9 +5992,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/class.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/class.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5881,9 +6005,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/common.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/common.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5892,9 +6018,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/cpp_conduit.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/cpp_conduit.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5903,9 +6031,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/descr.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/descr.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5914,9 +6044,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/exception_translation.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/exception_translation.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5925,9 +6057,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/init.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/init.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5936,9 +6070,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/internals.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/internals.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5947,9 +6083,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/type_caster_base.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/type_caster_base.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5958,9 +6096,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/typeid.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/typeid.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5969,9 +6109,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/value_and_holder.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/value_and_holder.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5980,9 +6122,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -5991,9 +6135,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/common.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/common.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6002,9 +6148,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/matrix.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/matrix.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6013,9 +6161,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/tensor.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/tensor.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6024,9 +6174,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/embed.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/embed.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6035,9 +6187,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eval.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eval.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6046,9 +6200,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/functional.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/functional.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6057,9 +6213,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/gil.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6068,9 +6226,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/gil_safe_call_once.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil_safe_call_once.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6079,9 +6239,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/iostream.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/iostream.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6090,9 +6252,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/numpy.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/numpy.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6101,9 +6265,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/operators.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/operators.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6112,9 +6278,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/options.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/options.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6123,9 +6291,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/pybind11.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pybind11.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6134,9 +6304,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/pytypes.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pytypes.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6145,9 +6317,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6156,9 +6330,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl/filesystem.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl/filesystem.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6167,9 +6343,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl_bind.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl_bind.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6178,9 +6356,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/type_caster_pyobject_ptr.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/type_caster_pyobject_ptr.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6189,9 +6369,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/typing.h:1:1",
                 name: "@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/typing.h",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -6232,30 +6414,32 @@ Query {
                         Dict(
                             DictProp {
                                 name: "flag_values",
-                                pairs: [
-                                    Pair {
-                                        items: Some(
-                                            [
-                                                Label(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "@bazel_tools//tools/cpp:compiler",
-                                                        ),
-                                                    },
-                                                ),
-                                                String(
-                                                    StringProp {
-                                                        name: None,
-                                                        value: Some(
-                                                            "msvc-cl",
-                                                        ),
-                                                    },
-                                                ),
-                                            ],
-                                        ),
-                                    },
-                                ],
+                                pairs: Some(
+                                    [
+                                        Pair {
+                                            items: Some(
+                                                [
+                                                    Label(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "@bazel_tools//tools/cpp:compiler",
+                                                            ),
+                                                        },
+                                                    ),
+                                                    String(
+                                                        StringProp {
+                                                            name: None,
+                                                            value: Some(
+                                                                "msvc-cl",
+                                                            ),
+                                                        },
+                                                    ),
+                                                ],
+                                            ),
+                                        },
+                                    ],
+                                ),
                             },
                         ),
                         RuleInput(
@@ -6941,9 +7125,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/java/bazel/rules/java_stub_template.txt:1:1",
                 name: "@rules_java//java/bazel/rules:java_stub_template.txt",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/java:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/java:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),

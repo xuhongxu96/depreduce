@@ -184,9 +184,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java:1:1",
                 name: "//:src/com/example/Main.java",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -195,9 +197,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java:1:1",
                 name: "//src/com/example/liba:ClassA.java",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -321,9 +325,11 @@ Query {
                 location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java:1:1",
                 name: "//src/com/example/libb:ClassB.java",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "//visibility:private",
+                        },
+                    ],
                 ),
             },
         ),
@@ -505,9 +511,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/non_volatile_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -516,9 +524,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/redacted_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -527,9 +537,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/volatile_file.properties.template:1:1",
                 name: "@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
@@ -753,9 +765,11 @@ Query {
                 location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/java_stub_template.txt:1:1",
                 name: "@rules_java//java/bazel/rules:java_stub_template.txt",
                 visibility: Some(
-                    VisibilityLabel {
-                        name: "@bazel_tools//tools/java:__pkg__",
-                    },
+                    [
+                        VisibilityLabel {
+                            name: "@bazel_tools//tools/java:__pkg__",
+                        },
+                    ],
                 ),
             },
         ),
