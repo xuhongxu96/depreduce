@@ -21,4 +21,22 @@ pub trait Toucher: TouchCondition {
     fn touch(&self, file: &str);
 }
 
+pub trait ToucherByAppend: Toucher {
+    fn content_to_append(&self) -> String;
+}
+
+impl<T: ToucherByAppend> Toucher for T {
+    fn touch(&self, file: &str) {
+        use std::fs::OpenOptions;
+        use std::io::Write;
+
+        let mut file = OpenOptions::new()
+            .append(true)
+            .open(file)
+            .expect("Failed to open file for touching");
+
+        writeln!(file, "{}", self.content_to_append()).expect("Failed to write to file");
+    }
+}
+
 pub mod c_toucher;
