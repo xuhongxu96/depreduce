@@ -79,6 +79,13 @@ fn main() {
         args.cwd = args.input.clone();
     }
 
+    args.command = PathBuf::from(&args.command)
+        .canonicalize()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
+
     let touchers: Vec<Box<dyn buildfuzz::touchers::Toucher>> = match args.touchers.as_str() {
         "all" => vec![
             Box::new(buildfuzz::touchers::CToucher {}),
