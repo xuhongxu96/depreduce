@@ -1,0 +1,146 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'buildfuzz'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=buildfuzz"
+                ],
+                "filter": {
+                    "name": "buildfuzz",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'buildfuzz'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=buildfuzz",
+                    "--package=buildfuzz"
+                ],
+                "filter": {
+                    "name": "buildfuzz",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "--input",
+                "${workspaceFolder}/examples/simple-cxx-project",
+                "-a",
+                "${workspaceFolder}/examples/simple-cxx-project/bazel-bin",
+                "-c",
+                "${workspaceFolder}/buildfuzz/src/test_data/build.sh"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'buildfuzz'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=buildfuzz",
+                    "--package=buildfuzz"
+                ],
+                "filter": {
+                    "name": "buildfuzz",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'utils'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=utils"
+                ],
+                "filter": {
+                    "name": "utils",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'strace_parser'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=strace_parser"
+                ],
+                "filter": {
+                    "name": "strace_parser",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'strace_parser'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=strace_parser",
+                    "--package=strace_parser"
+                ],
+                "filter": {
+                    "name": "strace_parser",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'strace_parser'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=strace_parser",
+                    "--package=strace_parser"
+                ],
+                "filter": {
+                    "name": "strace_parser",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

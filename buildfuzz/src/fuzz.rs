@@ -11,13 +11,13 @@ use utils::DependencyGraph;
 
 use crate::touchers::Toucher;
 
-struct BuildArtifacts {
-    inputs: HashSet<String>,
-    outputs: HashSet<String>,
-    command: String,
-    cwd: String,
+pub struct BuildArtifacts {
+    pub inputs: HashSet<String>,
+    pub outputs: HashSet<String>,
+    pub command: String,
+    pub cwd: String,
 
-    touchers: Vec<Box<dyn Toucher>>,
+    pub touchers: Vec<Box<dyn Toucher>>,
 }
 
 fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> u128 {
@@ -150,7 +150,7 @@ mod tests {
             cwd: get_test_data_path!("../../../examples/simple-cxx-project")
                 .to_string_lossy()
                 .to_string(),
-            touchers: vec![Box::new(crate::touchers::c_toucher::CToucher {})],
+            touchers: vec![Box::new(crate::touchers::CToucher {})],
         };
 
         let dep_graph = artifacts.fuzz().unwrap();
@@ -188,7 +188,7 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
             touchers: vec![Box::new(
-                crate::touchers::java_toucher::JavaToucher {},
+                crate::touchers::JavaToucher {},
             )],
         };
 

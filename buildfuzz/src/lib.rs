@@ -1,2 +1,2 @@
-mod fuzz;
-mod touchers;
+pub mod fuzz;
+pub mod touchers;
