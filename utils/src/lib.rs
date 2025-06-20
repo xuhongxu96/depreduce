@@ -19,6 +19,18 @@ impl DependencyGraph {
         deps.sort_by(|(a, _), (b, _)| a.cmp(b));
         deps
     }
+
+    pub fn from_json_lines(json_lines: &str) -> Self {
+        Self {
+            deps: from_json_lines::<(String, Vec<String>)>(json_lines).fold(
+                HashMap::new(),
+                |mut acc, (k, v)| {
+                    acc.entry(k).or_insert_with(HashSet::new).extend(v);
+                    acc
+                },
+            ),
+        }
+    }
 }
 
 #[macro_export]

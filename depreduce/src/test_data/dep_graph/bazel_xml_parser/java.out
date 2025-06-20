@@ -1,0 +1,673 @@
+Query {
+    values: [
+        Rule(
+            Rule {
+                class: "java_binary",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12",
+                name: "//:Main",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "Main",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "Main",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "java_binary",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//:src/com/example/Main.java",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//src/com/example/liba:liba",
+                                    },
+                                    StringProp {
+                                        name: None,
+                                        value: "//src/com/example/libb:libb",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "launcher",
+                            ),
+                            value: "@bazel_tools//tools/jdk:launcher_flag_alias",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//:src/com/example/Main.java",
+                        },
+                        RuleIO {
+                            name: "//src/com/example/liba:liba",
+                        },
+                        RuleIO {
+                            name: "//src/com/example/libb:libb",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/build_defs/build_info:java_build_info",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:current_java_toolchain",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:java_plugins_flag_alias",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:launcher_flag_alias",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:toolchain_type",
+                        },
+                        RuleIO {
+                            name: "@@platforms//os:windows",
+                        },
+                        RuleIO {
+                            name: "@rules_java//java/bazel/rules:java_stub_template.txt",
+                        },
+                    ],
+                ),
+                outputs: Some(
+                    [
+                        RuleIO {
+                            name: "//:Main.jar",
+                        },
+                        RuleIO {
+                            name: "//:Main-src.jar",
+                        },
+                        RuleIO {
+                            name: "//:Main_deploy-src.jar",
+                        },
+                        RuleIO {
+                            name: "//:Main_deploy.jar",
+                        },
+                        RuleIO {
+                            name: "//:Main_deploy.jar.unstripped",
+                        },
+                    ],
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/Main.java:1:1",
+                name: "//:src/com/example/Main.java",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/ClassA.java:1:1",
+                name: "//src/com/example/liba:ClassA.java",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "java_library",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/BUILD:3:13",
+                name: "//src/com/example/liba:liba",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "liba",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "liba",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "java_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "src/com/example/liba/BUILD:3:13",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "visibility",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//visibility:public",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//src/com/example/liba:ClassA.java",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//src/com/example/liba:ClassA.java",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:current_java_toolchain",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:java_plugins_flag_alias",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:toolchain_type",
+                        },
+                    ],
+                ),
+                outputs: Some(
+                    [
+                        RuleIO {
+                            name: "//src/com/example/liba:libliba.jar",
+                        },
+                        RuleIO {
+                            name: "//src/com/example/liba:libliba-src.jar",
+                        },
+                    ],
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/ClassB.java:1:1",
+                name: "//src/com/example/libb:ClassB.java",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "java_library",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13",
+                name: "//src/com/example/libb:libb",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "libb",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "libb",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "java_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "src/com/example/libb/BUILD:3:13",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "visibility",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//visibility:public",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//src/com/example/libb:ClassB.java",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//src/com/example/liba:liba",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//src/com/example/liba:liba",
+                        },
+                        RuleIO {
+                            name: "//src/com/example/libb:ClassB.java",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:current_java_toolchain",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:java_plugins_flag_alias",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/jdk:toolchain_type",
+                        },
+                    ],
+                ),
+                outputs: Some(
+                    [
+                        RuleIO {
+                            name: "//src/com/example/libb:liblibb.jar",
+                        },
+                        RuleIO {
+                            name: "//src/com/example/libb:liblibb-src.jar",
+                        },
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "bazel_java_build_info",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD:24:22",
+                name: "@bazel_tools//tools/build_defs/build_info:java_build_info",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "java_build_info",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/non_volatile_file.properties.template:1:1",
+                name: "@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/redacted_file.properties.template:1:1",
+                name: "@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/templates/volatile_file.properties.template:1:1",
+                name: "@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "@bazel_tools//tools/build_defs/build_info:__pkg__",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "toolchain_type",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/cpp/BUILD:20:15",
+                name: "@bazel_tools//tools/cpp:toolchain_type",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "toolchain_type",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD:186:10",
+                name: "@bazel_tools//tools/jdk:current_java_toolchain",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "current_java_toolchain",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "actual",
+                            ),
+                            value: "@rules_java//toolchains:current_java_toolchain",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@rules_java//toolchains:current_java_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "java_plugins_flag_alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD:49:24",
+                name: "@bazel_tools//tools/jdk:java_plugins_flag_alias",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "java_plugins_flag_alias",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "launcher_flag_alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD:196:20",
+                name: "@bazel_tools//tools/jdk:launcher_flag_alias",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "launcher_flag_alias",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "visibility",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//visibility:public",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "toolchain_type",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD:35:15",
+                name: "@bazel_tools//tools/jdk:runtime_toolchain_type",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "runtime_toolchain_type",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "toolchain_type",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD:24:15",
+                name: "@bazel_tools//tools/jdk:toolchain_type",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "toolchain_type",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "constraint_setting",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/platforms/os/BUILD:14:19",
+                name: "@@platforms//os:os",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "os",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "constraint_value",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/platforms/os/BUILD:46:17",
+                name: "@@platforms//os:windows",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "windows",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "constraint_setting",
+                            ),
+                            value: "@@platforms//os:os",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@@platforms//os:os",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/java_stub_template.txt:1:1",
+                name: "@rules_java//java/bazel/rules:java_stub_template.txt",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "@bazel_tools//tools/java:__pkg__",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "java_toolchain_alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/toolchains/BUILD:94:21",
+                name: "@rules_java//toolchains:current_java_toolchain",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "current_java_toolchain",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+    ],
+}

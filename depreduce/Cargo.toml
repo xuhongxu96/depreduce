@@ -1,0 +1,9 @@
+[package]
+name = "depreduce"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+quick-xml = { version = "0.37.5", features = ["overlapped-lists", "serialize"] }
+serde = { version = "1.0.219", features = ["derive"] }
+utils = { path = "../utils" }

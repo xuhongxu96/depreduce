@@ -1,0 +1,790 @@
+Query {
+    values: [
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/a.cpp:1:1",
+                name: "//liba:a.cpp",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/a.h:1:1",
+                name: "//liba:a.h",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/BUILD:3:11",
+                name: "//liba:liba",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "liba",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "liba",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "cc_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "liba/BUILD:3:11",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "visibility",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//visibility:public",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//liba:a.cpp",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "includes",
+                            labels: None,
+                            strings: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: ".",
+                                    },
+                                ],
+                            ),
+                        },
+                        ListProp {
+                            name: "hdrs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//liba:a.h",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//liba:a.cpp",
+                        },
+                        RuleIO {
+                            name: "//liba:a.h",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/b.cpp:1:1",
+                name: "//libb:b.cpp",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/b.h:1:1",
+                name: "//libb:b.h",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/BUILD:3:11",
+                name: "//libb:libb",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "libb",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "libb",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "cc_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "libb/BUILD:3:11",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "visibility",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//visibility:public",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//libb:b.cpp",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "includes",
+                            labels: None,
+                            strings: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: ".",
+                                    },
+                                ],
+                            ),
+                        },
+                        ListProp {
+                            name: "hdrs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//libb:b.h",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//liba:liba",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//liba:liba",
+                        },
+                        RuleIO {
+                            name: "//libb:b.cpp",
+                        },
+                        RuleIO {
+                            name: "//libb:b.h",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_binary",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10",
+                name: "//main:main",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "main",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "main",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "cc_binary",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "main/BUILD:3:10",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "srcs",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//main:main.cpp",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "//liba:liba",
+                                    },
+                                    StringProp {
+                                        name: None,
+                                        value: "//libb:libb",
+                                    },
+                                    StringProp {
+                                        name: None,
+                                        value: "@rules_cc//:link_extra_lib",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "//liba:liba",
+                        },
+                        RuleIO {
+                            name: "//libb:libb",
+                        },
+                        RuleIO {
+                            name: "//main:main.cpp",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:link_extra_lib",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:malloc",
+                        },
+                        RuleIO {
+                            name: "@rules_cc//:link_extra_lib",
+                        },
+                    ],
+                ),
+                outputs: Some(
+                    [
+                        RuleIO {
+                            name: "//main:main.stripped",
+                        },
+                        RuleIO {
+                            name: "//main:main.dwp",
+                        },
+                    ],
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/main.cpp:1:1",
+                name: "//main:main.cpp",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:27:10",
+                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "current_cc_toolchain",
+                        },
+                        StringProp {
+                            name: Some(
+                                "deprecation",
+                            ),
+                            value: "Please use @rules_cc//cc:current_cc_toolchain instead.",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "actual",
+                            ),
+                            value: "@rules_cc//cc:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@rules_cc//cc:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:52:11",
+                name: "@bazel_tools//tools/cpp:empty_lib",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "empty_lib",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "tags",
+                            labels: None,
+                            strings: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "__DONT_DEPEND_ON_DEF_PARSER__",
+                                    },
+                                ],
+                            ),
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:66:11",
+                name: "@bazel_tools//tools/cpp:link_extra_lib",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "link_extra_lib",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "tags",
+                            labels: None,
+                            strings: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "__DONT_DEPEND_ON_DEF_PARSER__",
+                                    },
+                                ],
+                            ),
+                        },
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "@bazel_tools//tools/cpp:link_extra_libs",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:link_extra_libs",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "label_flag",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:59:11",
+                name: "@bazel_tools//tools/cpp:link_extra_libs",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "link_extra_libs",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "build_setting_default",
+                            ),
+                            value: "@bazel_tools//tools/cpp:empty_lib",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:empty_lib",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:74:11",
+                name: "@bazel_tools//tools/cpp:malloc",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "malloc",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "tags",
+                            labels: None,
+                            strings: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "__DONT_DEPEND_ON_DEF_PARSER__",
+                                    },
+                                ],
+                            ),
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "toolchain_type",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:20:15",
+                name: "@bazel_tools//tools/cpp:toolchain_type",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "toolchain_type",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
+                name: "@rules_cc//:empty_lib",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "empty_lib",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "empty_lib",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "cc_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_library",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                name: "@rules_cc//:link_extra_lib",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "link_extra_lib",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_name",
+                            ),
+                            value: "link_extra_lib",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_function",
+                            ),
+                            value: "cc_library",
+                        },
+                        StringProp {
+                            name: Some(
+                                "generator_location",
+                            ),
+                            value: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                        },
+                    ],
+                ),
+                list_props: Some(
+                    [
+                        ListProp {
+                            name: "deps",
+                            labels: Some(
+                                [
+                                    StringProp {
+                                        name: None,
+                                        value: "@rules_cc//:link_extra_libs",
+                                    },
+                                ],
+                            ),
+                            strings: None,
+                        },
+                    ],
+                ),
+                labels: None,
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                        },
+                        RuleIO {
+                            name: "@rules_cc//:link_extra_libs",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "label_flag",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:13:11",
+                name: "@rules_cc//:link_extra_libs",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "link_extra_libs",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "build_setting_default",
+                            ),
+                            value: "@rules_cc//:empty_lib",
+                        },
+                    ],
+                ),
+                inputs: Some(
+                    [
+                        RuleIO {
+                            name: "@rules_cc//:empty_lib",
+                        },
+                    ],
+                ),
+                outputs: None,
+            },
+        ),
+        Rule(
+            Rule {
+                class: "cc_toolchain_alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/cc/BUILD:103:19",
+                name: "@rules_cc//cc:current_cc_toolchain",
+                string_props: Some(
+                    [
+                        StringProp {
+                            name: Some(
+                                "name",
+                            ),
+                            value: "current_cc_toolchain",
+                        },
+                    ],
+                ),
+                list_props: None,
+                labels: None,
+                inputs: None,
+                outputs: None,
+            },
+        ),
+    ],
+}
