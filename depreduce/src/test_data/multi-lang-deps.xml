@@ -1,0 +1,1367 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<query version="2">
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_cxx/core.cc:1:1" name="//core/core_cxx:core.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_cxx/core.h:1:1" name="//core/core_cxx:core.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_cxx/BUILD:3:11" name="//core/core_cxx:core_cxx">
+        <string name="name" value="core_cxx"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="core_cxx"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="core/core_cxx/BUILD:3:11"/>
+        <list name="srcs">
+            <label value="//core/core_cxx:core.cc"/>
+        </list>
+        <list name="includes">
+            <string value="."/>
+        </list>
+        <list name="hdrs">
+            <label value="//core/core_cxx:core.h"/>
+        </list>
+        <rule-input name="//core/core_cxx:core.cc"/>
+        <rule-input name="//core/core_cxx:core.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_jni/core_jni.cc:1:1" name="//core/core_jni:core_jni.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_jni/BUILD:4:11" name="//core/core_jni:core_jni_lib">
+        <string name="name" value="core_jni_lib"/>
+        <string name="generator_name" value="core_jni_lib"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="core/core_jni/BUILD:4:11"/>
+        <list name="srcs">
+            <label value="//core/core_jni:core_jni.cc"/>
+        </list>
+        <list name="deps">
+            <label value="//core/core_cxx:core_cxx"/>
+            <label value="//tools/jni:copy_jni_hdr_lib"/>
+        </list>
+        <boolean name="alwayslink" value="true"/>
+        <rule-input name="//core/core_cxx:core_cxx"/>
+        <rule-input name="//core/core_jni:core_jni.cc"/>
+        <rule-input name="//tools/jni:copy_jni_hdr_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="cc_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_jni/BUILD:14:10" name="//core/core_jni:libcore_jni.so">
+        <string name="name" value="libcore_jni.so"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="libcore_jni.so"/>
+        <string name="generator_function" value="cc_binary"/>
+        <string name="generator_location" value="core/core_jni/BUILD:14:10"/>
+        <list name="deps">
+            <label value="//core/core_jni:core_jni_lib"/>
+            <label value="//core/core_cxx:core_cxx"/>
+        </list>
+        <boolean name="linkshared" value="true"/>
+        <rule-input name="//core/core_cxx:core_cxx"/>
+        <rule-input name="//core/core_jni:core_jni_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+        <rule-input name="@bazel_tools//tools/cpp:link_extra_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:malloc"/>
+        <rule-output name="//core/core_jni:libcore_jni.so.stripped"/>
+        <rule-output name="//core/core_jni:libcore_jni.so.dwp"/>
+    </rule>
+    <rule class="alias" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/BUILD:4:17" name="//core/core_py:core_py">
+        <string name="name" value="core_py"/>
+        <string name="generator_name" value="core_py"/>
+        <string name="generator_function" value="pybind_extension"/>
+        <string name="generator_location" value="core/core_py/BUILD:4:17"/>
+        <label configurable="yes" name="actual"/>
+        <rule-input name="//core/core_py:core_py.pyd"/>
+        <rule-input name="//core/core_py:core_py.so"/>
+        <rule-input name="@platforms//os:windows"/>
+    </rule>
+    <generated-file generating-rule="//core/core_py:core_py_copy_so_to_pyd" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/BUILD:4:17" name="//core/core_py:core_py.pyd"/>
+    <rule class="cc_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/BUILD:4:17" name="//core/core_py:core_py.so">
+        <string name="name" value="core_py.so"/>
+        <list name="tags">
+            <string value="req_dep=@@pybind11_bazel++internal_configure_extension+pybind11//:pybind11"/>
+            <string value="req_dep=@rules_python//python/cc:current_py_cc_headers"/>
+        </list>
+        <string name="generator_name" value="core_py"/>
+        <string name="generator_function" value="pybind_extension"/>
+        <string name="generator_location" value="core/core_py/BUILD:4:17"/>
+        <list name="features">
+            <string value="-parse_headers"/>
+            <string value="-use_header_modules"/>
+        </list>
+        <list name="srcs">
+            <label value="//core/core_py:core_pybind.cc"/>
+        </list>
+        <list name="copts">
+            <string value="-fexceptions"/>
+            <string value="-fvisibility=hidden"/>
+        </list>
+        <list name="deps">
+            <label value="//core/core_cxx:core_cxx"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:pybind11"/>
+            <label value="@rules_python//python/cc:current_py_cc_headers"/>
+        </list>
+        <list name="linkopts">
+            <string value="-undefined"/>
+            <string value="dynamic_lookup"/>
+            <string value="-Wl,-Bsymbolic"/>
+        </list>
+        <boolean name="linkshared" value="true"/>
+        <rule-input name="//core/core_cxx:core_cxx"/>
+        <rule-input name="//core/core_py:core_pybind.cc"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+        <rule-input name="@bazel_tools//tools/cpp:link_extra_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:malloc"/>
+        <rule-input name="@platforms//os:osx"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:msvc_compiler"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:pybind11"/>
+        <rule-input name="@rules_python//python/cc:current_py_cc_headers"/>
+        <rule-output name="//core/core_py:core_py.so.stripped"/>
+        <rule-output name="//core/core_py:core_py.so.dwp"/>
+    </rule>
+    <rule class="_copy_file" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/BUILD:4:17" name="//core/core_py:core_py_copy_so_to_pyd">
+        <string name="name" value="core_py_copy_so_to_pyd"/>
+        <string name="generator_name" value="core_py"/>
+        <string name="generator_function" value="pybind_extension"/>
+        <string name="generator_location" value="core/core_py/BUILD:4:17"/>
+        <label name="src" value="//core/core_py:core_py.so"/>
+        <output name="out" value="//core/core_py:core_py.pyd"/>
+        <boolean configurable="yes" name="is_windows"/>
+        <boolean name="is_executable" value="false"/>
+        <boolean name="allow_symlink" value="false"/>
+        <rule-input name="//core/core_py:core_py.so"/>
+        <rule-input name="@bazel_tools//src/conditions:host_windows"/>
+        <rule-output name="//core/core_py:core_py.pyd"/>
+    </rule>
+    <rule class="py_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/BUILD:12:11" name="//core/core_py:core_py_lib">
+        <string name="name" value="core_py_lib"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="core_py_lib"/>
+        <string name="generator_function" value="py_library"/>
+        <string name="generator_location" value="core/core_py/BUILD:12:11"/>
+        <list name="data">
+            <label value="//core/core_py:core_py"/>
+        </list>
+        <list name="imports">
+            <string value="."/>
+        </list>
+        <rule-input name="//core/core_py:core_py"/>
+        <rule-input name="@rules_python//python/config_settings:add_srcs_to_runfiles"/>
+        <rule-input name="@rules_python//python/config_settings:precompile"/>
+        <rule-input name="@rules_python//python/config_settings:precompile_source_retention"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/core/core_py/core_pybind.cc:1:1" name="//core/core_py:core_pybind.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="java_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/BUILD:10:12" name="//main/java:core_java">
+        <string name="name" value="core_java"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="core_java"/>
+        <string name="generator_function" value="java_binary"/>
+        <string name="generator_location" value="main/java/BUILD:10:12"/>
+        <list name="srcs">
+            <label value="//main/java:src/com/example/core/Main.java"/>
+        </list>
+        <list name="deps">
+            <label value="//main/java:core_java_lib"/>
+        </list>
+        <label name="launcher" value="@bazel_tools//tools/jdk:launcher_flag_alias"/>
+        <string name="main_class" value="com.example.core.Main"/>
+        <list name="jvm_flags">
+            <string value="-Djava.library.path=core/core_jni"/>
+        </list>
+        <rule-input name="//main/java:core_java_lib"/>
+        <rule-input name="//main/java:src/com/example/core/Main.java"/>
+        <rule-input name="@bazel_tools//tools/build_defs/build_info:java_build_info"/>
+        <rule-input name="@bazel_tools//tools/jdk:current_java_toolchain"/>
+        <rule-input name="@bazel_tools//tools/jdk:java_plugins_flag_alias"/>
+        <rule-input name="@bazel_tools//tools/jdk:launcher_flag_alias"/>
+        <rule-input name="@bazel_tools//tools/jdk:toolchain_type"/>
+        <rule-input name="@platforms//os:windows"/>
+        <rule-input name="@rules_java//java/bazel/rules:java_stub_template.txt"/>
+        <rule-output name="//main/java:core_java.jar"/>
+        <rule-output name="//main/java:core_java-src.jar"/>
+        <rule-output name="//main/java:core_java_deploy-src.jar"/>
+        <rule-output name="//main/java:core_java_deploy.jar"/>
+        <rule-output name="//main/java:core_java_deploy.jar.unstripped"/>
+    </rule>
+    <rule class="java_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/BUILD:3:13" name="//main/java:core_java_lib">
+        <string name="name" value="core_java_lib"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="core_java_lib"/>
+        <string name="generator_function" value="java_library"/>
+        <string name="generator_location" value="main/java/BUILD:3:13"/>
+        <list name="srcs">
+            <label value="//main/java:src/com/example/core/Core.java"/>
+        </list>
+        <list name="data">
+            <label value="//core/core_jni:libcore_jni.so"/>
+        </list>
+        <rule-input name="//core/core_jni:libcore_jni.so"/>
+        <rule-input name="//main/java:src/com/example/core/Core.java"/>
+        <rule-input name="@bazel_tools//tools/jdk:current_java_toolchain"/>
+        <rule-input name="@bazel_tools//tools/jdk:java_plugins_flag_alias"/>
+        <rule-input name="@bazel_tools//tools/jdk:toolchain_type"/>
+        <rule-output name="//main/java:libcore_java_lib.jar"/>
+        <rule-output name="//main/java:libcore_java_lib-src.jar"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/src/com/example/core/Core.java:1:1" name="//main/java:src/com/example/core/Core.java">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/java/src/com/example/core/Main.java:1:1" name="//main/java:src/com/example/core/Main.java">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="py_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/py/BUILD:3:10" name="//main/py:main">
+        <string name="name" value="main"/>
+        <string name="generator_name" value="main"/>
+        <string name="generator_function" value="py_binary"/>
+        <string name="generator_location" value="main/py/BUILD:3:10"/>
+        <list name="deps">
+            <label value="//core/core_cxx:core_cxx"/>
+            <label value="//core/core_py:core_py_lib"/>
+        </list>
+        <list name="srcs">
+            <label value="//main/py:main.py"/>
+        </list>
+        <rule-input name="//core/core_cxx:core_cxx"/>
+        <rule-input name="//core/core_py:core_py_lib"/>
+        <rule-input name="//main/py:main.py"/>
+        <rule-input name="@bazel_tools//tools/python:python_bootstrap_template.txt"/>
+        <rule-input name="@platforms//os:windows"/>
+        <rule-input name="@rules_python//python:toolchain_type"/>
+        <rule-input name="@rules_python//python/config_settings:bootstrap_impl"/>
+        <rule-input name="@rules_python//python/config_settings:precompile"/>
+        <rule-input name="@rules_python//python/config_settings:precompile_source_retention"/>
+        <rule-input name="@rules_python//tools/launcher:launcher"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/main/py/main.py:1:1" name="//main/py:main.py">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/tools/jni/BUILD:19:11" name="//tools/jni:copy_jni_hdr_lib">
+        <string name="name" value="copy_jni_hdr_lib"/>
+        <string name="generator_name" value="copy_jni_hdr_lib"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="tools/jni/BUILD:19:11"/>
+        <list name="includes">
+            <string value="."/>
+        </list>
+        <list name="hdrs">
+            <label value="//tools/jni:copy_link_jni_header"/>
+            <label value="//tools/jni:copy_link_jni_md_header"/>
+        </list>
+        <rule-input name="//tools/jni:copy_link_jni_header"/>
+        <rule-input name="//tools/jni:copy_link_jni_md_header"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="genrule" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/tools/jni/BUILD:12:8" name="//tools/jni:copy_link_jni_header">
+        <string name="name" value="copy_link_jni_header"/>
+        <list name="srcs">
+            <label value="@bazel_tools//tools/jdk:jni_header"/>
+        </list>
+        <list name="outs">
+            <output value="//tools/jni:jni.h"/>
+        </list>
+        <string name="cmd" value="cp -f $&lt; $@"/>
+        <rule-input name="@bazel_tools//tools/jdk:jni_header"/>
+        <rule-output name="//tools/jni:jni.h"/>
+    </rule>
+    <rule class="genrule" location="/data/h445xu/repo/bazel-dep-reduce/examples/multi-lang-project/tools/jni/BUILD:5:8" name="//tools/jni:copy_link_jni_md_header">
+        <string name="name" value="copy_link_jni_md_header"/>
+        <list name="srcs">
+            <label value="@bazel_tools//tools/jdk:jni_md_header-linux"/>
+        </list>
+        <list name="outs">
+            <output value="//tools/jni:jni_md.h"/>
+        </list>
+        <string name="cmd" value="cp -f $&lt; $@"/>
+        <rule-input name="@bazel_tools//tools/jdk:jni_md_header-linux"/>
+        <rule-output name="//tools/jni:jni_md.h"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/conditions/BUILD:145:27" name="@bazel_tools//src/conditions:host_windows">
+        <string name="name" value="host_windows"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="host_windows"/>
+        <string name="generator_function" value="create_windows_host_config"/>
+        <string name="generator_location" value="src/conditions/BUILD:145:27"/>
+        <label configurable="yes" name="actual"/>
+        <rule-input name="@bazel_tools//src/conditions:host_windows_arm64_constraint"/>
+        <rule-input name="@bazel_tools//src/conditions:host_windows_x64_constraint"/>
+    </rule>
+    <rule class="config_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/conditions/BUILD:145:27" name="@bazel_tools//src/conditions:host_windows_arm64_constraint">
+        <string name="name" value="host_windows_arm64_constraint"/>
+        <string name="generator_name" value="host_windows_arm64_constraint"/>
+        <string name="generator_function" value="create_windows_host_config"/>
+        <string name="generator_location" value="src/conditions/BUILD:145:27"/>
+        <dict name="values">
+            <pair>
+                <string value="host_cpu"/>
+                <string value="arm64_windows"/>
+            </pair>
+        </dict>
+    </rule>
+    <rule class="config_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/conditions/BUILD:145:27" name="@bazel_tools//src/conditions:host_windows_x64_constraint">
+        <string name="name" value="host_windows_x64_constraint"/>
+        <string name="generator_name" value="host_windows_x64_constraint"/>
+        <string name="generator_function" value="create_windows_host_config"/>
+        <string name="generator_location" value="src/conditions/BUILD:145:27"/>
+        <dict name="values">
+            <pair>
+                <string value="host_cpu"/>
+                <string value="x64_windows"/>
+            </pair>
+        </dict>
+    </rule>
+    <rule class="config_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/conditions/BUILD:147:15" name="@bazel_tools//src/conditions:remote">
+        <string name="name" value="remote"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <dict name="values">
+            <pair>
+                <string value="define"/>
+                <string value="EXECUTOR=remote"/>
+            </pair>
+        </dict>
+    </rule>
+    <rule class="config_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/conditions/BUILD:117:15" name="@bazel_tools//src/conditions:windows">
+        <string name="name" value="windows"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="constraint_values">
+            <label value="@platforms//os:windows"/>
+        </list>
+        <rule-input name="@platforms//os:windows"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:155:11" name="@bazel_tools//src/main/cpp/util:blaze_exit_code">
+        <string name="name" value="blaze_exit_code"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:exit_code.h"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/cpp/util:exit_code.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:76:11" name="@bazel_tools//src/main/cpp/util:errors">
+        <string name="name" value="errors"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src/main/cpp:__subpackages__"/>
+            <label value="@bazel_tools//src/main/cpp/util:ijar"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/cpp/util:errors_windows.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:errors_posix.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:errors.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:logging"/>
+            <label value="@bazel_tools//src/main/cpp/util:port"/>
+            <label value="@bazel_tools//src/main/cpp/util:strings"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:errors.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:errors_posix.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:errors_windows.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:logging"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:port"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:strings"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors.h:1:1" name="@bazel_tools//src/main/cpp/util:errors.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors_posix.cc:1:1" name="@bazel_tools//src/main/cpp/util:errors_posix.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/errors_windows.cc:1:1" name="@bazel_tools//src/main/cpp/util:errors_windows.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/exit_code.h:1:1" name="@bazel_tools//src/main/cpp/util:exit_code.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file.cc:1:1" name="@bazel_tools//src/main/cpp/util:file.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file.h:1:1" name="@bazel_tools//src/main/cpp/util:file.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_platform.h:1:1" name="@bazel_tools//src/main/cpp/util:file_platform.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_posix.cc:1:1" name="@bazel_tools//src/main/cpp/util:file_posix.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/file_windows.cc:1:1" name="@bazel_tools//src/main/cpp/util:file_windows.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:34:11" name="@bazel_tools//src/main/cpp/util:filesystem">
+        <string name="name" value="filesystem"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src/main/cpp/util:ijar"/>
+            <label value="@bazel_tools//src/main/tools:__pkg__"/>
+            <label value="@bazel_tools//src/test/cpp/util:__pkg__"/>
+            <label value="@bazel_tools//src/test/native/windows:__pkg__"/>
+            <label value="@bazel_tools//src/tools/launcher:__subpackages__"/>
+            <label value="@bazel_tools//src/tools/singlejar:__pkg__"/>
+            <label value="@bazel_tools//third_party/def_parser:__pkg__"/>
+            <label value="@bazel_tools//tools/test:__pkg__"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/cpp/util:file.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:path.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:file_windows.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:path_windows.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:file_posix.cc"/>
+            <label value="@bazel_tools//src/main/cpp/util:path_posix.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:file.h"/>
+            <label value="@bazel_tools//src/main/cpp/util:file_platform.h"/>
+            <label value="@bazel_tools//src/main/cpp/util:path.h"/>
+            <label value="@bazel_tools//src/main/cpp/util:path_platform.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+            <label value="@bazel_tools//src/main/cpp/util:errors"/>
+            <label value="@bazel_tools//src/main/cpp/util:logging"/>
+            <label value="@bazel_tools//src/main/cpp/util:strings"/>
+            <label value="@bazel_tools//src/main/native/windows:lib-file"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:errors"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:file.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:file.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:file_platform.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:file_posix.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:file_windows.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:logging"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:path.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:path.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:path_platform.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:path_posix.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:path_windows.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:strings"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:lib-file"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <package-group location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:3:14" name="@bazel_tools//src/main/cpp/util:ijar">
+        <list name="includes"/>
+        <list name="packages">
+            <string value="@@bazel_tools//third_party/ijar/..."/>
+        </list>
+    </package-group>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:110:11" name="@bazel_tools//src/main/cpp/util:logging">
+        <string name="name" value="logging"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/cpp/util:logging.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:logging.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+            <label value="@bazel_tools//src/main/cpp/util:strings"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:logging.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:logging.h"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:strings"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/logging.cc:1:1" name="@bazel_tools//src/main/cpp/util:logging.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/logging.h:1:1" name="@bazel_tools//src/main/cpp/util:logging.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path.cc:1:1" name="@bazel_tools//src/main/cpp/util:path.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path.h:1:1" name="@bazel_tools//src/main/cpp/util:path.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_platform.h:1:1" name="@bazel_tools//src/main/cpp/util:path_platform.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_posix.cc:1:1" name="@bazel_tools//src/main/cpp/util:path_posix.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/path_windows.cc:1:1" name="@bazel_tools//src/main/cpp/util:path_windows.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:94:11" name="@bazel_tools//src/main/cpp/util:port">
+        <string name="name" value="port"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src/main/native:__pkg__"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/cpp/util:port.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:port.h"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/cpp/util:port.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:port.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/port.cc:1:1" name="@bazel_tools//src/main/cpp/util:port.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/port.h:1:1" name="@bazel_tools//src/main/cpp/util:port.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/BUILD:143:11" name="@bazel_tools//src/main/cpp/util:strings">
+        <string name="name" value="strings"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/cpp/util:strings.cc"/>
+        </list>
+        <list name="defines">
+            <string value="BLAZE_OPENSOURCE"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/cpp/util:strings.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/cpp/util:blaze_exit_code"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:strings.cc"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:strings.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/strings.cc:1:1" name="@bazel_tools//src/main/cpp/util:strings.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/cpp/util/strings.h:1:1" name="@bazel_tools//src/main/cpp/util:strings.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/file.cc:1:1" name="@bazel_tools//src/main/native/windows:file.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/file.h:1:1" name="@bazel_tools//src/main/native/windows:file.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/BUILD:18:11" name="@bazel_tools//src/main/native/windows:lib-file">
+        <string name="name" value="lib-file"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src/main/cpp:__subpackages__"/>
+            <label value="@bazel_tools//src/main/tools:__pkg__"/>
+            <label value="@bazel_tools//src/test/cpp:__subpackages__"/>
+            <label value="@bazel_tools//src/test/native:__subpackages__"/>
+            <label value="@bazel_tools//src/tools/launcher/util:__pkg__"/>
+            <label value="@bazel_tools//tools/test:__pkg__"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/native/windows:file.cc"/>
+            <label value="@bazel_tools//src/main/native/windows:util.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/native/windows:file.h"/>
+            <label value="@bazel_tools//src/main/native/windows:util.h"/>
+        </list>
+        <list name="linkopts">
+            <string value="-DEFAULTLIB:advapi32.lib"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/native/windows:file.cc"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:file.h"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:util.cc"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:util.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/BUILD:41:11" name="@bazel_tools//src/main/native/windows:lib-process">
+        <string name="name" value="lib-process"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src/main/cpp:__pkg__"/>
+            <label value="@bazel_tools//src/test/native:__subpackages__"/>
+            <label value="@bazel_tools//src/tools/launcher:__pkg__"/>
+            <label value="@bazel_tools//tools/test:__pkg__"/>
+        </list>
+        <list name="srcs">
+            <label value="@bazel_tools//src/main/native/windows:process.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/main/native/windows:process.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/native/windows:lib-file"/>
+        </list>
+        <rule-input name="@bazel_tools//src/main/native/windows:lib-file"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:process.cc"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:process.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/process.cc:1:1" name="@bazel_tools//src/main/native/windows:process.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/process.h:1:1" name="@bazel_tools//src/main/native/windows:process.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/util.cc:1:1" name="@bazel_tools//src/main/native/windows:util.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/main/native/windows/util.h:1:1" name="@bazel_tools//src/main/native/windows:util.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/BUILD:58:15" name="@bazel_tools//src/tools/launcher:bash_launcher">
+        <string name="name" value="bash_launcher"/>
+        <string name="generator_name" value="bash_launcher"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/BUILD:58:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher:bash_launcher.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher:bash_launcher.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/tools/launcher:launcher_base"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:bash_launcher.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:bash_launcher.h"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher_base"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/bash_launcher.cc:1:1" name="@bazel_tools//src/tools/launcher:bash_launcher.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/bash_launcher.h:1:1" name="@bazel_tools//src/tools/launcher:bash_launcher.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/dummy.cc:1:1" name="@bazel_tools//src/tools/launcher:dummy.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/BUILD:38:15" name="@bazel_tools//src/tools/launcher:java_launcher">
+        <string name="name" value="java_launcher"/>
+        <string name="generator_name" value="java_launcher"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/BUILD:38:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher:java_launcher.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher:java_launcher.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/tools/launcher:launcher_base"/>
+            <label value="@bazel_tools//src/main/native/windows:lib-process"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:lib-process"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:java_launcher.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:java_launcher.h"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher_base"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/java_launcher.cc:1:1" name="@bazel_tools//src/tools/launcher:java_launcher.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/java_launcher.h:1:1" name="@bazel_tools//src/tools/launcher:java_launcher.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_binary" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/BUILD:10:14" name="@bazel_tools//src/tools/launcher:launcher">
+        <string name="name" value="launcher"/>
+        <list name="visibility">
+            <label value="@bazel_tools//src:__pkg__"/>
+            <label value="@bazel_tools//tools/launcher:__pkg__"/>
+        </list>
+        <string name="generator_name" value="launcher"/>
+        <string name="generator_function" value="win_cc_binary"/>
+        <string name="generator_location" value="src/tools/launcher/BUILD:10:14"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher:launcher_main.cc"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/tools/launcher:bash_launcher"/>
+            <label value="@bazel_tools//src/tools/launcher:java_launcher"/>
+            <label value="@bazel_tools//src/tools/launcher:launcher_base"/>
+            <label value="@bazel_tools//src/tools/launcher:python_launcher"/>
+            <label value="@bazel_tools//src/tools/launcher/util:util"/>
+            <label value="@bazel_tools//src/tools/launcher/util:data_parser"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:bash_launcher"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:java_launcher"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher_base"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher_main.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:python_launcher"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:data_parser"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:util"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+        <rule-input name="@bazel_tools//tools/cpp:link_extra_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:malloc"/>
+        <rule-output name="@bazel_tools//src/tools/launcher:launcher.stripped"/>
+        <rule-output name="@bazel_tools//src/tools/launcher:launcher.dwp"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher.cc:1:1" name="@bazel_tools//src/tools/launcher:launcher.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher.h:1:1" name="@bazel_tools//src/tools/launcher:launcher.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/BUILD:27:15" name="@bazel_tools//src/tools/launcher:launcher_base">
+        <string name="name" value="launcher_base"/>
+        <string name="generator_name" value="launcher_base"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/BUILD:27:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher:launcher.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher:launcher.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:filesystem"/>
+            <label value="@bazel_tools//src/tools/launcher/util:util"/>
+            <label value="@bazel_tools//src/tools/launcher/util:data_parser"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:filesystem"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher.h"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:data_parser"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:util"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/launcher_main.cc:1:1" name="@bazel_tools//src/tools/launcher:launcher_main.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/BUILD:48:15" name="@bazel_tools//src/tools/launcher:python_launcher">
+        <string name="name" value="python_launcher"/>
+        <string name="generator_name" value="python_launcher"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/BUILD:48:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher:python_launcher.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher:python_launcher.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/tools/launcher:launcher_base"/>
+            <label value="@bazel_tools//src/main/native/windows:lib-process"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/native/windows:lib-process"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher_base"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:python_launcher.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:python_launcher.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/python_launcher.cc:1:1" name="@bazel_tools//src/tools/launcher:python_launcher.cc">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/python_launcher.h:1:1" name="@bazel_tools//src/tools/launcher:python_launcher.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/BUILD:11:15" name="@bazel_tools//src/tools/launcher/util:data_parser">
+        <string name="name" value="data_parser"/>
+        <string name="generator_name" value="data_parser"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/util/BUILD:11:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher/util:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher/util:data_parser.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher/util:data_parser.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/tools/launcher/util:util"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:data_parser.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:data_parser.h"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:util"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/data_parser.cc:1:1" name="@bazel_tools//src/tools/launcher/util:data_parser.cc">
+        <visibility-label name="@bazel_tools//src/tools/launcher:__subpackages__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/data_parser.h:1:1" name="@bazel_tools//src/tools/launcher/util:data_parser.h">
+        <visibility-label name="@bazel_tools//src/tools/launcher:__subpackages__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/dummy.cc:1:1" name="@bazel_tools//src/tools/launcher/util:dummy.cc">
+        <visibility-label name="@bazel_tools//src/tools/launcher:__subpackages__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/launcher_util.cc:1:1" name="@bazel_tools//src/tools/launcher/util:launcher_util.cc">
+        <visibility-label name="@bazel_tools//src/tools/launcher:__subpackages__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/launcher_util.h:1:1" name="@bazel_tools//src/tools/launcher/util:launcher_util.h">
+        <visibility-label name="@bazel_tools//src/tools/launcher:__subpackages__"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/src/tools/launcher/util/BUILD:18:15" name="@bazel_tools//src/tools/launcher/util:util">
+        <string name="name" value="util"/>
+        <string name="generator_name" value="util"/>
+        <string name="generator_function" value="win_cc_library"/>
+        <string name="generator_location" value="src/tools/launcher/util/BUILD:18:15"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher/util:dummy.cc"/>
+            <label value="@bazel_tools//src/tools/launcher/util:launcher_util.cc"/>
+        </list>
+        <list name="hdrs">
+            <label value="@bazel_tools//src/tools/launcher/util:launcher_util.h"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//src/main/cpp/util:filesystem"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:windows"/>
+        <rule-input name="@bazel_tools//src/main/cpp/util:filesystem"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:dummy.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:launcher_util.cc"/>
+        <rule-input name="@bazel_tools//src/tools/launcher/util:launcher_util.h"/>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="bazel_java_build_info" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/BUILD:24:22" name="@bazel_tools//tools/build_defs/build_info:java_build_info">
+        <string name="name" value="java_build_info"/>
+        <rule-input name="@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template"/>
+        <rule-input name="@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template"/>
+        <rule-input name="@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/non_volatile_file.properties.template:1:1" name="@bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template">
+        <visibility-label name="@bazel_tools//tools/build_defs/build_info:__pkg__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/redacted_file.properties.template:1:1" name="@bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template">
+        <visibility-label name="@bazel_tools//tools/build_defs/build_info:__pkg__"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/build_defs/build_info/templates/volatile_file.properties.template:1:1" name="@bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template">
+        <visibility-label name="@bazel_tools//tools/build_defs/build_info:__pkg__"/>
+    </source-file>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:27:10" name="@bazel_tools//tools/cpp:compiler">
+        <string name="name" value="compiler"/>
+        <string name="deprecation" value="Please use @rules_cc//cc/private/toolchain:compiler instead."/>
+        <label name="actual" value="@rules_cc//cc/private/toolchain:compiler"/>
+        <rule-input name="@rules_cc//cc/private/toolchain:compiler"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:27:10" name="@bazel_tools//tools/cpp:current_cc_toolchain">
+        <string name="name" value="current_cc_toolchain"/>
+        <string name="deprecation" value="Please use @rules_cc//cc:current_cc_toolchain instead."/>
+        <label name="actual" value="@rules_cc//cc:current_cc_toolchain"/>
+        <rule-input name="@rules_cc//cc:current_cc_toolchain"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:52:11" name="@bazel_tools//tools/cpp:empty_lib">
+        <string name="name" value="empty_lib"/>
+        <list name="tags">
+            <string value="__DONT_DEPEND_ON_DEF_PARSER__"/>
+        </list>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:66:11" name="@bazel_tools//tools/cpp:link_extra_lib">
+        <string name="name" value="link_extra_lib"/>
+        <list name="tags">
+            <string value="__DONT_DEPEND_ON_DEF_PARSER__"/>
+        </list>
+        <list name="deps">
+            <label value="@bazel_tools//tools/cpp:link_extra_libs"/>
+        </list>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+        <rule-input name="@bazel_tools//tools/cpp:link_extra_libs"/>
+    </rule>
+    <rule class="label_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:59:11" name="@bazel_tools//tools/cpp:link_extra_libs">
+        <string name="name" value="link_extra_libs"/>
+        <label name="build_setting_default" value="@bazel_tools//tools/cpp:empty_lib"/>
+        <rule-input name="@bazel_tools//tools/cpp:empty_lib"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:74:11" name="@bazel_tools//tools/cpp:malloc">
+        <string name="name" value="malloc"/>
+        <list name="tags">
+            <string value="__DONT_DEPEND_ON_DEF_PARSER__"/>
+        </list>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+    </rule>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/cpp/BUILD:20:15" name="@bazel_tools//tools/cpp:toolchain_type">
+        <string name="name" value="toolchain_type"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:186:10" name="@bazel_tools//tools/jdk:current_java_toolchain">
+        <string name="name" value="current_java_toolchain"/>
+        <label name="actual" value="@rules_java//toolchains:current_java_toolchain"/>
+        <rule-input name="@rules_java//toolchains:current_java_toolchain"/>
+    </rule>
+    <rule class="java_plugins_flag_alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:49:24" name="@bazel_tools//tools/jdk:java_plugins_flag_alias">
+        <string name="name" value="java_plugins_flag_alias"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:186:10" name="@bazel_tools//tools/jdk:jni_header">
+        <string name="name" value="jni_header"/>
+        <label name="actual" value="@rules_java//toolchains:jni_header"/>
+        <rule-input name="@rules_java//toolchains:jni_header"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:186:10" name="@bazel_tools//tools/jdk:jni_md_header-linux">
+        <string name="name" value="jni_md_header-linux"/>
+        <label name="actual" value="@rules_java//toolchains:jni_md_header-linux"/>
+        <rule-input name="@rules_java//toolchains:jni_md_header-linux"/>
+    </rule>
+    <rule class="launcher_flag_alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:196:20" name="@bazel_tools//tools/jdk:launcher_flag_alias">
+        <string name="name" value="launcher_flag_alias"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+    </rule>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:35:15" name="@bazel_tools//tools/jdk:runtime_toolchain_type">
+        <string name="name" value="runtime_toolchain_type"/>
+    </rule>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/jdk/BUILD:24:15" name="@bazel_tools//tools/jdk:toolchain_type">
+        <string name="name" value="toolchain_type"/>
+    </rule>
+    <rule class="filegroup" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/launcher/BUILD:11:10" name="@bazel_tools//tools/launcher:launcher">
+        <string name="name" value="launcher"/>
+        <list name="srcs">
+            <label value="@bazel_tools//tools/launcher:launcher_windows"/>
+            <label value="@bazel_tools//src/tools/launcher:launcher"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:host_windows"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher"/>
+        <rule-input name="@bazel_tools//tools/launcher:launcher_windows"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/launcher/launcher.exe:1:1" name="@bazel_tools//tools/launcher:launcher.exe">
+        <visibility-label name="//visibility:public"/>
+    </source-file>
+    <rule class="filegroup" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/launcher/BUILD:3:10" name="@bazel_tools//tools/launcher:launcher_windows">
+        <string name="name" value="launcher_windows"/>
+        <list name="srcs">
+            <label value="@bazel_tools//src/tools/launcher:launcher"/>
+            <label value="@bazel_tools//tools/launcher:launcher.exe"/>
+        </list>
+        <rule-input name="@bazel_tools//src/conditions:remote"/>
+        <rule-input name="@bazel_tools//src/tools/launcher:launcher"/>
+        <rule-input name="@bazel_tools//tools/launcher:launcher.exe"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/python/python_bootstrap_template.txt:1:1" name="@bazel_tools//tools/python:python_bootstrap_template.txt">
+        <visibility-label name="//visibility:public"/>
+    </source-file>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/bazel_tools/tools/python/BUILD:87:15" name="@bazel_tools//tools/python:toolchain_type">
+        <string name="name" value="toolchain_type"/>
+    </rule>
+    <rule class="constraint_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/platforms/os/BUILD:14:19" name="@platforms//os:os">
+        <string name="name" value="os"/>
+    </rule>
+    <rule class="constraint_value" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/platforms/os/BUILD:71:17" name="@platforms//os:osx">
+        <string name="name" value="osx"/>
+        <label name="constraint_setting" value="@platforms//os:os"/>
+        <rule-input name="@platforms//os:os"/>
+    </rule>
+    <rule class="constraint_value" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/platforms/os/BUILD:46:17" name="@platforms//os:windows">
+        <string name="name" value="windows"/>
+        <label name="constraint_setting" value="@platforms//os:os"/>
+        <rule-input name="@platforms//os:os"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/attr.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/attr.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/buffer_info.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/buffer_info.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/cast.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/cast.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/chrono.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/chrono.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/complex.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/complex.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/class.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/class.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/common.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/common.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/cpp_conduit.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/cpp_conduit.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/descr.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/descr.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/exception_translation.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/exception_translation.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/init.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/init.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/internals.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/internals.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/type_caster_base.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/type_caster_base.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/typeid.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/typeid.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/detail/value_and_holder.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/value_and_holder.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/common.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/common.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/matrix.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/matrix.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eigen/tensor.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/tensor.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/embed.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/embed.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/eval.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eval.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/functional.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/functional.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/gil.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/gil_safe_call_once.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil_safe_call_once.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/iostream.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/iostream.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/numpy.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/numpy.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/operators.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/operators.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/options.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/options.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/pybind11.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pybind11.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/pytypes.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pytypes.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl/filesystem.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl/filesystem.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/stl_bind.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl_bind.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/type_caster_pyobject_ptr.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/type_caster_pyobject_ptr.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/include/pybind11/typing.h:1:1" name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/typing.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="config_setting" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/BUILD.bazel:34:15" name="@@pybind11_bazel++internal_configure_extension+pybind11//:msvc_compiler">
+        <string name="name" value="msvc_compiler"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <dict name="flag_values">
+            <pair>
+                <label value="@bazel_tools//tools/cpp:compiler"/>
+                <string value="msvc-cl"/>
+            </pair>
+        </dict>
+        <rule-input name="@bazel_tools//tools/cpp:compiler"/>
+    </rule>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/BUILD.bazel:8:11" name="@@pybind11_bazel++internal_configure_extension+pybind11//:pybind11">
+        <string name="name" value="pybind11"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="pybind11"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/pybind11_bazel++internal_configure_extension+pybind11/BUILD.bazel:8:11"/>
+        <list name="includes">
+            <string value="include"/>
+        </list>
+        <list name="copts">
+            <string value="-fexceptions"/>
+            <string value="-Xclang-only=-Wno-undefined-inline"/>
+            <string value="-Xclang-only=-Wno-pragma-once-outside-header"/>
+            <string value="-Xgcc-only=-Wno-error"/>
+        </list>
+        <list name="hdrs">
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/attr.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/buffer_info.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/cast.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/chrono.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/complex.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/class.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/common.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/cpp_conduit.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/descr.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/exception_translation.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/init.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/internals.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/type_caster_base.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/typeid.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/value_and_holder.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/common.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/matrix.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/tensor.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/embed.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eval.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/functional.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil_safe_call_once.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/iostream.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/numpy.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/operators.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/options.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pybind11.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pytypes.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl/filesystem.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl_bind.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/type_caster_pyobject_ptr.h"/>
+            <label value="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/typing.h"/>
+        </list>
+        <list name="deps">
+            <label value="@rules_python//python/cc:current_py_cc_headers"/>
+        </list>
+        <rule-input name="@bazel_tools//tools/cpp:current_cc_toolchain"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/attr.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/buffer_info.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/cast.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/chrono.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/complex.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/class.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/common.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/cpp_conduit.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/descr.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/exception_translation.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/init.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/internals.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/type_caster_base.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/typeid.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/detail/value_and_holder.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/common.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/matrix.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eigen/tensor.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/embed.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/eval.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/functional.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/gil_safe_call_once.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/iostream.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/numpy.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/operators.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/options.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pybind11.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/pytypes.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl/filesystem.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/stl_bind.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/type_caster_pyobject_ptr.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:include/pybind11/typing.h"/>
+        <rule-input name="@@pybind11_bazel++internal_configure_extension+pybind11//:msvc_compiler"/>
+        <rule-input name="@rules_python//python/cc:current_py_cc_headers"/>
+    </rule>
+    <rule class="cc_toolchain_alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_cc+/cc/BUILD:103:19" name="@rules_cc//cc:current_cc_toolchain">
+        <string name="name" value="current_cc_toolchain"/>
+    </rule>
+    <rule class="compiler_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_cc+/cc/private/toolchain/BUILD:96:14" name="@rules_cc//cc/private/toolchain:compiler">
+        <string name="name" value="compiler"/>
+        <rule-input name="@rules_cc//cc:current_cc_toolchain"/>
+    </rule>
+    <source-file location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/java/bazel/rules/java_stub_template.txt:1:1" name="@rules_java//java/bazel/rules:java_stub_template.txt">
+        <visibility-label name="@bazel_tools//tools/java:__pkg__"/>
+    </source-file>
+    <rule class="java_runtime_alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:88:19" name="@rules_java//toolchains:current_java_runtime">
+        <string name="name" value="current_java_runtime"/>
+    </rule>
+    <rule class="java_toolchain_alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:94:21" name="@rules_java//toolchains:current_java_toolchain">
+        <string name="name" value="current_java_toolchain"/>
+    </rule>
+    <rule class="genrule" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:99:19" name="@rules_java//toolchains:gen_include/jni.h">
+        <string name="name" value="gen_include/jni.h"/>
+        <list name="tags">
+            <string value="manual"/>
+        </list>
+        <string name="generator_name" value="jni_header"/>
+        <string name="generator_function" value="java_runtime_files"/>
+        <string name="generator_location" value="toolchains/BUILD:99:19"/>
+        <list name="toolchains">
+            <label value="@rules_java//toolchains:current_java_runtime"/>
+        </list>
+        <list name="srcs">
+            <label value="@rules_java//toolchains:current_java_runtime"/>
+        </list>
+        <list name="outs">
+            <output value="@rules_java//toolchains:include/jni.h"/>
+        </list>
+        <string name="cmd" value="cp $(JAVABASE)/include/jni.h $@"/>
+        <rule-input name="@rules_java//toolchains:current_java_runtime"/>
+        <rule-output name="@rules_java//toolchains:include/jni.h"/>
+    </rule>
+    <rule class="genrule" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:109:19" name="@rules_java//toolchains:gen_include/linux/jni_md.h">
+        <string name="name" value="gen_include/linux/jni_md.h"/>
+        <list name="tags">
+            <string value="manual"/>
+        </list>
+        <string name="generator_name" value="jni_md_header-linux"/>
+        <string name="generator_function" value="java_runtime_files"/>
+        <string name="generator_location" value="toolchains/BUILD:109:19"/>
+        <list name="toolchains">
+            <label value="@rules_java//toolchains:current_java_runtime"/>
+        </list>
+        <list name="srcs">
+            <label value="@rules_java//toolchains:current_java_runtime"/>
+        </list>
+        <list name="outs">
+            <output value="@rules_java//toolchains:include/linux/jni_md.h"/>
+        </list>
+        <string name="cmd" value="cp $(JAVABASE)/include/linux/jni_md.h $@"/>
+        <rule-input name="@rules_java//toolchains:current_java_runtime"/>
+        <rule-output name="@rules_java//toolchains:include/linux/jni_md.h"/>
+    </rule>
+    <generated-file generating-rule="@rules_java//toolchains:gen_include/jni.h" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:99:19" name="@rules_java//toolchains:include/jni.h"/>
+    <generated-file generating-rule="@rules_java//toolchains:gen_include/linux/jni_md.h" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:109:19" name="@rules_java//toolchains:include/linux/jni_md.h"/>
+    <rule class="filegroup" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:99:19" name="@rules_java//toolchains:jni_header">
+        <string name="name" value="jni_header"/>
+        <list name="tags">
+            <string value="manual"/>
+        </list>
+        <string name="generator_name" value="jni_header"/>
+        <string name="generator_function" value="java_runtime_files"/>
+        <string name="generator_location" value="toolchains/BUILD:99:19"/>
+        <list name="srcs">
+            <label value="@rules_java//toolchains:include/jni.h"/>
+        </list>
+        <rule-input name="@rules_java//toolchains:include/jni.h"/>
+    </rule>
+    <rule class="filegroup" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_java+/toolchains/BUILD:109:19" name="@rules_java//toolchains:jni_md_header-linux">
+        <string name="name" value="jni_md_header-linux"/>
+        <list name="tags">
+            <string value="manual"/>
+        </list>
+        <string name="generator_name" value="jni_md_header-linux"/>
+        <string name="generator_function" value="java_runtime_files"/>
+        <string name="generator_location" value="toolchains/BUILD:109:19"/>
+        <list name="srcs">
+            <label value="@rules_java//toolchains:include/linux/jni_md.h"/>
+        </list>
+        <rule-input name="@rules_java//toolchains:include/linux/jni_md.h"/>
+    </rule>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/BUILD.bazel:323:15" name="@rules_python//python:exec_tools_toolchain_type">
+        <string name="name" value="exec_tools_toolchain_type"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/BUILD.bazel:318:6" name="@rules_python//python:toolchain_type">
+        <string name="name" value="toolchain_type"/>
+        <label name="actual" value="@bazel_tools//tools/python:toolchain_type"/>
+        <rule-input name="@bazel_tools//tools/python:toolchain_type"/>
+    </rule>
+    <rule class="current_py_cc_headers" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/cc/BUILD.bazel:15:22" name="@rules_python//python/cc:current_py_cc_headers">
+        <string name="name" value="current_py_cc_headers"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="tags"/>
+    </rule>
+    <rule class="toolchain_type" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/cc/BUILD.bazel:34:15" name="@rules_python//python/cc:toolchain_type">
+        <string name="name" value="toolchain_type"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+    </rule>
+    <rule class="string_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/config_settings/BUILD.bazel:36:12" name="@rules_python//python/config_settings:add_srcs_to_runfiles">
+        <string name="name" value="add_srcs_to_runfiles"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="values">
+            <string value="auto"/>
+            <string value="disabled"/>
+            <string value="enabled"/>
+        </list>
+        <string name="build_setting_default" value="auto"/>
+    </rule>
+    <rule class="string_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/config_settings/BUILD.bazel:79:12" name="@rules_python//python/config_settings:bootstrap_impl">
+        <string name="name" value="bootstrap_impl"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="values">
+            <string value="script"/>
+            <string value="system_python"/>
+        </list>
+        <string name="build_setting_default" value="system_python"/>
+    </rule>
+    <rule class="string_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/config_settings/BUILD.bazel:63:12" name="@rules_python//python/config_settings:precompile">
+        <string name="name" value="precompile"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="values">
+            <string value="auto"/>
+            <string value="disabled"/>
+            <string value="enabled"/>
+            <string value="force_disabled"/>
+            <string value="force_enabled"/>
+        </list>
+        <string name="build_setting_default" value="auto"/>
+    </rule>
+    <rule class="string_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/python/config_settings/BUILD.bazel:71:12" name="@rules_python//python/config_settings:precompile_source_retention">
+        <string name="name" value="precompile_source_retention"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="values">
+            <string value="auto"/>
+            <string value="keep_source"/>
+            <string value="omit_source"/>
+        </list>
+        <string name="build_setting_default" value="auto"/>
+    </rule>
+    <rule class="filegroup" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/tools/launcher/BUILD.bazel:31:10" name="@rules_python//tools/launcher:_sentinel_no_launcher">
+        <string name="name" value="_sentinel_no_launcher"/>
+    </rule>
+    <rule class="alias" location="/home/hongxu/.cache/bazel/_bazel_hongxu/89557d33bf09ebe973caa9631b374872/external/rules_python+/tools/launcher/BUILD.bazel:21:6" name="@rules_python//tools/launcher:launcher">
+        <string name="name" value="launcher"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <label configurable="yes" name="actual"/>
+        <rule-input name="@bazel_tools//tools/launcher:launcher"/>
+        <rule-input name="@platforms//os:windows"/>
+        <rule-input name="@rules_python//tools/launcher:_sentinel_no_launcher"/>
+    </rule>
+</query>

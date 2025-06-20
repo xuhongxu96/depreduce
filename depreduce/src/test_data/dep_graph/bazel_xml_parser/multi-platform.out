@@ -3,18 +3,7 @@ Query {
     values: [
         SourceFile(
             SourceFile {
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/a.cpp:1:1",
-                name: "//liba:a.cpp",
-                visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
-                ),
-            },
-        ),
-        SourceFile(
-            SourceFile {
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/a.h:1:1",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/a.h:1:1",
                 name: "//liba:a.h",
                 visibility: Some(
                     VisibilityLabel {
@@ -26,8 +15,8 @@ Query {
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/BUILD:3:11",
-                name: "//liba:liba",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/BUILD:11:11",
+                name: "//liba:liba_linux",
                 props: Some(
                     [
                         String(
@@ -36,7 +25,7 @@ Query {
                                     "name",
                                 ),
                                 value: Some(
-                                    "liba",
+                                    "liba_linux",
                                 ),
                             },
                         ),
@@ -63,7 +52,7 @@ Query {
                                     "generator_name",
                                 ),
                                 value: Some(
-                                    "liba",
+                                    "liba_linux",
                                 ),
                             },
                         ),
@@ -83,7 +72,7 @@ Query {
                                     "generator_location",
                                 ),
                                 value: Some(
-                                    "liba/BUILD:3:11",
+                                    "liba/BUILD:11:11",
                                 ),
                             },
                         ),
@@ -96,7 +85,7 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//liba:a.cpp",
+                                                    "//liba:linux.cc",
                                                 ),
                                             },
                                         ),
@@ -140,12 +129,12 @@ Query {
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//liba:a.cpp",
+                                name: "//liba:a.h",
                             },
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//liba:a.h",
+                                name: "//liba:linux.cc",
                             },
                         ),
                         RuleInput(
@@ -157,33 +146,11 @@ Query {
                 ),
             },
         ),
-        SourceFile(
-            SourceFile {
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/b.cpp:1:1",
-                name: "//libb:b.cpp",
-                visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
-                ),
-            },
-        ),
-        SourceFile(
-            SourceFile {
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/b.h:1:1",
-                name: "//libb:b.h",
-                visibility: Some(
-                    VisibilityLabel {
-                        name: "//visibility:private",
-                    },
-                ),
-            },
-        ),
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/libb/BUILD:3:11",
-                name: "//libb:libb",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/BUILD:19:11",
+                name: "//liba:liba_mac",
                 props: Some(
                     [
                         String(
@@ -192,7 +159,7 @@ Query {
                                     "name",
                                 ),
                                 value: Some(
-                                    "libb",
+                                    "liba_mac",
                                 ),
                             },
                         ),
@@ -219,7 +186,7 @@ Query {
                                     "generator_name",
                                 ),
                                 value: Some(
-                                    "libb",
+                                    "liba_mac",
                                 ),
                             },
                         ),
@@ -239,7 +206,7 @@ Query {
                                     "generator_location",
                                 ),
                                 value: Some(
-                                    "libb/BUILD:3:11",
+                                    "liba/BUILD:19:11",
                                 ),
                             },
                         ),
@@ -252,7 +219,7 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//libb:b.cpp",
+                                                    "//liba:mac.cc",
                                                 ),
                                             },
                                         ),
@@ -286,24 +253,7 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//libb:b.h",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                ),
-                            },
-                        ),
-                        List(
-                            ListProp {
-                                name: "deps",
-                                items: Some(
-                                    [
-                                        Label(
-                                            StringProp {
-                                                name: None,
-                                                value: Some(
-                                                    "//liba:liba",
+                                                    "//liba:a.h",
                                                 ),
                                             },
                                         ),
@@ -313,17 +263,12 @@ Query {
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//liba:liba",
+                                name: "//liba:a.h",
                             },
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//libb:b.cpp",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "//libb:b.h",
+                                name: "//liba:mac.cc",
                             },
                         ),
                         RuleInput(
@@ -337,8 +282,175 @@ Query {
         ),
         Rule(
             Rule {
+                class: "cc_library",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/BUILD:3:11",
+                name: "//liba:liba_win",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "liba_win",
+                                ),
+                            },
+                        ),
+                        List(
+                            ListProp {
+                                name: "visibility",
+                                items: Some(
+                                    [
+                                        Label(
+                                            StringProp {
+                                                name: None,
+                                                value: Some(
+                                                    "//visibility:public",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                ),
+                            },
+                        ),
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "generator_name",
+                                ),
+                                value: Some(
+                                    "liba_win",
+                                ),
+                            },
+                        ),
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "generator_function",
+                                ),
+                                value: Some(
+                                    "cc_library",
+                                ),
+                            },
+                        ),
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "generator_location",
+                                ),
+                                value: Some(
+                                    "liba/BUILD:3:11",
+                                ),
+                            },
+                        ),
+                        List(
+                            ListProp {
+                                name: "srcs",
+                                items: Some(
+                                    [
+                                        Label(
+                                            StringProp {
+                                                name: None,
+                                                value: Some(
+                                                    "//liba:win.cc",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                ),
+                            },
+                        ),
+                        List(
+                            ListProp {
+                                name: "includes",
+                                items: Some(
+                                    [
+                                        String(
+                                            StringProp {
+                                                name: None,
+                                                value: Some(
+                                                    ".",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                ),
+                            },
+                        ),
+                        List(
+                            ListProp {
+                                name: "hdrs",
+                                items: Some(
+                                    [
+                                        Label(
+                                            StringProp {
+                                                name: None,
+                                                value: Some(
+                                                    "//liba:a.h",
+                                                ),
+                                            },
+                                        ),
+                                    ],
+                                ),
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "//liba:a.h",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "//liba:win.cc",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/linux.cc:1:1",
+                name: "//liba:linux.cc",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/mac.cc:1:1",
+                name: "//liba:mac.cc",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        SourceFile(
+            SourceFile {
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/liba/win.cc:1:1",
+                name: "//liba:win.cc",
+                visibility: Some(
+                    VisibilityLabel {
+                        name: "//visibility:private",
+                    },
+                ),
+            },
+        ),
+        Rule(
+            Rule {
                 class: "cc_binary",
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/main/BUILD:3:10",
                 name: "//main:main",
                 props: Some(
                     [
@@ -391,7 +503,7 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//main:main.cpp",
+                                                    "//main:main.cc",
                                                 ),
                                             },
                                         ),
@@ -408,7 +520,7 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//liba:liba",
+                                                    "//liba:liba_win",
                                                 ),
                                             },
                                         ),
@@ -416,7 +528,15 @@ Query {
                                             StringProp {
                                                 name: None,
                                                 value: Some(
-                                                    "//libb:libb",
+                                                    "//liba:liba_mac",
+                                                ),
+                                            },
+                                        ),
+                                        Label(
+                                            StringProp {
+                                                name: None,
+                                                value: Some(
+                                                    "//liba:liba_linux",
                                                 ),
                                             },
                                         ),
@@ -434,17 +554,22 @@ Query {
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//liba:liba",
+                                name: "//liba:liba_linux",
                             },
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//libb:libb",
+                                name: "//liba:liba_mac",
                             },
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "//main:main.cpp",
+                                name: "//liba:liba_win",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "//main:main.cc",
                             },
                         ),
                         RuleInput(
@@ -460,6 +585,21 @@ Query {
                         RuleInput(
                             RuleIO {
                                 name: "@bazel_tools//tools/cpp:malloc",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:linux",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:macos",
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:windows",
                             },
                         ),
                         RuleInput(
@@ -483,8 +623,8 @@ Query {
         ),
         SourceFile(
             SourceFile {
-                location: "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/main.cpp:1:1",
-                name: "//main:main.cpp",
+                location: "/data/h445xu/repo/bazel-dep-reduce/examples/multi-platform-project/main/main.cc:1:1",
+                name: "//main:main.cc",
                 visibility: Some(
                     VisibilityLabel {
                         name: "//visibility:private",
@@ -495,7 +635,7 @@ Query {
         Rule(
             Rule {
                 class: "alias",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:27:10",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:27:10",
                 name: "@bazel_tools//tools/cpp:current_cc_toolchain",
                 props: Some(
                     [
@@ -541,7 +681,7 @@ Query {
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:52:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:52:11",
                 name: "@bazel_tools//tools/cpp:empty_lib",
                 props: Some(
                     [
@@ -584,7 +724,7 @@ Query {
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:66:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:66:11",
                 name: "@bazel_tools//tools/cpp:link_extra_lib",
                 props: Some(
                     [
@@ -649,7 +789,7 @@ Query {
         Rule(
             Rule {
                 class: "label_flag",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:59:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:59:11",
                 name: "@bazel_tools//tools/cpp:link_extra_libs",
                 props: Some(
                     [
@@ -685,7 +825,7 @@ Query {
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:74:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:74:11",
                 name: "@bazel_tools//tools/cpp:malloc",
                 props: Some(
                     [
@@ -728,7 +868,7 @@ Query {
         Rule(
             Rule {
                 class: "toolchain_type",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:20:15",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/bazel_tools/tools/cpp/BUILD:20:15",
                 name: "@bazel_tools//tools/cpp:toolchain_type",
                 props: Some(
                     [
@@ -748,8 +888,173 @@ Query {
         ),
         Rule(
             Rule {
+                class: "constraint_value",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/platforms/os/BUILD:41:17",
+                name: "@platforms//os:linux",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "linux",
+                                ),
+                            },
+                        ),
+                        Label(
+                            StringProp {
+                                name: Some(
+                                    "constraint_setting",
+                                ),
+                                value: Some(
+                                    "@platforms//os:os",
+                                ),
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:os",
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "alias",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/platforms/os/BUILD:76:6",
+                name: "@platforms//os:macos",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "macos",
+                                ),
+                            },
+                        ),
+                        Label(
+                            StringProp {
+                                name: Some(
+                                    "actual",
+                                ),
+                                value: Some(
+                                    "@platforms//os:osx",
+                                ),
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:osx",
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "constraint_setting",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/platforms/os/BUILD:14:19",
+                name: "@platforms//os:os",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "os",
+                                ),
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "constraint_value",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/platforms/os/BUILD:71:17",
+                name: "@platforms//os:osx",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "osx",
+                                ),
+                            },
+                        ),
+                        Label(
+                            StringProp {
+                                name: Some(
+                                    "constraint_setting",
+                                ),
+                                value: Some(
+                                    "@platforms//os:os",
+                                ),
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:os",
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
+                class: "constraint_value",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/platforms/os/BUILD:46:17",
+                name: "@platforms//os:windows",
+                props: Some(
+                    [
+                        String(
+                            StringProp {
+                                name: Some(
+                                    "name",
+                                ),
+                                value: Some(
+                                    "windows",
+                                ),
+                            },
+                        ),
+                        Label(
+                            StringProp {
+                                name: Some(
+                                    "constraint_setting",
+                                ),
+                                value: Some(
+                                    "@platforms//os:os",
+                                ),
+                            },
+                        ),
+                        RuleInput(
+                            RuleIO {
+                                name: "@platforms//os:os",
+                            },
+                        ),
+                    ],
+                ),
+            },
+        ),
+        Rule(
+            Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/BUILD:9:11",
                 name: "@rules_cc//:empty_lib",
                 props: Some(
                     [
@@ -789,7 +1094,7 @@ Query {
                                     "generator_location",
                                 ),
                                 value: Some(
-                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
+                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/BUILD:9:11",
                                 ),
                             },
                         ),
@@ -805,7 +1110,7 @@ Query {
         Rule(
             Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/BUILD:20:11",
                 name: "@rules_cc//:link_extra_lib",
                 props: Some(
                     [
@@ -845,7 +1150,7 @@ Query {
                                     "generator_location",
                                 ),
                                 value: Some(
-                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/BUILD:20:11",
                                 ),
                             },
                         ),
@@ -883,7 +1188,7 @@ Query {
         Rule(
             Rule {
                 class: "label_flag",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:13:11",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/BUILD:13:11",
                 name: "@rules_cc//:link_extra_libs",
                 props: Some(
                     [
@@ -919,7 +1224,7 @@ Query {
         Rule(
             Rule {
                 class: "cc_toolchain_alias",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/cc/BUILD:103:19",
+                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/21922ac53ba630e6389f4d0f8dfe8126/external/rules_cc+/cc/BUILD:103:19",
                 name: "@rules_cc//cc:current_cc_toolchain",
                 props: Some(
                     [

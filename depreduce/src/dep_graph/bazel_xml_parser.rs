@@ -24,25 +24,76 @@ pub struct StringProp {
     pub name: Option<String>,
 
     #[serde(rename = "@value")]
-    pub value: String,
+    pub value: Option<String>,
 }
+
+// #[derive(Debug, Deserialize)]
+// pub enum ListItem {
+//     #[serde(rename = "string")]
+//     String(StringProp),
+
+//     #[serde(rename = "label")]
+//     Label(StringProp),
+
+//     #[serde(rename = "output")]
+//     Output(StringProp),
+// }
 
 #[derive(Debug, Deserialize)]
 pub struct ListProp {
     #[serde(rename = "@name")]
     pub name: String,
 
-    #[serde(rename = "label")]
-    pub labels: Option<Vec<StringProp>>,
+    #[serde(rename = "$value")]
+    pub items: Option<Vec<VariantProp>>,
+}
 
-    #[serde(rename = "string")]
-    pub strings: Option<Vec<StringProp>>,
+#[derive(Debug, Deserialize)]
+pub struct Pair {
+    #[serde(rename = "$value")]
+    pub items: Option<Vec<VariantProp>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DictProp {
+    #[serde(rename = "@name")]
+    pub name: String,
+
+    #[serde(rename = "pair")]
+    pub pairs: Vec<Pair>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct RuleIO {
     #[serde(rename = "@name")]
     pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum VariantProp {
+    #[serde(rename = "string")]
+    String(StringProp),
+
+    #[serde(rename = "label")]
+    Label(StringProp),
+
+    #[serde(rename = "output")]
+    Output(StringProp),
+
+    #[serde(rename = "list")]
+    List(ListProp),
+
+    #[serde(rename = "dict")]
+    Dict(DictProp),
+
+    #[serde(rename = "boolean")]
+    Boolean(StringProp),
+
+    #[serde(rename = "rule-input")]
+    RuleInput(RuleIO),
+
+    #[serde(rename = "rule-output")]
+    RuleOutput(RuleIO),
 }
 
 #[derive(Debug, Deserialize)]
@@ -56,20 +107,32 @@ pub struct Rule {
     #[serde(rename = "@name")]
     pub name: String,
 
-    #[serde(rename = "string")]
-    pub string_props: Option<Vec<StringProp>>,
+    #[serde(rename = "$value")]
+    pub props: Option<Vec<VariantProp>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GeneratedFile {
+    #[serde(rename = "@generating-rule")]
+    pub generating_rule: String,
+
+    #[serde(rename = "@name")]
+    pub name: String,
+
+    #[serde(rename = "@location")]
+    pub location: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PackageGroup {
+    #[serde(rename = "@name")]
+    pub name: String,
+
+    #[serde(rename = "@location")]
+    pub location: String,
 
     #[serde(rename = "list")]
     pub list_props: Option<Vec<ListProp>>,
-
-    #[serde(rename = "label")]
-    pub labels: Option<Vec<StringProp>>,
-
-    #[serde(rename = "rule-input")]
-    pub inputs: Option<Vec<RuleIO>>,
-
-    #[serde(rename = "rule-output")]
-    pub outputs: Option<Vec<RuleIO>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -79,10 +142,19 @@ pub enum SkyValue {
 
     #[serde(rename = "rule")]
     Rule(Rule),
+
+    #[serde(rename = "generated-file")]
+    GeneratedFile(GeneratedFile),
+
+    #[serde(rename = "package-group")]
+    PackageGroup(PackageGroup),
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Query {
+    #[serde(rename = "@version")]
+    pub version: i32,
+
     #[serde(rename = "$value")]
     pub values: Vec<SkyValue>,
 }
@@ -115,5 +187,21 @@ mod tests {
     #[test]
     fn test_parse_source_file_kt() {
         run_parse_test("kt-deps.xml", "dep_graph/bazel_xml_parser/kt.out");
+    }
+
+    #[test]
+    fn test_parse_source_file_multi_lang() {
+        run_parse_test(
+            "multi-lang-deps.xml",
+            "dep_graph/bazel_xml_parser/multi-lang.out",
+        );
+    }
+
+    #[test]
+    fn test_parse_source_file_multi_platform() {
+        run_parse_test(
+            "multi-platform-deps.xml",
+            "dep_graph/bazel_xml_parser/multi-platform.out",
+        );
     }
 }
