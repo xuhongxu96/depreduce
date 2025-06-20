@@ -53,6 +53,7 @@ impl BuildArtifacts {
         for toucher in &self.touchers {
             if toucher.should_touch(&abs_path) {
                 toucher.touch(&abs_path);
+                break;
             }
         }
 
@@ -155,5 +156,47 @@ mod tests {
         let dep_graph = artifacts.fuzz().unwrap();
         let content = to_json_lines(&dep_graph.to_sorted_vec());
         assert_eq!(content, read_or_create_test_data!("fuzz/cxx.out", &content));
+    }
+
+    #[test]
+    fn test_fuzz_java() {
+        let artifacts = BuildArtifacts {
+            inputs: vec![
+                "src/com/example/liba/ClassA.java".to_string(),
+                "src/com/example/libb/ClassB.java".to_string(),
+                "src/com/example/Main.java".to_string(),
+            ]
+            .into_iter()
+            .collect(),
+            outputs: vec![
+                "bazel-bin/Main".to_string(),
+                "bazel-bin/Main.jar".to_string(),
+                "bazel-bin/_javac/Main/Main_classes/com/example/Main.class".to_string(),
+                "bazel-bin/src/com/example/liba/libliba.jar".to_string(),
+                "bazel-bin/src/com/example/liba/libliba-hjar.jar".to_string(),
+                "bazel-bin/src/com/example/liba/_javac/liba/libliba_classes/com/example/liba/ClassA.class".to_string(),
+                "bazel-bin/src/com/example/libb/liblibb.jar".to_string(),
+                "bazel-bin/src/com/example/libb/liblibb-hjar.jar".to_string(),
+                "bazel-bin/src/com/example/libb/_javac/libb/liblibb_classes/com/example/libb/ClassB.class".to_string(),
+            ]
+            .into_iter()
+            .collect(),
+            command: get_test_data_path!("build.sh")
+                .to_string_lossy()
+                .to_string(),
+            cwd: get_test_data_path!("../../../examples/simple-java-project")
+                .to_string_lossy()
+                .to_string(),
+            touchers: vec![Box::new(
+                crate::touchers::java_toucher::JavaToucher {},
+            )],
+        };
+
+        let dep_graph = artifacts.fuzz().unwrap();
+        let content = to_json_lines(&dep_graph.to_sorted_vec());
+        assert_eq!(
+            content,
+            read_or_create_test_data!("fuzz/java.out", &content)
+        );
     }
 }

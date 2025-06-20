@@ -40,3 +40,4 @@ impl<T: ToucherByAppend> Toucher for T {
 }
 
 pub mod c_toucher;
+pub mod java_toucher;

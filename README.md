@@ -6,10 +6,10 @@ Dependency Reduction for Bazel
 ## Dynamic Dependency Analysis via `buildfuzz`
 
 `buildfuzz` is basically the reproduction of the build fuzz testing algorithm proposed by 
-[`mkcheck`] (https://github.com/nandor/mkcheck) with some modifications:
+[`mkcheck`] (https://github.com/nandor/mkcheck) with a new feature:
 
 1. Use **custom touchers** instead of the `touch` file operation, which will **CHANGE** the file content but not affect the original functionality.
-1. **Restore** touched file content after every round. 
+1. **Restore** touched file content after every round.
 1. **Rebuild** the project before every round.
 
 You may wonder why we bother this -- changing the source code instead of just touching them. 
@@ -25,13 +25,19 @@ such as the executables. Bazel is too smart to re-link the
 object files without real changes of them.
 
 So, what we do with custom touchers is actually adding a dummy
-static thing such as static function into the source code. 
-It introduces some risks such as unused function warnings, 
+static thing such as static function into the source code.
+But it introduces some risks such as unused function warnings, 
 which may cause build failures if the project has settings 
-to treat warnings as errors.
+to treat warnings as errors. There are also risks like conflicted symbols,
+invalid syntaxes in some special contexts (e.g. a header file used as a database) 
+and so on.
 
-But in this way, we do make it possible to apply the build fuzz testing method 
-to Bazel build system.
+What's more, even if we added a new function into the source code, there could be 
+a chance that the change stop propagating to its dependents. In such cases, we
+would lose the tracking of dependencies and get inaccurate results.
+
+Anyway, by using custom touchers, we do make it possible to apply the build fuzz 
+testing method to Bazel build system.
 
 ### How to Run `buildfuzz`
 
