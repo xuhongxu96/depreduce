@@ -44,7 +44,8 @@ testing method to Bazel build system.
 ```sh
 buildfuzz --input examples/simple-cxx-project \
     --artifact examples/simple-cxx-project/bazel-bin \
-    --command buildfuzz/src/test_data/build.sh
+    --command buildfuzz/src/test_data/build.sh \
+    --output result_deps.log
 ```
 
 The result is a JSONL file like below.

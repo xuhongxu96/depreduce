@@ -30,6 +30,10 @@ fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> u128 {
                 .unwrap()
                 .as_nanos()
         })
+        .map_err(|e| {
+            eprintln!("Error reading timestamp: {}", e);
+            e
+        })
         .unwrap()
 }
 
