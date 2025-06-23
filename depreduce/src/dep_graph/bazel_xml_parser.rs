@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use crate::dep_graph::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType};
+
 #[derive(Debug, Deserialize)]
 pub struct VisibilityLabel {
     #[serde(rename = "@name")]
@@ -165,16 +167,103 @@ pub struct Query {
     pub values: Vec<SkyValue>,
 }
 
+pub fn parse_bazel_xml(xml: &str) -> Result<Query, quick_xml::de::DeError> {
+    quick_xml::de::from_str(xml)
+}
+
+pub fn convert_query_to_dep_graph(query: &Query) -> Result<DependencyGraph, String> {
+    let mut graph = DependencyGraph::new();
+
+    for value in &query.values {
+        match value {
+            SkyValue::SourceFile(source_file) => {
+                graph.add_node(
+                    source_file.name.clone(),
+                    NodeProps {
+                        t: NodeType::Source,
+                    },
+                )?;
+            }
+            SkyValue::Rule(rule) => {
+                graph.add_node(
+                    rule.name.clone(),
+                    NodeProps {
+                        t: NodeType::Target,
+                    },
+                )?;
+            }
+            SkyValue::GeneratedFile(generated_file) => {
+                graph.add_node(
+                    generated_file.name.clone(),
+                    NodeProps {
+                        t: NodeType::GeneratedFile,
+                    },
+                )?;
+            }
+            SkyValue::PackageGroup(_package_group) => {}
+        }
+    }
+
+    for value in &query.values {
+        match value {
+            SkyValue::Rule(rule) => {
+                let node_id = graph.get_node_id(&rule.name).unwrap();
+                if let Some(props) = &rule.props {
+                    for prop in props {
+                        match prop {
+                            VariantProp::RuleInput(rule_io) => {
+                                let tgt = graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
+                                    graph
+                                        .add_node(
+                                            rule_io.name.clone(),
+                                            NodeProps {
+                                                t: NodeType::Unknown,
+                                            },
+                                        )
+                                        .unwrap()
+                                });
+
+                                if graph.get_edge_id(node_id, tgt).is_none() {
+                                    graph.add_edge(node_id, tgt, EdgeProps {})?;
+                                }
+                            }
+                            VariantProp::RuleOutput(rule_io) => {
+                                let src = graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
+                                    graph
+                                        .add_node(
+                                            rule_io.name.clone(),
+                                            NodeProps {
+                                                t: NodeType::Unknown,
+                                            },
+                                        )
+                                        .unwrap()
+                                });
+
+                                if graph.get_edge_id(src, node_id).is_none() {
+                                    graph.add_edge(src, node_id, EdgeProps {})?;
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    Ok(graph)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use quick_xml::de::from_str;
     use utils::*;
 
     fn run_parse_test(input_path: &str, output_path: &str) {
         let xml = read_test_data!(input_path);
 
-        let value: Query = from_str(&xml).unwrap();
+        let value: Query = parse_bazel_xml(&xml).unwrap();
         let res = format!("{:#?}", value);
 
         assert_eq!(res, read_or_create_test_data!(output_path, res));
@@ -214,5 +303,31 @@ mod tests {
     #[test]
     fn test_parse_source_file_perses() {
         run_parse_test("perses.xml", "dep_graph/bazel_xml_parser/perses.out");
+    }
+
+    #[test]
+    fn test_convert_query_to_dep_graph_cxx() {
+        let xml = read_test_data!("cxx-deps.xml");
+        let query: Query = parse_bazel_xml(&xml).unwrap();
+        let graph = convert_query_to_dep_graph(&query).unwrap();
+
+        let res = graph.to_dot();
+        assert_eq!(
+            res,
+            read_or_create_test_data!("dep_graph/bazel_xml_parser/cxx_graph.out", res)
+        );
+    }
+
+    #[test]
+    fn test_convert_query_to_dep_graph_perses() {
+        let xml = read_test_data!("perses.xml");
+        let query: Query = parse_bazel_xml(&xml).unwrap();
+        let graph = convert_query_to_dep_graph(&query).unwrap();
+
+        let res = to_json_lines(&graph.to_dependency_map().to_sorted_vec());
+        assert_eq!(
+            res,
+            read_or_create_test_data!("dep_graph/bazel_xml_parser/perses_graph.out", res)
+        );
     }
 }

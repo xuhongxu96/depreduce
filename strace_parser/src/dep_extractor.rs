@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use utils::DependencyGraph;
+use utils::DependencyMap;
 
 use crate::{
     analyzer::{FileOperation, State},
@@ -94,7 +94,7 @@ impl DependencyExtractor {
             .retain(|k, v| v.len() > 1 && self.attentioned_paths.contains(k));
     }
 
-    pub fn get_dependencies(&self) -> DependencyGraph {
+    pub fn get_dependencies(&self) -> DependencyMap {
         let mut deps = HashMap::new();
         for (i, paths) in &self.final_dep_caches {
             let src = self.get_path(*i).unwrap();
@@ -109,7 +109,7 @@ impl DependencyExtractor {
             );
         }
 
-        DependencyGraph { deps }
+        DependencyMap { deps }
     }
 }
 

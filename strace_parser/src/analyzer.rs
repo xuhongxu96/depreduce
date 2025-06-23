@@ -23,6 +23,7 @@ pub enum FileOperation {
 
 #[derive(PartialEq, Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ProcessState {
+    #[serde(serialize_with = "utils::ordered_map")]
     pub fd_maps: HashMap<FileDescriptor, String>,
     pub cwd: String,
     pub parent: Option<ProcessId>,
@@ -64,15 +65,14 @@ impl State {
 
         let cwd = lines.next().unwrap().to_string();
 
-        let processes: HashMap<ProcessId, ProcessState> =
-            from_json_lines::<(ProcessId, ProcessState)>(
-                &lines
-                    .by_ref()
-                    .take(process_count)
-                    .collect::<Vec<_>>()
-                    .join("\n"),
-            )
-            .collect();
+        let processes: HashMap<ProcessId, ProcessState> = from_json_lines(
+            &lines
+                .by_ref()
+                .take(process_count)
+                .collect::<Vec<_>>()
+                .join("\n"),
+        )
+        .collect();
         let vfs = VFS::from_json_lines(&lines.take(vfs_count).collect::<Vec<_>>().join("\n"));
         Self {
             processes,

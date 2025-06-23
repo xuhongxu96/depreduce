@@ -7,6 +7,7 @@ pub type NodeIndex = usize;
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct NormalNodeProps {
+    #[serde(serialize_with = "utils::ordered_map")]
     pub children: HashMap<String, NodeIndex>,
 }
 

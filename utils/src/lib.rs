@@ -1,14 +1,34 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
-pub struct DependencyGraph {
+use serde::{Serialize, Serializer};
+
+pub fn ordered_map<S, K: Ord + Serialize, V: Serialize>(
+    value: &HashMap<K, V>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let ordered: BTreeMap<_, _> = value.iter().collect();
+    ordered.serialize(serializer)
+}
+
+pub struct DependencyMap {
     pub deps: HashMap<String, HashSet<String>>,
 }
 
-impl DependencyGraph {
+impl DependencyMap {
+    pub fn new() -> Self {
+        Self {
+            deps: HashMap::new(),
+        }
+    }
+
     pub fn to_sorted_vec(&self) -> Vec<(String, Vec<String>)> {
         let mut deps: Vec<_> = self
             .deps
             .iter()
+            .filter(|(_, v)| !v.is_empty())
             .map(|(k, v)| {
                 let mut paths: Vec<_> = v.iter().cloned().collect();
                 paths.sort();

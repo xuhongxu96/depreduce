@@ -1,0 +1,8 @@
+digraph DependencyGraph {
+    0 [label="foo (Source)"]
+    1 [label="bar (Target)"]
+    2 [label="baz (GeneratedFile)"]
+    0 -> 1 [label="0"]
+    1 -> 2 [label="1"]
+    0 -> 2 [label="2"]
+}

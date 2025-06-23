@@ -7,7 +7,7 @@ use std::{
 };
 
 use normalize_path::NormalizePath;
-use utils::DependencyGraph;
+use utils::DependencyMap;
 
 use crate::touchers::Toucher;
 
@@ -83,7 +83,7 @@ impl BuildArtifacts {
         Ok(())
     }
 
-    pub fn fuzz(&self) -> Result<DependencyGraph, String> {
+    pub fn fuzz(&self) -> Result<DependencyMap, String> {
         let mut res = HashMap::new();
 
         for file in &self.inputs {
@@ -114,7 +114,7 @@ impl BuildArtifacts {
             println!("Restored file {}", file);
         }
 
-        Ok(DependencyGraph { deps: res })
+        Ok(DependencyMap { deps: res })
     }
 }
 
