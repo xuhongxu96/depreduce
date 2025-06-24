@@ -1,0 +1,23 @@
+[
+    (
+        //main:main.cpp,
+        Interval {
+            start: 101,
+            end: 118,
+        },
+    ),
+    (
+        //liba:liba,
+        Interval {
+            start: 141,
+            end: 159,
+        },
+    ),
+    (
+        //libb:libb,
+        Interval {
+            start: 159,
+            end: 174,
+        },
+    ),
+]
