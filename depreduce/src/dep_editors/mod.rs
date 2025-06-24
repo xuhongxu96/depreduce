@@ -1,12 +1,13 @@
 type CheckpointId = usize;
 
-type ChangedFiles = Vec<String>;
+struct FileEdit {
+    path: String,
+    content: String,
+}
 
 trait DepEditor {
-    fn add(&mut self, label: &str, dep_label: &str) -> Result<ChangedFiles, String>;
-    fn remove(&mut self, label: &str, dep_label: &str) -> Result<ChangedFiles, String>;
-    fn save(&mut self) -> CheckpointId;
-    fn restore(&mut self, checkpoint_id: CheckpointId);
+    fn add(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
+    fn remove(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
 }
 
 mod bazel_dep_editor;

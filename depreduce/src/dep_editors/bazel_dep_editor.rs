@@ -1,11 +1,11 @@
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{self, Path};
 
 use rustpython_parser::Parse;
 use rustpython_parser::ast::Ranged;
 use serde::{Deserialize, Serialize};
 
-use crate::dep_editors::{ChangedFiles, DepEditor};
+use crate::dep_editors::{DepEditor, FileEdit};
 use crate::dep_graph::bazel_xml_parser::{Query, SkyValue};
 
 pub struct BazelDepEditor {
@@ -29,6 +29,10 @@ struct Interval {
 impl Interval {
     fn size(&self) -> usize {
         self.end - self.start
+    }
+
+    fn to_range(&self) -> std::ops::Range<usize> {
+        self.start..self.end
     }
 }
 
@@ -74,6 +78,34 @@ impl std::fmt::Debug for BazelLabel {
     }
 }
 
+fn get_list_start_pos(expr: &rustpython_parser::ast::Expr) -> Option<usize> {
+    use rustpython_parser::ast;
+
+    match expr {
+        ast::Expr::Call(e) => {
+            let dep_kw = e
+                .keywords
+                .iter()
+                .filter(|kw| {
+                    if let Some(ident) = &kw.arg {
+                        ident == "deps"
+                    } else {
+                        false
+                    }
+                })
+                .next();
+            if let Some(kw) = dep_kw {
+                return get_list_start_pos(&kw.value);
+            }
+        }
+        ast::Expr::List(e) => {
+            return Some(e.range.start().to_usize());
+        }
+        _ => {}
+    }
+    None
+}
+
 fn extract_list_items(expr: &rustpython_parser::ast::Expr) -> Vec<(String, Interval)> {
     use rustpython_parser::ast;
 
@@ -113,6 +145,17 @@ fn extract_list_items(expr: &rustpython_parser::ast::Expr) -> Vec<(String, Inter
     }
 
     res
+}
+
+fn split_location(location: &str) -> (String, usize, usize) {
+    let parts: Vec<&str> = location.split(':').collect();
+    assert_eq!(parts.len(), 3, "Invalid location format: {}", location);
+
+    let path = parts[0];
+    let start_line = parts[1].parse::<usize>().unwrap_or(0);
+    let end_col = parts[2].parse::<usize>().unwrap_or(0);
+
+    (path.to_string(), start_line, end_col)
 }
 
 impl BazelDepEditor {
@@ -160,34 +203,71 @@ impl BazelDepEditor {
         };
     }
 
-    fn extract_all_labels(&self, location: &str) -> Vec<(BazelLabel, Interval)> {
+    fn get_insertion_pos(
+        &self,
+        path: &str,
+        build_content: &str,
+        start_line: usize,
+    ) -> Option<usize> {
         use rustpython_parser::ast;
 
         // split location as 3 parts: path, start_line, end_line
-        let parts: Vec<&str> = location.split(':').collect();
-        assert_eq!(parts.len(), 3, "Invalid location format: {}", location);
-
-        let path = parts[0];
-        let start_line = parts[1].parse::<usize>().unwrap_or(0);
-        let _end_col = parts[2].parse::<usize>().unwrap_or(0);
-
-        let build = std::fs::read_to_string(path).unwrap();
 
         // convert start_line and end_line to char offsets
-        let start_offset = build
+        let start_offset = build_content
+            .lines()
+            .take(start_line - 1)
+            .map(|s| s.len() + 1)
+            .sum::<usize>();
+
+        let mut res = None;
+        let ast = rustpython_parser::ast::Suite::parse(&build_content, path).unwrap();
+        for stmt in ast {
+            if stmt.range().start().to_usize() < start_offset {
+                continue;
+            }
+            match stmt {
+                ast::Stmt::Expr(e) => {
+                    res = get_list_start_pos(&e.value);
+                }
+                _ => {}
+            }
+            break;
+        }
+
+        if let Some(pos) = res {
+            let offset = &build_content[pos..].find('[').unwrap() + 1;
+            Some(pos + offset)
+        } else {
+            None
+        }
+    }
+
+    fn extract_all_labels(
+        &self,
+        path: &str,
+        build_content: &str,
+        start_line: usize,
+    ) -> Vec<(BazelLabel, Interval)> {
+        use rustpython_parser::ast;
+
+        // split location as 3 parts: path, start_line, end_line
+
+        // convert start_line and end_line to char offsets
+        let start_offset = build_content
             .lines()
             .take(start_line - 1)
             .map(|s| s.len() + 1)
             .sum::<usize>();
 
         let mut res = vec![];
-        let ast = rustpython_parser::ast::Suite::parse(&build, path).unwrap();
+        let ast = rustpython_parser::ast::Suite::parse(&build_content, path).unwrap();
         for stmt in ast {
             if stmt.range().start().to_usize() < start_offset {
                 continue;
             }
             match stmt {
-                ast::Stmt::Expr(e) => res.extend(extract_list_items(e.value.as_ref())),
+                ast::Stmt::Expr(e) => res.extend(extract_list_items(&e.value)),
                 _ => {}
             }
             break;
@@ -204,30 +284,53 @@ impl BazelDepEditor {
 }
 
 impl DepEditor for BazelDepEditor {
-    fn add(&mut self, label: &str, dep_label: &str) -> Result<ChangedFiles, String> {
+    fn add(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
-            let changed_files = vec![location.clone()];
-            Ok(changed_files)
+            let (path, start_line, _end_col) = split_location(location);
+            let build = std::fs::read_to_string(&path).unwrap();
+            if let Some(pos) = self.get_insertion_pos(&path, &build, start_line) {
+                Ok(FileEdit {
+                    path: path,
+                    content: format!("{}\"{}\",{}", &build[..pos], dep_label, &build[pos..]),
+                })
+            } else {
+                Err(format!("Label '{}' does not have 'deps' field", label))
+            }
         } else {
             Err(format!("Label '{}' not found", label))
         }
     }
 
-    fn remove(&mut self, label: &str, dep_label: &str) -> Result<ChangedFiles, String> {
+    fn remove(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
-            let changed_files = vec![location.clone()];
-            Ok(changed_files)
+            let (path, start_line, _end_col) = split_location(location);
+            let mut build = std::fs::read_to_string(&path).unwrap();
+            let candidate_labels = self.extract_all_labels(&path, &build, start_line);
+
+            if let Some((_label, interval)) = candidate_labels
+                .iter()
+                .find(|(l, _)| l.to_string() == dep_label)
+            {
+                // replace interval of build as spaces with the same length of the interval, but keep \n as \n
+                let mut replacement = String::new();
+                for c in build[interval.to_range()].chars() {
+                    if c == '\n' {
+                        replacement.push('\n');
+                    } else {
+                        replacement.push(' ');
+                    }
+                }
+                build.replace_range(interval.to_range(), &replacement);
+                Ok(FileEdit {
+                    path,
+                    content: build,
+                })
+            } else {
+                Err(format!("Dependency Label '{}' not found", dep_label))
+            }
         } else {
             Err(format!("Label '{}' not found", label))
         }
-    }
-
-    fn save(&mut self) -> super::CheckpointId {
-        todo!()
-    }
-
-    fn restore(&mut self, checkpoint_id: super::CheckpointId) {
-        todo!()
     }
 }
 
@@ -337,9 +440,8 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
 
-        let labels = editor.extract_all_labels(
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10",
-        );
+        let path = "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD";
+        let labels = editor.extract_all_labels(path, &std::fs::read_to_string(path).unwrap(), 3);
         let res = format!("{:#?}", labels);
         assert_eq!(
             res,
@@ -353,10 +455,11 @@ mod tests {
             fake_query,
             get_test_data_path!("").to_string_lossy().to_string(),
         );
-        let labels = editor.extract_all_labels(&format!(
-            "{}:3:12",
-            get_test_data_path!("test.BUILD").to_str().unwrap()
-        ));
+        let labels = editor.extract_all_labels(
+            get_test_data_path!("test.BUILD").to_str().unwrap(),
+            &read_test_data!("test.BUILD"),
+            3,
+        );
         let res = format!("{:#?}", labels);
         assert_eq!(
             res,
@@ -365,16 +468,56 @@ mod tests {
     }
 
     #[rstest]
-    fn test_bazel_dep_editor(cxx_query: &Query) {
+    fn test_get_insertion_pos(fake_query: &Query) {
+        let editor = BazelDepEditor::new(
+            fake_query,
+            get_test_data_path!("").to_string_lossy().to_string(),
+        );
+        let pos = editor.get_insertion_pos(
+            get_test_data_path!("test.BUILD").to_str().unwrap(),
+            &read_test_data!("test.BUILD"),
+            3,
+        );
+        assert_eq!(pos, Some(119));
+    }
+
+    #[rstest]
+    fn test_bazel_dep_editor_remove(cxx_query: &Query) {
         let mut editor = BazelDepEditor::new(
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
-        let changed_files = editor.remove("//main:main", "//liba:liba").unwrap();
-        assert_eq!(changed_files.len(), 1);
+        let edit = editor.remove("//main:main", "//liba:liba").unwrap();
         assert_eq!(
-            changed_files[0],
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10"
+            edit.path,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+        );
+        assert_eq!(
+            edit.content,
+            read_or_create_test_data!(
+                "dep_editors/bazel_dep_editor/remove_main_liba.BUILD",
+                edit.content
+            )
+        );
+    }
+
+    #[rstest]
+    fn test_bazel_dep_editor_add(cxx_query: &Query) {
+        let mut editor = BazelDepEditor::new(
+            cxx_query,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
+        );
+        let edit = editor.add("//main:main", "//libc:libc").unwrap();
+        assert_eq!(
+            edit.path,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+        );
+        assert_eq!(
+            edit.content,
+            read_or_create_test_data!(
+                "dep_editors/bazel_dep_editor/add_main_libc.BUILD",
+                edit.content
+            )
         );
     }
 }
