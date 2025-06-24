@@ -3,6 +3,18 @@ bazel-dep-reduce
 
 Dependency Reduction for Bazel
 
+## Static Dependency Analysis via `depreduce`
+
+`depreduce` is a novel tool for static dependency analysis and reduction proposed by ourself.
+
+### Get Dependency Graph from Bazel Query
+
+`depreduce` can parse the dependency graph in the XML format output by Bazel Query:
+
+```sh
+bazel query "deps(//...)" --notool_deps --output xml
+```
+
 ## Dynamic Dependency Analysis via `buildfuzz`
 
 `buildfuzz` is basically the reproduction of the build fuzz testing algorithm proposed by 
