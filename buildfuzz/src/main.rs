@@ -87,7 +87,7 @@ fn main() {
         touchers,
     };
 
-    match artifacts.fuzz() {
+    match artifacts.fuzz(true) {
         Ok(res) => {
             let content = to_json_lines(&res.to_sorted_vec());
             std::fs::write(&args.output, content).expect("Failed to write output file");

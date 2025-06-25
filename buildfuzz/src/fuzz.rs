@@ -20,7 +20,7 @@ pub struct BuildArtifacts {
     pub touchers: Vec<Box<dyn Toucher>>,
 }
 
-fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> u128 {
+fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> String {
     std::fs::metadata(file)
         .map(|metadata| {
             metadata
@@ -30,6 +30,7 @@ fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> u128 {
                 .unwrap()
                 .as_nanos()
         })
+        .map(|nanos| nanos.to_string())
         .map_err(|e| {
             eprintln!("Error reading timestamp: {}", e);
             e
@@ -37,15 +38,31 @@ fn read_timestamp<P: AsRef<std::path::Path>>(file: P) -> u128 {
         .unwrap()
 }
 
+fn read_sha256<P: AsRef<std::path::Path>>(file: P) -> String {
+    use sha2::{Digest, Sha256};
+
+    let mut hasher = Sha256::new();
+    let content = std::fs::read(file).unwrap_or_default();
+    hasher.update(content);
+    format!("{:x}", hasher.finalize())
+}
+
 impl BuildArtifacts {
     fn norm_path(&self, path: &str) -> std::path::PathBuf {
         std::path::Path::new(&self.cwd).join(path).normalize()
     }
 
-    fn read_timestamps(&self) -> HashMap<&String, u128> {
+    fn read_timestamps(&self) -> HashMap<&String, String> {
         self.outputs
             .iter()
             .map(|file| (file, read_timestamp(self.norm_path(file))))
+            .collect()
+    }
+
+    fn read_sha256s(&self) -> HashMap<&String, String> {
+        self.outputs
+            .iter()
+            .map(|file| (file, read_sha256(self.norm_path(file))))
             .collect()
     }
 
@@ -83,7 +100,7 @@ impl BuildArtifacts {
         Ok(())
     }
 
-    pub fn fuzz(&self) -> Result<DependencyMap, String> {
+    pub fn fuzz(&self, use_sha256: bool) -> Result<DependencyMap, String> {
         let mut res = HashMap::new();
 
         for file in &self.inputs {
@@ -91,7 +108,11 @@ impl BuildArtifacts {
                 return Err("Failed to build the original project".to_string());
             }
 
-            let t0 = self.read_timestamps();
+            let t0 = if use_sha256 {
+                self.read_sha256s()
+            } else {
+                self.read_timestamps()
+            };
             let restore_fn = self.touch(file);
 
             if self.build().is_err() {
@@ -99,11 +120,15 @@ impl BuildArtifacts {
                 return Err(format!("Failed to build after touching {}", file));
             }
 
-            let t1 = self.read_timestamps();
+            let t1 = if use_sha256 {
+                self.read_sha256s()
+            } else {
+                self.read_timestamps()
+            };
 
             self.outputs
                 .iter()
-                .filter(|output| t0[output] < t1[output])
+                .filter(|output| t0[output] != t1[output])
                 .for_each(|output| {
                     res.entry(output.clone())
                         .or_insert_with(|| HashSet::new())
@@ -157,9 +182,16 @@ mod tests {
             touchers: vec![Box::new(crate::touchers::CToucher {})],
         };
 
-        let dep_graph = artifacts.fuzz().unwrap();
+        let dep_graph = artifacts.fuzz(true).unwrap();
         let content = to_json_lines(&dep_graph.to_sorted_vec());
         assert_eq!(content, read_or_create_test_data!("fuzz/cxx.out", &content));
+
+        let dep_graph = artifacts.fuzz(false).unwrap();
+        let content = to_json_lines(&dep_graph.to_sorted_vec());
+        assert_eq!(
+            content,
+            read_or_create_test_data!("fuzz/cxx-timestamp.out", &content)
+        );
     }
 
     #[test]
@@ -196,11 +228,18 @@ mod tests {
             )],
         };
 
-        let dep_graph = artifacts.fuzz().unwrap();
+        let dep_graph = artifacts.fuzz(true).unwrap();
         let content = to_json_lines(&dep_graph.to_sorted_vec());
         assert_eq!(
             content,
             read_or_create_test_data!("fuzz/java.out", &content)
+        );
+
+        let dep_graph = artifacts.fuzz(false).unwrap();
+        let content = to_json_lines(&dep_graph.to_sorted_vec());
+        assert_eq!(
+            content,
+            read_or_create_test_data!("fuzz/java-timestamp.out", &content)
         );
     }
 }

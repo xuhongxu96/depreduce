@@ -5,4 +5,4 @@
 ["bazel-bin/libb/liblibb.a",["libb/b.cpp"]]
 ["bazel-bin/libb/liblibb.so",["libb/b.cpp"]]
 ["bazel-bin/main/_objs/main/main.pic.o",["liba/a.h","main/main.cpp"]]
-["bazel-bin/main/main",["liba/a.cpp","liba/a.h","main/main.cpp"]]
+["bazel-bin/main/main",["liba/a.cpp","liba/a.h","libb/b.cpp","main/main.cpp"]]
