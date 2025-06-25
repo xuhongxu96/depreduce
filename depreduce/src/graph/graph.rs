@@ -40,17 +40,17 @@ pub struct Edge {
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
 pub struct DependencyGraph {
-    nodes: Vec<Node>,
-    edges: Vec<Edge>,
+    pub nodes: Vec<Node>,
+    pub edges: Vec<Edge>,
 
     #[serde(skip)]
-    name2node: HashMap<String, NodeId>,
+    pub name2node: HashMap<String, NodeId>,
 
     #[serde(skip)]
-    node2out_edges: HashMap<NodeId, HashMap<NodeId, EdgeId>>,
+    pub node2out_edges: HashMap<NodeId, HashMap<NodeId, EdgeId>>,
 
     #[serde(skip)]
-    node2in_edges: HashMap<NodeId, HashMap<NodeId, EdgeId>>,
+    pub node2in_edges: HashMap<NodeId, HashMap<NodeId, EdgeId>>,
 }
 
 impl DependencyGraph {
@@ -194,6 +194,43 @@ impl DependencyGraph {
             dep_map.deps.insert(node.label.clone(), deps);
         }
         dep_map
+    }
+
+    pub fn topsort(&self) -> Vec<NodeId> {
+        let mut visited = vec![false; self.nodes.len()];
+        let mut stack = Vec::new();
+        let mut result = Vec::new();
+
+        fn visit(
+            graph: &DependencyGraph,
+            node_id: NodeId,
+            visited: &mut [bool],
+            stack: &mut Vec<NodeId>,
+            result: &mut Vec<NodeId>,
+        ) {
+            if visited[node_id] {
+                return;
+            }
+            visited[node_id] = true;
+
+            if let Some(edges) = graph.node2out_edges.get(&node_id) {
+                for &neighbor in edges.keys() {
+                    visit(graph, neighbor, visited, stack, result);
+                }
+            }
+
+            stack.push(node_id);
+        }
+
+        for node in &self.nodes {
+            visit(self, node.id, &mut visited, &mut stack, &mut result);
+        }
+
+        while let Some(node_id) = stack.pop() {
+            result.push(node_id);
+        }
+
+        result
     }
 }
 
@@ -423,5 +460,152 @@ mod tests {
             res,
             read_or_create_test_data!("dep_graph/graph/test_graph.dot", res)
         );
+    }
+
+    #[test]
+    fn test_topsort_linear_chain() {
+        let mut graph = DependencyGraph::new();
+        let id1 = graph
+            .add_node(
+                "n1".to_string(),
+                NodeProps {
+                    t: NodeType::Source,
+                },
+            )
+            .unwrap();
+        let id2 = graph
+            .add_node(
+                "n2".to_string(),
+                NodeProps {
+                    t: NodeType::Target,
+                },
+            )
+            .unwrap();
+        let id3 = graph
+            .add_node(
+                "n3".to_string(),
+                NodeProps {
+                    t: NodeType::GeneratedFile,
+                },
+            )
+            .unwrap();
+
+        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
+        graph.add_edge(id2, id3, EdgeProps {}).unwrap();
+
+        let order = graph.topsort();
+        let pos = |id| order.iter().position(|&x| x == id).unwrap();
+        assert!(pos(id1) < pos(id2));
+        assert!(pos(id2) < pos(id3));
+        assert_eq!(order.len(), 3);
+    }
+
+    #[test]
+    fn test_topsort_disconnected_graph() {
+        let mut graph = DependencyGraph::new();
+        let id1 = graph
+            .add_node(
+                "a".to_string(),
+                NodeProps {
+                    t: NodeType::Source,
+                },
+            )
+            .unwrap();
+        let id2 = graph
+            .add_node(
+                "b".to_string(),
+                NodeProps {
+                    t: NodeType::Target,
+                },
+            )
+            .unwrap();
+        let id3 = graph
+            .add_node(
+                "c".to_string(),
+                NodeProps {
+                    t: NodeType::GeneratedFile,
+                },
+            )
+            .unwrap();
+
+        // No edges
+        let order = graph.topsort();
+        assert_eq!(order.len(), 3);
+        assert!(order.contains(&id1));
+        assert!(order.contains(&id2));
+        assert!(order.contains(&id3));
+    }
+
+    #[test]
+    fn test_topsort_branching() {
+        let mut graph = DependencyGraph::new();
+        let id_a = graph
+            .add_node(
+                "a".to_string(),
+                NodeProps {
+                    t: NodeType::Source,
+                },
+            )
+            .unwrap();
+        let id_b = graph
+            .add_node(
+                "b".to_string(),
+                NodeProps {
+                    t: NodeType::Target,
+                },
+            )
+            .unwrap();
+        let id_c = graph
+            .add_node(
+                "c".to_string(),
+                NodeProps {
+                    t: NodeType::Target,
+                },
+            )
+            .unwrap();
+        let id_d = graph
+            .add_node(
+                "d".to_string(),
+                NodeProps {
+                    t: NodeType::GeneratedFile,
+                },
+            )
+            .unwrap();
+
+        // a -> b, a -> c, b -> d, c -> d
+        graph.add_edge(id_a, id_b, EdgeProps {}).unwrap();
+        graph.add_edge(id_a, id_c, EdgeProps {}).unwrap();
+        graph.add_edge(id_b, id_d, EdgeProps {}).unwrap();
+        graph.add_edge(id_c, id_d, EdgeProps {}).unwrap();
+
+        let order = graph.topsort();
+        let pos = |id| order.iter().position(|&x| x == id).unwrap();
+        assert!(pos(id_a) < pos(id_b));
+        assert!(pos(id_a) < pos(id_c));
+        assert!(pos(id_b) < pos(id_d));
+        assert!(pos(id_c) < pos(id_d));
+        assert_eq!(order.len(), 4);
+    }
+
+    #[test]
+    fn test_topsort_single_node() {
+        let mut graph = DependencyGraph::new();
+        let id = graph
+            .add_node(
+                "only".to_string(),
+                NodeProps {
+                    t: NodeType::Unknown,
+                },
+            )
+            .unwrap();
+        let order = graph.topsort();
+        assert_eq!(order, vec![id]);
+    }
+
+    #[test]
+    fn test_topsort_no_nodes() {
+        let graph = DependencyGraph::new();
+        let order = graph.topsort();
+        assert!(order.is_empty());
     }
 }

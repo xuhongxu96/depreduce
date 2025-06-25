@@ -284,7 +284,7 @@ impl BazelDepEditor {
 }
 
 impl DepEditor for BazelDepEditor {
-    fn add(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
+    fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
             let build = std::fs::read_to_string(&path).unwrap();
@@ -301,7 +301,7 @@ impl DepEditor for BazelDepEditor {
         }
     }
 
-    fn remove(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
+    fn remove(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
             let mut build = std::fs::read_to_string(&path).unwrap();
