@@ -271,9 +271,10 @@ For each node $n_i$,
 1. If build fails, add $deps(n_i)$ to $n_j$ and rebuild the project.
 1. If build still fails, give up removing $n_j$.
 
-You may wonder whether the 2nd step really reduce the sum of $R$,
-as it adds some new dependencies and seems to increase the $R_k$ at the same time where $n_k \in deps(n_i)$.
+The step 1 is not required, and it's just a shortcut for the step 2 to reduce optimization attempts in the future steps.
 
+You may wonder whether the step 2 really reduce the sum of $R$,
+as it adds some new dependencies and seems to increase the $R_k$ at the same time where $n_k \in deps(n_i)$.
 In fact, $R_k$ won't be changed. Let's do some calculations.
 
 #### Why Does Replacing Useless Dependency with Its Dependencies Work?
