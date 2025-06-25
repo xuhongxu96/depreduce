@@ -164,32 +164,25 @@ Let $N$ be the total number of nodes in the graph.
 
 ### Dependencies
 
-$\newcommand{\deps}{deps}$
-$\newcommand{\rdeps}{deps_{real}}$
-
-Let $\deps(n_i)$ be the set of all dependencies that $n_i$ depends on in the graph,
-and $\rdeps(n_i)$ be the set of all **real** direct dependencies that $n_i$ depends on.
+Let $deps(n_i)$ be the set of all dependencies that $n_i$ depends on in the graph,
+and $deps_{real}(n_i)$ be the set of all **real** direct dependencies that $n_i$ depends on.
 
 #### Transitive Dependencies
 
-$\newcommand{\trdeps}{deps_{transitive}}$
-
 $$
-\trdeps(n_i) = \bigcup_{\forall n_j \in \deps(n_i)} \left[\deps(n_j) \cup \trdeps(n_j)\right]
+deps_{transitive}(n_i) = \bigcup_{\forall n_j \in deps(n_i)} \left[deps(n_j) \cup deps_{transitive}(n_j)\right]
 $$
 
 ### Dependents
 
-$\newcommand{\dpdt}{dependents}$
-
-Let $\dpdt(n_i)$ be the set of all dependents of $n_i$, i.e., all nodes that 
+Let $dependents(n_i)$ be the set of all dependents of $n_i$, i.e., all nodes that 
 depends on $n_i$ in the graph.
 
-So, $n_j \in \deps(n_i) \Leftrightarrow n_i \in \dpdt(n_j)$.
+So, $n_j \in dependents(n_i) \Leftrightarrow n_i \in dependents(n_j)$.
 
 ### Edge
 
-When $n_j \in \deps(n_i)$ or $n_i \in \dpdt(n_j)$,
+When $n_j \in deps(n_i)$ or $n_i \in dependents(n_j)$,
 we say there is a directed edge $e_{i,j}$.
 
 ### In-Degree and Out-Degree
@@ -200,8 +193,8 @@ And the out-degree $d_{out}(n_i)$ represents the number of outcoming edges for t
 
 $$
 \begin{align*}
-d_{in}(n_i) &= \sum_{\forall n_j \in \dpdt(n_i)} 1 \\
-d_{out}(n_i)  &= \sum_{\forall n_j \in \deps(n_i)} 1
+d_{in}(n_i) &= \sum_{\forall n_j \in dependents(n_i)} 1 \\
+d_{out}(n_i)  &= \sum_{\forall n_j \in deps(n_i)} 1
 \end{align*}
 $$
 
@@ -210,7 +203,7 @@ $$
 The build will succeed if
 
 $$
-\forall i, \rdeps(n_i) \subseteq \left[\deps(n_i) \cup \trdeps(n_i)\right]
+\forall i, deps_{real}(n_i) \subseteq \left[deps(n_i) \cup deps_{transitive}(n_i)\right]
 $$
 
 ### The Number of Targets to Rebuild
@@ -220,8 +213,8 @@ changed.
 
 $$
 \begin{split}
-R_i &= d_{in}(n_i) + \sum_{\forall n_j \in \dpdt(n_i)} R_j \\
-    &= \sum_{\forall n_j \in \dpdt(n_i)} (1 + R_j)
+R_i &= d_{in}(n_i) + \sum_{\forall n_j \in dependents(n_i)} R_j \\
+    &= \sum_{\forall n_j \in dependents(n_i)} (1 + R_j)
 \end{split}
 $$
 
@@ -238,12 +231,12 @@ Suppose $n_1 \leq n_2 \leq \dots \leq n_N$ after topological sort on dependencie
 We have:
 $$
 \begin{align*}
-\deps(n_1) & = \emptyset \\
-\dpdt(n_N) & = \emptyset \\
-n_j \in \deps(n_i) & \Rightarrow j < i \Rightarrow n_j \leq n_i \\
-\deps(n_i) & \subseteq \left\{ n_j | j < i \right\} \\
-n_j \in \dpdt(n_i) & \Rightarrow j > i \Rightarrow n_j \geq n_i \\
-\dpdt(n_i) & \subseteq \left\{ n_j | j > i \right\}
+deps(n_1) & = \emptyset \\
+dependents(n_N) & = \emptyset \\
+n_j \in deps(n_i) & \Rightarrow j < i \Rightarrow n_j \leq n_i \\
+deps(n_i) & \subseteq \left\{ n_j | j < i \right\} \\
+n_j \in dependents(n_i) & \Rightarrow j > i \Rightarrow n_j \geq n_i \\
+dependents(n_i) & \subseteq \left\{ n_j | j > i \right\}
 \end{align*}
 $$
 
@@ -252,7 +245,7 @@ we can minimize $R_i$ in the **reversed** topological order.
 
 For example, first consider the $n_N$,
 $$
-\dpdt(n_N) = \emptyset \Longrightarrow R_N = 0
+dependents(n_N) = \emptyset \Longrightarrow R_N = 0
 $$
 
 We have nothing to do with minimizing the $R_N$ for $n_N$, as it is already $0$.
@@ -260,9 +253,9 @@ We have nothing to do with minimizing the $R_N$ for $n_N$, as it is already $0$.
 Now let's look at $n_{i}$,
 $$
 \begin{split}
-& \dpdt(n_i) \subseteq \left\{ n_j | j > i \right\} \\
-\Longrightarrow \quad & R_i = \sum_{\forall n_j \in \dpdt(n_i) \subseteq \left\{ n_j | j > i \right\}} (1 + R_j) \\
-\Longrightarrow \quad & R_i = \left|\dpdt(n_i)\right| + \sum_{\forall n_j \in \dpdt(n_i) \subseteq \left\{ n_j | j > i \right\}} R_j
+& dependents(n_i) \subseteq \left\{ n_j | j > i \right\} \\
+\Longrightarrow \quad & R_i = \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j > i \right\}} (1 + R_j) \\
+\Longrightarrow \quad & R_i = \left|dependents(n_i)\right| + \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j > i \right\}} R_j
 \end{split}
 $$
 
@@ -274,12 +267,12 @@ So, to minimize $R_i$, we only need to minimize the number of dependents for eac
 
 For each node $n_i$, 
 
-1. Remove $n_j \in \dpdt(n_i)$ and rebuild the project to validate the change.
-1. If build fails, add $\deps(n_i)$ to $n_j$ and rebuild the project.
+1. Remove $n_j \in dependents(n_i)$ and rebuild the project to validate the change.
+1. If build fails, add $deps(n_i)$ to $n_j$ and rebuild the project.
 1. If build still fails, give up removing $n_j$.
 
 You may wonder whether the 2nd step really reduce the sum of $R$,
-as it adds some new dependencies and seems to increase the $R_k$ at the same time where $n_k \in \deps(n_i)$.
+as it adds some new dependencies and seems to increase the $R_k$ at the same time where $n_k \in deps(n_i)$.
 
 In fact, $R_k$ won't be changed. Let's do some calculations.
 
@@ -308,7 +301,7 @@ graph LR;
     2[...] --> B;
 ```
 
-Suppose $n_j$ depends on all $\deps(n_i)$ transitively inherited from $n_i \in \deps(n_j)$, but 
+Suppose $n_j$ depends on all $deps(n_i)$ transitively inherited from $n_i \in deps(n_j)$, but 
 does not actually depend on $n_i$.
 In such case, after replacing the $n_i$ with all its dependencies as the dependencies of $n_j$, 
 there will be no other available optimization.
@@ -318,16 +311,15 @@ Let $R_*'$ be the updated value of $R_*$.
 
 For $n_i$ that is currently being optimized, $R_i' = R_i - (1 + R_j)$.
 
-For $n_k \in \deps(n_i)$, let $D_k$ be $\dpdt(n_k)$ before optimization and $D_k'$ be $\dpdt(n_k)$ after optimization.
+For $n_k \in deps(n_i)$, let $D_k$ be $dependents(n_k)$ before optimization and $D_k'$ be $dependents(n_k)$ after optimization.
 
 We have $D_k' = D_k \cup n_j$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $R_t$, i.e., $R_t' = R_t$.
 
 $$
 \begin{split}
 R_k & = \sum_{\forall n_t \in D_k} (1 + R_t) \\
-    & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i)
-\end{split}
-\begin{split}
+    & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i) \\
+\\
 R_k' & = \sum_{\forall n_t \in D_k' \setminus n_i} (1 + R_t') + (1 + R_i') \\
      & = \sum_{\forall n_t \in D_k \cup n_j \setminus n_i} (1 + R_t') + (1 + R_i') \\
      & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t') + (1 + R_j) + (1 + R_i') \\
