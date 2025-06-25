@@ -150,7 +150,7 @@ The result is a JSONL file like below.
 ```
 
 
-## What is a Good Dependency Graph
+## What is a Good Dependency Graph?
 
 Our goal is to minimize the number of targets to be rebuilt after
 changes of any target.
@@ -276,7 +276,7 @@ as it adds some new dependencies and seems to increase the $R_k$ at the same tim
 
 In fact, $R_k$ won't be changed. Let's do some calculations.
 
-#### Why Replacing Useless Dependency with Its Dependencies Work?
+#### Why Does Replacing Useless Dependency with Its Dependencies Work?
 
 ##### Before
 
