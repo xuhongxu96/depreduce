@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::dep_graph::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType};
+use crate::graph::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType};
 
 #[derive(Debug, Deserialize)]
 pub struct VisibilityLabel {

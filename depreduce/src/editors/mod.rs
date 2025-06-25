@@ -1,11 +1,11 @@
 type CheckpointId = usize;
 
-struct FileEdit {
+pub struct FileEdit {
     path: String,
     content: String,
 }
 
-trait DepEditor {
+pub trait DepEditor {
     fn add(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
     fn remove(&mut self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
 }

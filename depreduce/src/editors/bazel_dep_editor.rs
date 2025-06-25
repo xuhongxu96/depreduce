@@ -5,8 +5,8 @@ use rustpython_parser::Parse;
 use rustpython_parser::ast::Ranged;
 use serde::{Deserialize, Serialize};
 
-use crate::dep_editors::{DepEditor, FileEdit};
-use crate::dep_graph::bazel_xml_parser::{Query, SkyValue};
+use crate::editors::{DepEditor, FileEdit};
+use crate::graph::bazel_xml_parser::{Query, SkyValue};
 
 pub struct BazelDepEditor {
     label2location: HashMap<String, String>,
@@ -339,7 +339,7 @@ mod tests {
     use rstest::*;
     use utils::{get_test_data_path, read_or_create_test_data, read_test_data};
 
-    use crate::dep_graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::graph::bazel_xml_parser::parse_bazel_xml;
 
     use super::*;
 

@@ -1,2 +1,3 @@
-mod dep_editors;
-mod dep_graph;
+mod editors;
+mod graph;
+mod reducers;
