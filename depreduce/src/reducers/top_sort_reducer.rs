@@ -84,6 +84,7 @@ impl<'a> ReduceContext<'a> {
 
         if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
             dependents_vec = dependents.iter().map(|(a, b)| (*a, *b)).collect();
+            dependents_vec.sort();
         }
 
         self.settings
@@ -124,6 +125,11 @@ impl TopSortReducer {
                 ));
             });
         }
+        let mut transitive_deps: Vec<_> = transitive_deps
+            .into_iter()
+            .map(|(id, label)| (id, label))
+            .collect();
+        transitive_deps.sort();
 
         for (dep_node, _edge_id) in candidates {
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
@@ -187,7 +193,7 @@ impl TopSortReducer {
         match ctx.try_build() {
             Ok(_) => {
                 ctx.commit_changes();
-                ctx.logs.push_str("  Build succeeded");
+                ctx.logs.push_str("  Build succeeded\n");
                 true
             }
             Err(e) => {
@@ -260,9 +266,8 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
         };
-        let res = reducer.reduce(&settings);
-        assert!(res.is_ok());
-        println!("{}", res.unwrap());
+        let res = reducer.reduce(&settings).unwrap();
+        assert_eq!(res, read_or_create_test_data!("reducers/cxx.out", res));
     }
 
     #[test]
@@ -286,9 +291,8 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
         };
-        let res = reducer.reduce(&settings);
-        assert!(res.is_ok());
-        println!("{}", res.unwrap());
+        let res = reducer.reduce(&settings).unwrap();
+        assert_eq!(res, read_or_create_test_data!("reducers/java.out", res));
     }
 
     #[test]
@@ -312,8 +316,7 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
         };
-        let res = reducer.reduce(&settings);
-        assert!(res.is_ok());
-        println!("{}", res.unwrap());
+        let res = reducer.reduce(&settings).unwrap();
+        assert_eq!(res, read_or_create_test_data!("reducers/kt.out", res));
     }
 }

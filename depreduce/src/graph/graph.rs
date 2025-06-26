@@ -214,7 +214,9 @@ impl DependencyGraph {
             visited[node_id] = true;
 
             if let Some(edges) = graph.node2out_edges.get(&node_id) {
-                for &neighbor in edges.keys() {
+                let mut edges: Vec<_> = edges.keys().collect();
+                edges.sort();
+                for &neighbor in edges {
                     visit(graph, neighbor, visited, stack, result);
                 }
             }

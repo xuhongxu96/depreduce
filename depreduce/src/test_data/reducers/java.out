@@ -1,0 +1,110 @@
+Sorted nodes in topological order:
+  //src/com/example/libb:liblibb-src.jar
+  //src/com/example/libb:liblibb.jar
+  //src/com/example/liba:libliba-src.jar
+  //src/com/example/liba:libliba.jar
+  //:Main_deploy.jar.unstripped
+  //:Main_deploy.jar
+  //:Main_deploy-src.jar
+  //:Main-src.jar
+  //:Main.jar
+  @bazel_tools//tools/jdk:runtime_toolchain_type
+  @bazel_tools//tools/cpp:toolchain_type
+  //:Main
+  @rules_java//java/bazel/rules:java_stub_template.txt
+  @@platforms//os:windows
+  @@platforms//os:os
+  @bazel_tools//tools/jdk:launcher_flag_alias
+  @bazel_tools//tools/build_defs/build_info:java_build_info
+  @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+  @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+  @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+  //src/com/example/libb:libb
+  //src/com/example/libb:ClassB.java
+  //src/com/example/liba:liba
+  @bazel_tools//tools/jdk:toolchain_type
+  @bazel_tools//tools/jdk:java_plugins_flag_alias
+  @bazel_tools//tools/jdk:current_java_toolchain
+  @rules_java//toolchains:current_java_toolchain
+  //src/com/example/liba:ClassA.java
+  //:src/com/example/Main.java
+Processing node: //src/com/example/libb:liblibb-src.jar
+Processing node: //src/com/example/libb:liblibb.jar
+Processing node: //src/com/example/liba:libliba-src.jar
+Processing node: //src/com/example/liba:libliba.jar
+Processing node: //:Main_deploy.jar.unstripped
+Processing node: //:Main_deploy.jar
+Processing node: //:Main_deploy-src.jar
+Processing node: //:Main-src.jar
+Processing node: //:Main.jar
+Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type
+Processing node: @bazel_tools//tools/cpp:toolchain_type
+Processing node: //:Main
+  Failed to remove //:Main.jar -> //:Main
+  Failed to remove //:Main-src.jar -> //:Main
+  Failed to remove //:Main_deploy-src.jar -> //:Main
+  Failed to remove //:Main_deploy.jar -> //:Main
+  Failed to remove //:Main_deploy.jar.unstripped -> //:Main
+Processing node: @rules_java//java/bazel/rules:java_stub_template.txt
+  Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt
+Processing node: @@platforms//os:windows
+  Failed to remove //:Main -> @@platforms//os:windows
+Processing node: @@platforms//os:os
+  Failed to remove @@platforms//os:windows -> @@platforms//os:os
+Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
+  Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias
+Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info
+  Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+Processing node: //src/com/example/libb:libb
+  Removed //:Main -> //src/com/example/libb:libb
+  Build succeeded
+  Failed to remove //src/com/example/libb:liblibb.jar -> //src/com/example/libb:libb
+  Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb
+Processing node: //src/com/example/libb:ClassB.java
+  Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
+  Build failed: Build failed
+  Trying to add transitive dependencies for node //src/com/example/libb:ClassB.java
+  Build failed: Build failed
+Processing node: //src/com/example/liba:liba
+  Removed //:Main -> //src/com/example/liba:liba
+  Build failed: Build failed
+  Trying to add transitive dependencies for node //src/com/example/liba:liba
+  Added //:Main -> //src/com/example/liba:ClassA.java
+  Added //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
+  Added //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  Added //:Main -> @bazel_tools//tools/jdk:toolchain_type
+  Build failed: Build failed
+  Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
+  Build succeeded
+  Failed to remove //src/com/example/liba:libliba.jar -> //src/com/example/liba:liba
+  Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba
+Processing node: @bazel_tools//tools/jdk:toolchain_type
+  Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type
+  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:toolchain_type
+  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type
+Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
+  Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+Processing node: @bazel_tools//tools/jdk:current_java_toolchain
+  Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
+  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain
+  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain
+Processing node: @rules_java//toolchains:current_java_toolchain
+  Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain
+Processing node: //src/com/example/liba:ClassA.java
+  Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
+  Build failed: Build failed
+  Trying to add transitive dependencies for node //src/com/example/liba:ClassA.java
+  Build failed: Build failed
+Processing node: //:src/com/example/Main.java
+  Removed //:Main -> //:src/com/example/Main.java
+  Build failed: Build failed
+  Trying to add transitive dependencies for node //:src/com/example/Main.java
+  Build failed: Build failed

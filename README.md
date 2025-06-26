@@ -345,7 +345,7 @@ The overall sum of $R$ will be definitely reduced.
 `depreduce` can parse the dependency graph in the XML format output by Bazel Query:
 
 ```sh
-bazel query "deps(//...)" --notool_deps --output xml
+bazel query "deps(//...)" --notool_deps --noimplicit_deps --output xml
 ```
 
 
