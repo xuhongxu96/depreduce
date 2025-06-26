@@ -12,18 +12,18 @@ use crate::reducers::candidate_generators::{
 
 const INDENT_SIZE_FOR_STDERR: usize = 8;
 
-struct TopSortReducer {
+pub struct TopSortReducer {
     editor: Box<dyn DepEditor>,
 }
 
-struct ReduceSettings<'a> {
-    reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
-    graph: &'a DependencyGraph,
-    build_command: String,
-    cwd: String,
+pub struct ReduceSettings<'a> {
+    pub reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
+    pub graph: &'a DependencyGraph,
+    pub build_command: String,
+    pub cwd: String,
 }
 
-struct ReduceContext<'a> {
+pub struct ReduceContext<'a> {
     history: HashMap<String, String>,
     in_degrees: Vec<usize>,
     logs: String,
@@ -63,7 +63,7 @@ impl<'a> ReduceContext<'a> {
         self.history.clear();
     }
 
-    fn try_build(&mut self) -> Result<(), std::io::Error> {
+    fn try_build(&mut self) -> Result<String, std::io::Error> {
         let mut process = Command::new("/bin/bash")
             .arg(&self.settings.build_command)
             .current_dir(&self.settings.cwd)
@@ -76,7 +76,10 @@ impl<'a> ReduceContext<'a> {
             .map(|mut stderr| stderr.read_to_string(&mut stderr_str));
 
         if exit.success() {
-            return Ok(());
+            return Ok(format!(
+                "Build succeeded: \n{}",
+                indent_all_lines(&stderr_str, INDENT_SIZE_FOR_STDERR)
+            ));
         } else {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
@@ -174,21 +177,24 @@ impl TopSortReducer {
                     }
                 }
 
-                if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label, None) {
-                    changed = true;
-                    ctx.backup(&edit);
-                    ctx.apply(&edit);
-                    ctx.logs.push_str(&format!(
-                        "  Added {} -> {}\n",
-                        dep_node_label, transitive_dep_label
-                    ));
-                } else {
-                    ctx.logs.push_str(&format!(
-                        "Failed to add {} -> {}\n",
-                        dep_node_label, transitive_dep_label
-                    ));
-                    ctx.restore_backup();
-                    return false;
+                match self.editor.add(&dep_node_label, transitive_dep_label, None) {
+                    Ok(edit) => {
+                        changed = true;
+                        ctx.backup(&edit);
+                        ctx.apply(&edit);
+                        ctx.logs.push_str(&format!(
+                            "  Added {} -> {}\n",
+                            dep_node_label, transitive_dep_label
+                        ));
+                    }
+                    Err(e) => {
+                        ctx.logs.push_str(&format!(
+                            "Failed to add {} -> {}: {}\n",
+                            dep_node_label, transitive_dep_label, e
+                        ));
+                        ctx.restore_backup();
+                        return false;
+                    }
                 }
             }
         }
@@ -200,14 +206,14 @@ impl TopSortReducer {
         }
 
         match ctx.try_build() {
-            Ok(_) => {
+            Ok(stderr) => {
                 ctx.commit_changes();
-                ctx.logs.push_str(&format!("  Build succeeded\n"));
+                ctx.logs.push_str(&format!("  {}\n", stderr));
                 return true;
             }
             Err(e) => {
                 ctx.restore_backup();
-                ctx.logs.push_str(&format!("  Build failed: {}\n", e));
+                ctx.logs.push_str(&format!("  {}\n", e));
                 return false;
             }
         }
@@ -236,7 +242,7 @@ impl TopSortReducer {
             }
 
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
-            if let Ok(edit) = self.editor.remove(
+            match self.editor.remove(
                 &dep_node_label,
                 &label,
                 if ctx.in_degrees[*dep_node] == 0 {
@@ -245,16 +251,19 @@ impl TopSortReducer {
                     None
                 },
             ) {
-                ctx.backup(&edit);
-                ctx.apply(&edit);
-                ctx.logs
-                    .push_str(&format!("    Removed {} -> {}\n", dep_node_label, label));
-            } else {
-                ctx.logs.push_str(&format!(
-                    "    Failed to remove {} -> {}\n",
-                    dep_node_label, label
-                ));
-                continue;
+                Ok(edit) => {
+                    ctx.backup(&edit);
+                    ctx.apply(&edit);
+                    ctx.logs
+                        .push_str(&format!("    Removed {} -> {}\n", dep_node_label, label));
+                }
+                Err(e) => {
+                    ctx.logs.push_str(&format!(
+                        "    Failed to remove {} -> {}: {}\n",
+                        dep_node_label, label, e
+                    ));
+                    continue;
+                }
             }
         }
 
@@ -264,13 +273,13 @@ impl TopSortReducer {
         }
 
         match ctx.try_build() {
-            Ok(_) => {
+            Ok(stderr) => {
                 ctx.commit_changes();
-                ctx.logs.push_str("  Build succeeded\n\n");
+                ctx.logs.push_str(&format!("  {}\n\n", stderr));
                 true
             }
             Err(e) => {
-                ctx.logs.push_str(&format!("  Build failed: {}\n\n", e));
+                ctx.logs.push_str(&format!("  {}\n\n", e));
                 self.try_add_transitive_deps(ctx, candidates, node_id)
             }
         }

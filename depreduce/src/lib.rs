@@ -1,3 +1,3 @@
-mod editors;
-mod graph;
-mod reducers;
+pub mod editors;
+pub mod graph;
+pub mod reducers;
