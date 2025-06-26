@@ -44,49 +44,55 @@ Processing node: //liba:liba.jar
 Processing node: //main:main
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main.jar (because of no in-degree)
-    Failed to remove //main:main.jar -> //main:main
+    Failed to remove //main:main.jar -> //main:main: Label '//main:main.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main-src.jar (because of no in-degree)
-    Failed to remove //main:main-src.jar -> //main:main
+    Failed to remove //main:main-src.jar -> //main:main: Label '//main:main-src.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main_deploy-src.jar (because of no in-degree)
-    Failed to remove //main:main_deploy-src.jar -> //main:main
+    Failed to remove //main:main_deploy-src.jar -> //main:main: Label '//main:main_deploy-src.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main_deploy.jar (because of no in-degree)
-    Failed to remove //main:main_deploy.jar -> //main:main
+    Failed to remove //main:main_deploy.jar -> //main:main: Label '//main:main_deploy.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main_deploy.jar.unstripped (because of no in-degree)
-    Failed to remove //main:main_deploy.jar.unstripped -> //main:main
+    Failed to remove //main:main_deploy.jar.unstripped -> //main:main: Label '//main:main_deploy.jar.unstripped' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
   Trying a new candidate set
-    Failed to remove //main:main -> @bazel_tools//tools/jdk:launcher_flag_alias
+    Failed to remove //main:main -> @bazel_tools//tools/jdk:launcher_flag_alias: Dependency Label '@bazel_tools//tools/jdk:launcher_flag_alias' not found
   No changes made, skipping build
 Processing node: //main:main_lib
   Trying a new candidate set
-    Failed to remove //main:main -> //main:main_lib
+    Failed to remove //main:main -> //main:main_lib: Dependency Label '//main:main_lib' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main_lib -> //main:main_lib.jar (because of no in-degree)
-    Failed to remove //main:main_lib.jar -> //main:main_lib
+    Failed to remove //main:main_lib.jar -> //main:main_lib: Label '//main:main_lib.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //main:main_lib -> //main:main_lib-sources.jar (because of no in-degree)
-    Failed to remove //main:main_lib-sources.jar -> //main:main_lib
+    Failed to remove //main:main_lib-sources.jar -> //main:main_lib: Label '//main:main_lib-sources.jar' not found
   No changes made, skipping build
 Processing node: //main:Main.kt
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
+        Starting local Bazel server (8.3.0) and connecting to it...
         Computing main repo mapping: 
+        WARNING: For repository 'rules_java', the root module requires module version rules_java@8.11.0, but got rules_java@8.12.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
         Loading: 
         Loading: 0 packages loaded
-        Analyzing: 6 targets (1 packages loaded, 0 targets configured)
-        Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+        Analyzing: 6 targets (5 packages loaded, 0 targets configured)
+        Analyzing: 6 targets (5 packages loaded, 0 targets configured)
+        
+        Analyzing: 6 targets (85 packages loaded, 1726 targets configured)
+        
+        Analyzing: 6 targets (94 packages loaded, 4291 targets configured)
         
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: in kt_jvm_library rule //main:main_lib: 
         Traceback (most recent call last):
@@ -98,7 +104,7 @@ Processing node: //main:Main.kt
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: Analysis of target '//main:main_lib' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//main:main_lib' failed; build aborted
-        INFO: Elapsed time: 1.070s, Critical Path: 0.00s
+        INFO: Elapsed time: 5.213s, Critical Path: 0.03s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
 
@@ -107,15 +113,18 @@ Processing node: //main:Main.kt
 Processing node: //libd:libd
   Trying a new candidate set
     Removed //main:main_lib -> //libd:libd
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 6 targets (1 packages loaded, 0 targets configured)
         Analyzing: 6 targets (1 packages loaded, 0 targets configured)
         
-        INFO: Analyzed 6 targets (1 packages loaded, 3 targets configured).
-        [16 / 38] JavaToolchainCompileBootClasspath external/rules_java+/toolchains/platformclasspath.jar; 1s linux-sandbox ... (2 actions, 1 running)
+        INFO: Analyzed 6 targets (33 packages loaded, 620 targets configured).
+        [15 / 38] [Prepa] JavaToolchainCompileBootClasspath external/rules_java+/toolchains/platformclasspath.jar [for tool] ... (2 actions, 0 running)
+        [16 / 38] JavaToolchainCompileBootClasspath external/rules_java+/toolchains/platformclasspath.jar [for tool]; 0s linux-sandbox ... (2 actions, 1 running)
+        [20 / 38] KotlinCompile //libb:libb { kt: 1, java: 0, srcjars: 0 } for k8; 1s worker ... (3 actions running)
+        [21 / 38] KotlinCompile //libb:libb { kt: 1, java: 0, srcjars: 0 } for k8; 5s worker ... (3 actions, 2 running)
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
         main/Main.kt:4:8: error: unresolved reference: libb
         import libb.ClassB
@@ -129,7 +138,7 @@ Processing node: //libd:libd
         main/Main.kt:13:21: error: unresolved reference: ClassC
                     println(ClassC.divide(9, 3))
                             ^
-        Jun 26, 2025 6:52:23 PM worker request 0
+        Jun 26, 2025 11:50:20 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
         main/Main.kt:4:8: error: unresolved reference: libb
         import libb.ClassB
@@ -143,8 +152,8 @@ Processing node: //libd:libd
         main/Main.kt:13:21: error: unresolved reference: ClassC
                     println(ClassC.divide(9, 3))
                             ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 2.073s, Critical Path: 1.93s
-        INFO: 15 processes: 23 action cache hit, 8 internal, 4 linux-sandbox, 3 worker.
+        INFO: Elapsed time: 8.704s, Critical Path: 7.95s
+        INFO: 36 processes: 14 internal, 11 linux-sandbox, 11 worker.
         ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //libd:libd
@@ -152,19 +161,30 @@ Processing node: //libd:libd
   Added //main:main_lib -> //libb:libb
   Added //main:main_lib -> //libc:libc
   Skipping //main:main_lib -> //libd:ClassD.kt (non-target)
-  Build succeeded
+  Build succeeded: 
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+        Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 6 targets (1 packages loaded, 3 targets configured).
+        INFO: Found 6 targets...
+        INFO: Elapsed time: 0.635s, Critical Path: 0.47s
+        INFO: 8 processes: 1 action cache hit, 5 internal, 1 linux-sandbox, 2 worker.
+        INFO: Build completed successfully, 8 total actions
   Trying a new candidate set
     Only consider deps for //libd:libd -> //libd:libd.jar (because of no in-degree)
-    Failed to remove //libd:libd.jar -> //libd:libd
+    Failed to remove //libd:libd.jar -> //libd:libd: Label '//libd:libd.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //libd:libd -> //libd:libd-sources.jar (because of no in-degree)
-    Failed to remove //libd:libd-sources.jar -> //libd:libd
+    Failed to remove //libd:libd-sources.jar -> //libd:libd: Label '//libd:libd-sources.jar' not found
   No changes made, skipping build
 Processing node: //libd:ClassD.kt
   Trying a new candidate set
     Removed //libd:libd -> //libd:ClassD.kt
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -181,7 +201,7 @@ Processing node: //libd:ClassD.kt
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: Analysis of target '//libd:libd' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//libd:libd' failed; build aborted
-        INFO: Elapsed time: 0.111s, Critical Path: 0.00s
+        INFO: Elapsed time: 0.129s, Critical Path: 0.00s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
 
@@ -190,7 +210,7 @@ Processing node: //libd:ClassD.kt
 Processing node: //libc:libc
   Trying a new candidate set
     Removed //libd:libd -> //libc:libc
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -205,7 +225,7 @@ Processing node: //libc:libc
         libd/ClassD.kt:10:27: error: unresolved reference: divide
                     return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
                                   ^
-        Jun 26, 2025 6:52:25 PM worker request 0
+        Jun 26, 2025 11:50:22 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
         libd/ClassD.kt:5:8: error: unresolved reference: libc
         import libc.ClassC
@@ -213,7 +233,7 @@ Processing node: //libc:libc
         libd/ClassD.kt:10:27: error: unresolved reference: divide
                     return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
                                   ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.346s, Critical Path: 0.22s
+        INFO: Elapsed time: 0.386s, Critical Path: 0.18s
         INFO: 2 processes: 2 internal.
         ERROR: Build did NOT complete successfully
 
@@ -222,16 +242,16 @@ Processing node: //libc:libc
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //libc:libc -> //libc:libc.jar (because of no in-degree)
-    Failed to remove //libc:libc.jar -> //libc:libc
+    Failed to remove //libc:libc.jar -> //libc:libc: Label '//libc:libc.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //libc:libc -> //libc:libc-sources.jar (because of no in-degree)
-    Failed to remove //libc:libc-sources.jar -> //libc:libc
+    Failed to remove //libc:libc-sources.jar -> //libc:libc: Label '//libc:libc-sources.jar' not found
   No changes made, skipping build
 Processing node: //libc:ClassC.kt
   Trying a new candidate set
     Removed //libc:libc -> //libc:ClassC.kt
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -239,22 +259,22 @@ Processing node: //libc:ClassC.kt
         Analyzing: 6 targets (2 packages loaded, 0 targets configured)
         
         INFO: Analyzed 6 targets (2 packages loaded, 5 targets configured).
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //libd:libd) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/libd/libd-kt.jar-0.params'
-        libd/ClassD.kt:5:8: error: unresolved reference: libc
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
+        main/Main.kt:5:8: error: unresolved reference: libc
         import libc.ClassC
                ^
-        libd/ClassD.kt:10:27: error: unresolved reference: divide
-                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
-                                  ^
-        Jun 26, 2025 6:52:26 PM worker request 0
+        main/Main.kt:13:21: error: unresolved reference: ClassC
+                    println(ClassC.divide(9, 3))
+                            ^
+        Jun 26, 2025 11:50:23 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
-        libd/ClassD.kt:5:8: error: unresolved reference: libc
+        main/Main.kt:5:8: error: unresolved reference: libc
         import libc.ClassC
                ^
-        libd/ClassD.kt:10:27: error: unresolved reference: divide
-                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
-                                  ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.392s, Critical Path: 0.26s
+        main/Main.kt:13:21: error: unresolved reference: ClassC
+                    println(ClassC.divide(9, 3))
+                            ^Use --verbose_failures to see the command lines of failed build steps.
+        INFO: Elapsed time: 0.433s, Critical Path: 0.26s
         INFO: 9 processes: 1 action cache hit, 9 internal.
         ERROR: Build did NOT complete successfully
 
@@ -263,7 +283,80 @@ Processing node: //libc:ClassC.kt
 Processing node: //libb:libb
   Trying a new candidate set
     Removed //libd:libd -> //libb:libb
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 6 targets (2 packages loaded, 6 targets configured).
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //libd:libd) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/libd/libd-kt.jar-0.params'
+        libd/ClassD.kt:4:8: error: unresolved reference: libb
+        import libb.ClassB
+               ^
+        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
+                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
+                                                            ^
+        Jun 26, 2025 11:50:24 PM worker request 0
+        SEVERE: Compilation failure: compile phase failed:
+        libd/ClassD.kt:4:8: error: unresolved reference: libb
+        import libb.ClassB
+               ^
+        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
+                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
+                                                            ^
+        INFO: Elapsed time: 0.507s, Critical Path: 0.38s
+        INFO: 9 processes: 6 action cache hit, 6 internal, 1 linux-sandbox, 2 worker.
+        ERROR: Build did NOT complete successfully
+
+  Trying to add transitive dependencies for node //libb:libb
+  Skipping //libd:libd -> //libb:ClassB.kt (non-target)
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //libb:libb -> //libb:libb.jar (because of no in-degree)
+    Failed to remove //libb:libb.jar -> //libb:libb: Label '//libb:libb.jar' not found
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //libb:libb -> //libb:libb-sources.jar (because of no in-degree)
+    Failed to remove //libb:libb-sources.jar -> //libb:libb: Label '//libb:libb-sources.jar' not found
+  No changes made, skipping build
+Processing node: //libb:ClassB.kt
+  Trying a new candidate set
+    Removed //libb:libb -> //libb:ClassB.kt
+  Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 6 targets (2 packages loaded, 5 targets configured).
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //libd:libd) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/libd/libd-kt.jar-0.params'
+        libd/ClassD.kt:4:8: error: unresolved reference: libb
+        import libb.ClassB
+               ^
+        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
+                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
+                                                            ^
+        Jun 26, 2025 11:50:25 PM worker request 0
+        SEVERE: Compilation failure: compile phase failed:
+        libd/ClassD.kt:4:8: error: unresolved reference: libb
+        import libb.ClassB
+               ^
+        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
+                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
+                                                            ^Use --verbose_failures to see the command lines of failed build steps.
+        INFO: Elapsed time: 0.470s, Critical Path: 0.32s
+        INFO: 9 processes: 1 action cache hit, 9 internal.
+        ERROR: Build did NOT complete successfully
+
+  Trying to add transitive dependencies for node //libb:ClassB.kt
+  No changes made, skipping build
+Processing node: //liba:liba
+  Trying a new candidate set
+    Removed //libd:libd -> //liba:liba
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -273,86 +366,13 @@ Processing node: //libb:libb
         INFO: Analyzed 6 targets (2 packages loaded, 6 targets configured).
         [13 / 16] KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8; 1s worker
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //libd:libd) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/libd/libd-kt.jar-0.params'
-        libd/ClassD.kt:4:8: error: unresolved reference: libb
-        import libb.ClassB
-               ^
-        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
-                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
-                                                            ^
-        Jun 26, 2025 6:52:31 PM worker request 0
-        SEVERE: Compilation failure: compile phase failed:
-        libd/ClassD.kt:4:8: error: unresolved reference: libb
-        import libb.ClassB
-               ^
-        libd/ClassD.kt:10:53: error: unresolved reference: ClassB
-                    return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
-                                                            ^
-        INFO: Elapsed time: 4.833s, Critical Path: 4.71s
-        INFO: 9 processes: 6 action cache hit, 6 internal, 1 linux-sandbox, 2 worker.
-        ERROR: Build did NOT complete successfully
-
-  Trying to add transitive dependencies for node //libb:libb
-  Skipping //libd:libd -> //libb:ClassB.kt (non-target)
-  No changes made, skipping build
-  Trying a new candidate set
-    Only consider deps for //libb:libb -> //libb:libb.jar (because of no in-degree)
-    Failed to remove //libb:libb.jar -> //libb:libb
-  No changes made, skipping build
-  Trying a new candidate set
-    Only consider deps for //libb:libb -> //libb:libb-sources.jar (because of no in-degree)
-    Failed to remove //libb:libb-sources.jar -> //libb:libb
-  No changes made, skipping build
-Processing node: //libb:ClassB.kt
-  Trying a new candidate set
-    Removed //libb:libb -> //libb:ClassB.kt
-  Build failed: Build failed with exit code 1:
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
-        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
-        
-        INFO: Analyzed 6 targets (2 packages loaded, 5 targets configured).
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
-        main/Main.kt:4:8: error: unresolved reference: libb
-        import libb.ClassB
-               ^
-        main/Main.kt:12:21: error: unresolved reference: ClassB
-                    println(ClassB.multiply(2, 3))
-                            ^
-        Jun 26, 2025 6:52:32 PM worker request 0
-        SEVERE: Compilation failure: compile phase failed:
-        main/Main.kt:4:8: error: unresolved reference: libb
-        import libb.ClassB
-               ^
-        main/Main.kt:12:21: error: unresolved reference: ClassB
-                    println(ClassB.multiply(2, 3))
-                            ^
-        INFO: Elapsed time: 0.419s, Critical Path: 0.25s
-        INFO: 9 processes: 1 action cache hit, 9 internal.
-        ERROR: Build did NOT complete successfully
-
-  Trying to add transitive dependencies for node //libb:ClassB.kt
-  No changes made, skipping build
-Processing node: //liba:liba
-  Trying a new candidate set
-    Removed //libd:libd -> //liba:liba
-  Build failed: Build failed with exit code 1:
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
-        Analyzing: 6 targets (2 packages loaded, 0 targets configured)
-        
-        INFO: Analyzed 6 targets (2 packages loaded, 6 targets configured).
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD:3:15: KotlinCompile //libd:libd { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //libd:libd) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/libd/libd-kt.jar-0.params'
         libd/ClassD.kt:3:8: error: unresolved reference: liba
         import liba.ClassA
                ^
         libd/ClassD.kt:10:34: error: unresolved reference: ClassA
                     return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
                                          ^
-        Jun 26, 2025 6:52:32 PM worker request 0
+        Jun 26, 2025 11:50:30 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
         libd/ClassD.kt:3:8: error: unresolved reference: liba
         import liba.ClassA
@@ -360,8 +380,8 @@ Processing node: //liba:liba
         libd/ClassD.kt:10:34: error: unresolved reference: ClassA
                     return ClassC.divide(ClassA.add(a, b) * ClassB.multiply(a, c), d)
                                          ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.260s, Critical Path: 0.13s
-        INFO: 9 processes: 3 action cache hit, 7 internal, 1 linux-sandbox, 1 worker.
+        INFO: Elapsed time: 5.125s, Critical Path: 4.95s
+        INFO: 9 processes: 6 action cache hit, 6 internal, 1 linux-sandbox, 2 worker.
         ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //liba:liba
@@ -369,7 +389,7 @@ Processing node: //liba:liba
   No changes made, skipping build
   Trying a new candidate set
     Removed //main:main_lib -> //liba:liba
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -377,7 +397,6 @@ Processing node: //liba:liba
         Analyzing: 6 targets (2 packages loaded, 0 targets configured)
         
         INFO: Analyzed 6 targets (2 packages loaded, 5 targets configured).
-        [9 / 12] KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8; 1s worker
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
         main/Main.kt:3:8: error: unresolved reference: liba
         import liba.ClassA
@@ -385,16 +404,16 @@ Processing node: //liba:liba
         main/Main.kt:11:21: error: unresolved reference: ClassA
                     println(ClassA.add(2, 3))
                             ^
-        Jun 26, 2025 6:52:37 PM worker request 0
+        Jun 26, 2025 11:50:31 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
         main/Main.kt:3:8: error: unresolved reference: liba
         import liba.ClassA
                ^
         main/Main.kt:11:21: error: unresolved reference: ClassA
                     println(ClassA.add(2, 3))
-                            ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 4.563s, Critical Path: 4.43s
-        INFO: 7 processes: 3 action cache hit, 6 internal, 1 worker.
+                            ^
+        INFO: Elapsed time: 0.443s, Critical Path: 0.30s
+        INFO: 7 processes: 1 action cache hit, 7 internal.
         ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //liba:liba
@@ -402,16 +421,16 @@ Processing node: //liba:liba
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //liba:liba -> //liba:liba.jar (because of no in-degree)
-    Failed to remove //liba:liba.jar -> //liba:liba
+    Failed to remove //liba:liba.jar -> //liba:liba: Label '//liba:liba.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //liba:liba -> //liba:liba-sources.jar (because of no in-degree)
-    Failed to remove //liba:liba-sources.jar -> //liba:liba
+    Failed to remove //liba:liba-sources.jar -> //liba:liba: Label '//liba:liba-sources.jar' not found
   No changes made, skipping build
 Processing node: //liba:ClassA.kt
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -426,7 +445,7 @@ Processing node: //liba:ClassA.kt
         main/Main.kt:11:21: error: unresolved reference: ClassA
                     println(ClassA.add(2, 3))
                             ^
-        Jun 26, 2025 6:52:38 PM worker request 0
+        Jun 26, 2025 11:50:32 PM worker request 0
         SEVERE: Compilation failure: compile phase failed:
         main/Main.kt:3:8: error: unresolved reference: liba
         import liba.ClassA
@@ -434,7 +453,7 @@ Processing node: //liba:ClassA.kt
         main/Main.kt:11:21: error: unresolved reference: ClassA
                     println(ClassA.add(2, 3))
                             ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.352s, Critical Path: 0.23s
+        INFO: Elapsed time: 0.328s, Critical Path: 0.20s
         INFO: 9 processes: 1 action cache hit, 9 internal.
         ERROR: Build did NOT complete successfully
 

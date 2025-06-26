@@ -6,18 +6,13 @@ pub struct FileEdit {
 }
 
 pub trait DepEditor {
-    fn add(
-        &self,
-        label: &str,
-        dep_label: &str,
-        override_keywords: Option<&HashSet<String>>,
-    ) -> Result<FileEdit, String>;
+    fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
 
     fn remove(
         &self,
         label: &str,
         dep_label: &str,
-        override_keywords: Option<&HashSet<String>>,
+        only_remove_deps: bool,
     ) -> Result<FileEdit, String>;
 }
 

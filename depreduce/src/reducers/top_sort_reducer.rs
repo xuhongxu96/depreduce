@@ -177,7 +177,7 @@ impl TopSortReducer {
                     }
                 }
 
-                match self.editor.add(&dep_node_label, transitive_dep_label, None) {
+                match self.editor.add(&dep_node_label, transitive_dep_label) {
                     Ok(edit) => {
                         changed = true;
                         ctx.backup(&edit);
@@ -242,15 +242,10 @@ impl TopSortReducer {
             }
 
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
-            match self.editor.remove(
-                &dep_node_label,
-                &label,
-                if ctx.in_degrees[*dep_node] == 0 {
-                    Some(&deps_keyword)
-                } else {
-                    None
-                },
-            ) {
+            match self
+                .editor
+                .remove(&dep_node_label, &label, ctx.in_degrees[*dep_node] == 0)
+            {
                 Ok(edit) => {
                     ctx.backup(&edit);
                     ctx.apply(&edit);

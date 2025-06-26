@@ -42,73 +42,88 @@ Processing node: @bazel_tools//tools/cpp:toolchain_type
 Processing node: //:Main
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main.jar (because of no in-degree)
-    Failed to remove //:Main.jar -> //:Main
+    Failed to remove //:Main.jar -> //:Main: Label '//:Main.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main-src.jar (because of no in-degree)
-    Failed to remove //:Main-src.jar -> //:Main
+    Failed to remove //:Main-src.jar -> //:Main: Label '//:Main-src.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main_deploy-src.jar (because of no in-degree)
-    Failed to remove //:Main_deploy-src.jar -> //:Main
+    Failed to remove //:Main_deploy-src.jar -> //:Main: Label '//:Main_deploy-src.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main_deploy.jar (because of no in-degree)
-    Failed to remove //:Main_deploy.jar -> //:Main
+    Failed to remove //:Main_deploy.jar -> //:Main: Label '//:Main_deploy.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main_deploy.jar.unstripped (because of no in-degree)
-    Failed to remove //:Main_deploy.jar.unstripped -> //:Main
+    Failed to remove //:Main_deploy.jar.unstripped -> //:Main: Label '//:Main_deploy.jar.unstripped' not found
   No changes made, skipping build
 Processing node: @rules_java//java/bazel/rules:java_stub_template.txt
   Trying a new candidate set
-    Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt
+    Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt: Dependency Label '@rules_java//java/bazel/rules:java_stub_template.txt' not found
   No changes made, skipping build
 Processing node: @@platforms//os:windows
   Trying a new candidate set
-    Failed to remove //:Main -> @@platforms//os:windows
+    Failed to remove //:Main -> @@platforms//os:windows: Dependency Label '@@platforms//os:windows' not found
   No changes made, skipping build
 Processing node: @@platforms//os:os
   Trying a new candidate set
-    Failed to remove @@platforms//os:windows -> @@platforms//os:os
+    Failed to remove @@platforms//os:windows -> @@platforms//os:os: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/platforms/os/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
   Trying a new candidate set
-    Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias: Dependency Label '@bazel_tools//tools/jdk:launcher_flag_alias' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info
   Trying a new candidate set
-    Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info
+    Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info: Dependency Label '@bazel_tools//tools/build_defs/build_info:java_build_info' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
   Trying a new candidate set
-    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
   Trying a new candidate set
-    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
   Trying a new candidate set
-    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
 Processing node: //src/com/example/libb:libb
   Trying a new candidate set
     Removed //:Main -> //src/com/example/libb:libb
-  Build succeeded
+  Build succeeded: 
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        
+        Analyzing: 3 targets (4 packages loaded, 2346 targets configured)
+        [1 / 1] no actions running
+        INFO: Analyzed 3 targets (4 packages loaded, 2346 targets configured).
+        [7 / 11] [Prepa] Building src/com/example/liba/libliba.jar (1 source file)
+        [8 / 11] Building src/com/example/liba/libliba.jar (1 source file); 1s multiplex-worker ... (3 actions running)
+        INFO: Found 3 targets...
+        INFO: Elapsed time: 4.237s, Critical Path: 3.04s
+        INFO: 11 processes: 1 action cache hit, 5 internal, 3 linux-sandbox, 3 worker.
+        INFO: Build completed successfully, 11 total actions
 
   Trying a new candidate set
     Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb.jar (because of no in-degree)
-    Failed to remove //src/com/example/libb:liblibb.jar -> //src/com/example/libb:libb
+    Failed to remove //src/com/example/libb:liblibb.jar -> //src/com/example/libb:libb: Label '//src/com/example/libb:liblibb.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb-src.jar (because of no in-degree)
-    Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb
+    Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb: Label '//src/com/example/libb:liblibb-src.jar' not found
   No changes made, skipping build
 Processing node: //src/com/example/libb:ClassB.java
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -125,7 +140,7 @@ Processing node: //src/com/example/libb:ClassB.java
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13: Analysis of target '//src/com/example/libb:libb' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//src/com/example/libb:libb' failed; build aborted
-        INFO: Elapsed time: 0.124s, Critical Path: 0.00s
+        INFO: Elapsed time: 0.120s, Critical Path: 0.00s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
 
@@ -134,7 +149,7 @@ Processing node: //src/com/example/libb:ClassB.java
 Processing node: //src/com/example/liba:liba
   Trying a new candidate set
     Removed //:Main -> //src/com/example/liba:liba
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -151,8 +166,7 @@ Processing node: //src/com/example/liba:liba
                                    ^
           symbol:   variable ClassA
           location: class Main
-        Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.246s, Critical Path: 0.10s
+        INFO: Elapsed time: 0.272s, Critical Path: 0.14s
         INFO: 6 processes: 1 action cache hit, 6 internal.
         ERROR: Build did NOT complete successfully
 
@@ -164,54 +178,65 @@ Processing node: //src/com/example/liba:liba
   No changes made, skipping build
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
-  Build succeeded
+  Build succeeded: 
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
+        INFO: Found 3 targets...
+        INFO: Elapsed time: 0.232s, Critical Path: 0.09s
+        INFO: 7 processes: 1 action cache hit, 5 internal, 2 worker.
+        INFO: Build completed successfully, 7 total actions
 
   Trying a new candidate set
     Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba.jar (because of no in-degree)
-    Failed to remove //src/com/example/liba:libliba.jar -> //src/com/example/liba:liba
+    Failed to remove //src/com/example/liba:libliba.jar -> //src/com/example/liba:liba: Label '//src/com/example/liba:libliba.jar' not found
   No changes made, skipping build
   Trying a new candidate set
     Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba-src.jar (because of no in-degree)
-    Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba
+    Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba: Label '//src/com/example/liba:libliba-src.jar' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:toolchain_type
   Trying a new candidate set
-    Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:toolchain_type
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
   Trying a new candidate set
-    Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:current_java_toolchain
   Trying a new candidate set
-    Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
   Trying a new candidate set
-    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
 Processing node: @rules_java//toolchains:current_java_toolchain
   Trying a new candidate set
-    Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain
+    Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
 Processing node: //src/com/example/liba:ClassA.java
   Trying a new candidate set
     Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
@@ -228,7 +253,8 @@ Processing node: //src/com/example/liba:ClassA.java
                                    ^
           symbol:   variable ClassA
           location: class Main
-        INFO: Elapsed time: 0.246s, Critical Path: 0.09s
+        Use --verbose_failures to see the command lines of failed build steps.
+        INFO: Elapsed time: 0.287s, Critical Path: 0.11s
         INFO: 7 processes: 6 internal, 1 worker.
         ERROR: Build did NOT complete successfully
 
@@ -237,12 +263,12 @@ Processing node: //src/com/example/liba:ClassA.java
 Processing node: //:src/com/example/Main.java
   Trying a new candidate set
     Removed //:Main -> //:src/com/example/Main.java
-  Build failed: Build failed with exit code 1:
+  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (2 packages loaded, 1 target configured)
         
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: in java_binary rule //:Main: 
         Traceback (most recent call last):
@@ -256,7 +282,7 @@ Processing node: //:src/com/example/Main.java
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Analysis of target '//:Main' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//:Main' failed; build aborted
-        INFO: Elapsed time: 0.128s, Critical Path: 0.00s
+        INFO: Elapsed time: 0.109s, Critical Path: 0.00s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
 
