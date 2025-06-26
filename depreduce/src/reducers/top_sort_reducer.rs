@@ -3,13 +3,16 @@ use std::process::Command;
 
 use crate::editors::{DepEditor, FileEdit};
 use crate::graph::{DependencyGraph, NodeId};
-use crate::reducers::candidate_generators::ReductionCandidateGenerator;
+use crate::reducers::candidate_generators::{
+    ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
+};
 
 struct TopSortReducer {
     editor: Box<dyn DepEditor>,
 }
 
 struct ReduceSettings<'a> {
+    reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
     graph: &'a DependencyGraph,
     build_command: String,
     cwd: String,
@@ -69,14 +72,19 @@ impl<'a> ReduceContext<'a> {
         self.history.clear();
     }
 
-    fn generate_reduction_candidates(&mut self, node_id: NodeId) -> ReductionCandidateGenerator {
+    fn generate_reduction_candidates(
+        &mut self,
+        node_id: NodeId,
+    ) -> Box<dyn ReductionCandidateGenerator> {
         let mut dependents_vec = Vec::new();
 
         if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
             dependents_vec = dependents.iter().map(|(a, b)| (*a, *b)).collect();
         }
 
-        ReductionCandidateGenerator::new(dependents_vec)
+        self.settings
+            .reduction_candidate_generator_factory
+            .create(dependents_vec)
     }
 }
 
@@ -152,6 +160,7 @@ mod tests {
     use crate::{
         editors::BazelDepEditor,
         graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
+        reducers::candidate_generators::NaiveReductionCandidateGeneratorFactory,
     };
 
     use super::*;
@@ -168,6 +177,7 @@ mod tests {
 
         let reducer = TopSortReducer::new(Box::new(editor));
         let settings = ReduceSettings {
+            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
             build_command: get_test_data_path!("build.sh")
                 .to_string_lossy()
@@ -193,6 +203,7 @@ mod tests {
 
         let reducer = TopSortReducer::new(Box::new(editor));
         let settings = ReduceSettings {
+            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
             build_command: get_test_data_path!("build.sh")
                 .to_string_lossy()
@@ -218,6 +229,7 @@ mod tests {
 
         let reducer = TopSortReducer::new(Box::new(editor));
         let settings = ReduceSettings {
+            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
             build_command: get_test_data_path!("build.sh")
                 .to_string_lossy()
