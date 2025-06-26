@@ -20,6 +20,7 @@ struct ReduceSettings<'a> {
 
 struct ReduceContext<'a> {
     history: HashMap<String, String>,
+    in_degrees: Vec<usize>,
     logs: String,
 
     settings: &'a ReduceSettings<'a>,
@@ -28,8 +29,9 @@ struct ReduceContext<'a> {
 impl<'a> ReduceContext<'a> {
     pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
         Self {
-            logs: String::new(),
             history: HashMap::new(),
+            in_degrees: Vec::new(),
+            logs: String::new(),
             settings,
         }
     }
@@ -134,7 +136,7 @@ impl TopSortReducer {
         for (dep_node, _edge_id) in candidates {
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
             for (_, transitive_dep_label) in &transitive_deps {
-                if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label) {
+                if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label, None) {
                     ctx.backup(&edit);
                     ctx.apply(&edit);
                     ctx.logs.push_str(&format!(
@@ -172,32 +174,58 @@ impl TopSortReducer {
         candidates: &Vec<(NodeId, EdgeId)>,
         node_id: NodeId,
     ) -> bool {
+        let deps_keyword = HashSet::from(["deps".to_string()]);
+
+        ctx.logs.push_str("  Trying a new candidate set\n");
+
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         for (dep_node, _edge_id) in candidates {
+            if ctx.in_degrees[*dep_node] == 0 {
+                ctx.logs.push_str(
+                    format!(
+                        "    Only consider deps for {} -> {} (because of no in-degree)\n",
+                        label, ctx.settings.graph.nodes[*dep_node].label
+                    )
+                    .as_str(),
+                );
+            }
+
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
-            if let Ok(edit) = self.editor.remove(&dep_node_label, &label) {
+            if let Ok(edit) = self.editor.remove(
+                &dep_node_label,
+                &label,
+                if ctx.in_degrees[*dep_node] == 0 {
+                    Some(&deps_keyword)
+                } else {
+                    None
+                },
+            ) {
                 ctx.backup(&edit);
                 ctx.apply(&edit);
                 ctx.logs
-                    .push_str(&format!("  Removed {} -> {}\n", dep_node_label, label));
+                    .push_str(&format!("    Removed {} -> {}\n", dep_node_label, label));
             } else {
                 ctx.logs.push_str(&format!(
-                    "  Failed to remove {} -> {}\n",
+                    "    Failed to remove {} -> {}\n",
                     dep_node_label, label
                 ));
-                ctx.restore_backup();
-                return false;
+                continue;
             }
+        }
+
+        if ctx.history.is_empty() {
+            ctx.logs.push_str("  No changes made, skipping build\n");
+            return false;
         }
 
         match ctx.try_build() {
             Ok(_) => {
                 ctx.commit_changes();
-                ctx.logs.push_str("  Build succeeded\n");
+                ctx.logs.push_str("  Build succeeded\n\n");
                 true
             }
             Err(e) => {
-                ctx.logs.push_str(&format!("  Build failed: {}\n", e));
+                ctx.logs.push_str(&format!("  Build failed: {}\n\n", e));
                 self.try_add_transitive_deps(ctx, candidates, node_id)
             }
         }
@@ -215,6 +243,11 @@ impl TopSortReducer {
                 .push_str(&format!("  {}\n", graph.nodes.get(*node_id).unwrap().label));
         }
 
+        for i in 0..graph.nodes.len() {
+            ctx.in_degrees
+                .push(graph.node2in_edges.get(&i).map_or(0, |edges| edges.len()));
+        }
+
         for node_id in sorted_nodes {
             ctx.logs.push_str(&format!(
                 "Processing node: {}\n",
@@ -226,6 +259,9 @@ impl TopSortReducer {
             while let Some(candidates) = generator.next() {
                 let res = self.try_remove_dep(&mut ctx, &candidates, node_id);
                 generator.report_result(res);
+                if res {
+                    ctx.in_degrees[node_id] -= candidates.len();
+                }
             }
         }
 

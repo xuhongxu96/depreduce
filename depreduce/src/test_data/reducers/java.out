@@ -40,71 +40,146 @@ Processing node: //:Main.jar
 Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type
 Processing node: @bazel_tools//tools/cpp:toolchain_type
 Processing node: //:Main
-  Failed to remove //:Main.jar -> //:Main
-  Failed to remove //:Main-src.jar -> //:Main
-  Failed to remove //:Main_deploy-src.jar -> //:Main
-  Failed to remove //:Main_deploy.jar -> //:Main
-  Failed to remove //:Main_deploy.jar.unstripped -> //:Main
+  Trying a new candidate set
+    Only consider deps for //:Main -> //:Main.jar (because of no in-degree)
+    Failed to remove //:Main.jar -> //:Main
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //:Main -> //:Main-src.jar (because of no in-degree)
+    Failed to remove //:Main-src.jar -> //:Main
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //:Main -> //:Main_deploy-src.jar (because of no in-degree)
+    Failed to remove //:Main_deploy-src.jar -> //:Main
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //:Main -> //:Main_deploy.jar (because of no in-degree)
+    Failed to remove //:Main_deploy.jar -> //:Main
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //:Main -> //:Main_deploy.jar.unstripped (because of no in-degree)
+    Failed to remove //:Main_deploy.jar.unstripped -> //:Main
+  No changes made, skipping build
 Processing node: @rules_java//java/bazel/rules:java_stub_template.txt
-  Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt
+  Trying a new candidate set
+    Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt
+  No changes made, skipping build
 Processing node: @@platforms//os:windows
-  Failed to remove //:Main -> @@platforms//os:windows
+  Trying a new candidate set
+    Failed to remove //:Main -> @@platforms//os:windows
+  No changes made, skipping build
 Processing node: @@platforms//os:os
-  Failed to remove @@platforms//os:windows -> @@platforms//os:os
+  Trying a new candidate set
+    Failed to remove @@platforms//os:windows -> @@platforms//os:os
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
-  Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias
+  Trying a new candidate set
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info
-  Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info
+  Trying a new candidate set
+    Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
-  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
-  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
-  Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+  No changes made, skipping build
 Processing node: //src/com/example/libb:libb
-  Removed //:Main -> //src/com/example/libb:libb
+  Trying a new candidate set
+    Removed //:Main -> //src/com/example/libb:libb
   Build succeeded
-  Failed to remove //src/com/example/libb:liblibb.jar -> //src/com/example/libb:libb
-  Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb
+
+  Trying a new candidate set
+    Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb.jar (because of no in-degree)
+    Failed to remove //src/com/example/libb:liblibb.jar -> //src/com/example/libb:libb
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb-src.jar (because of no in-degree)
+    Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb
+  No changes made, skipping build
 Processing node: //src/com/example/libb:ClassB.java
-  Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
+  Trying a new candidate set
+    Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //src/com/example/libb:ClassB.java
   Build failed: Build failed
 Processing node: //src/com/example/liba:liba
-  Removed //:Main -> //src/com/example/liba:liba
+  Trying a new candidate set
+    Removed //:Main -> //src/com/example/liba:liba
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //src/com/example/liba:liba
   Added //:Main -> //src/com/example/liba:ClassA.java
   Added //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
   Added //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
   Added //:Main -> @bazel_tools//tools/jdk:toolchain_type
   Build failed: Build failed
-  Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
+  Trying a new candidate set
+    Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
   Build succeeded
-  Failed to remove //src/com/example/liba:libliba.jar -> //src/com/example/liba:liba
-  Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba
+
+  Trying a new candidate set
+    Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba.jar (because of no in-degree)
+    Failed to remove //src/com/example/liba:libliba.jar -> //src/com/example/liba:liba
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba-src.jar (because of no in-degree)
+    Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:toolchain_type
-  Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type
-  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:toolchain_type
-  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type
+  Trying a new candidate set
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:toolchain_type
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
-  Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
-  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:java_plugins_flag_alias
-  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  Trying a new candidate set
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/jdk:current_java_toolchain
-  Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
-  Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain
-  Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain
+  Trying a new candidate set
+    Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain
+  No changes made, skipping build
 Processing node: @rules_java//toolchains:current_java_toolchain
-  Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain
+  No changes made, skipping build
 Processing node: //src/com/example/liba:ClassA.java
-  Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
+  Trying a new candidate set
+    Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //src/com/example/liba:ClassA.java
   Build failed: Build failed
 Processing node: //:src/com/example/Main.java
-  Removed //:Main -> //:src/com/example/Main.java
+  Trying a new candidate set
+    Removed //:Main -> //:src/com/example/Main.java
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //:src/com/example/Main.java
   Build failed: Build failed

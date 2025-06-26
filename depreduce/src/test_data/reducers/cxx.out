@@ -23,64 +23,120 @@ Processing node: //main:main.dwp
 Processing node: //main:main.stripped
 Processing node: @bazel_tools//tools/cpp:toolchain_type
 Processing node: //main:main
-  Failed to remove //main:main.stripped -> //main:main
-  Failed to remove //main:main.dwp -> //main:main
+  Trying a new candidate set
+    Only consider deps for //main:main -> //main:main.stripped (because of no in-degree)
+    Failed to remove //main:main.stripped -> //main:main
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for //main:main -> //main:main.dwp (because of no in-degree)
+    Failed to remove //main:main.dwp -> //main:main
+  No changes made, skipping build
 Processing node: @rules_cc//:link_extra_lib
-  Failed to remove //main:main -> @rules_cc//:link_extra_lib
+  Trying a new candidate set
+    Failed to remove //main:main -> @rules_cc//:link_extra_lib
+  No changes made, skipping build
 Processing node: @rules_cc//:link_extra_libs
-  Failed to remove @rules_cc//:link_extra_lib -> @rules_cc//:link_extra_libs
+  Trying a new candidate set
+    Failed to remove @rules_cc//:link_extra_lib -> @rules_cc//:link_extra_libs
+  No changes made, skipping build
 Processing node: @rules_cc//:empty_lib
-  Failed to remove @rules_cc//:link_extra_libs -> @rules_cc//:empty_lib
+  Trying a new candidate set
+    Failed to remove @rules_cc//:link_extra_libs -> @rules_cc//:empty_lib
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/cpp:malloc
-  Failed to remove //main:main -> @bazel_tools//tools/cpp:malloc
+  Trying a new candidate set
+    Failed to remove //main:main -> @bazel_tools//tools/cpp:malloc
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/cpp:link_extra_lib
-  Failed to remove //main:main -> @bazel_tools//tools/cpp:link_extra_lib
+  Trying a new candidate set
+    Failed to remove //main:main -> @bazel_tools//tools/cpp:link_extra_lib
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/cpp:link_extra_libs
-  Failed to remove @bazel_tools//tools/cpp:link_extra_lib -> @bazel_tools//tools/cpp:link_extra_libs
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:link_extra_lib -> @bazel_tools//tools/cpp:link_extra_libs
+  No changes made, skipping build
 Processing node: @bazel_tools//tools/cpp:empty_lib
-  Failed to remove @bazel_tools//tools/cpp:link_extra_libs -> @bazel_tools//tools/cpp:empty_lib
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:link_extra_libs -> @bazel_tools//tools/cpp:empty_lib
+  No changes made, skipping build
 Processing node: //main:main.cpp
-  Removed //main:main -> //main:main.cpp
+  Trying a new candidate set
+    Removed //main:main -> //main:main.cpp
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //main:main.cpp
   Build failed: Build failed
 Processing node: //libb:libb
-  Removed //main:main -> //libb:libb
+  Trying a new candidate set
+    Removed //main:main -> //libb:libb
   Build succeeded
+
 Processing node: //libb:b.h
-  Removed //libb:libb -> //libb:b.h
-  Build succeeded
+  Trying a new candidate set
+    Only consider deps for //libb:b.h -> //libb:libb (because of no in-degree)
+    Failed to remove //libb:libb -> //libb:b.h
+  No changes made, skipping build
 Processing node: //libb:b.cpp
-  Removed //libb:libb -> //libb:b.cpp
-  Build succeeded
+  Trying a new candidate set
+    Only consider deps for //libb:b.cpp -> //libb:libb (because of no in-degree)
+    Failed to remove //libb:libb -> //libb:b.cpp
+  No changes made, skipping build
 Processing node: //liba:liba
-  Removed //libb:libb -> //liba:liba
+  Trying a new candidate set
+    Only consider deps for //liba:liba -> //libb:libb (because of no in-degree)
+    Removed //libb:libb -> //liba:liba
   Build succeeded
-  Removed //main:main -> //liba:liba
+
+  Trying a new candidate set
+    Removed //main:main -> //liba:liba
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //liba:liba
   Added //main:main -> //liba:a.cpp
   Added //main:main -> //liba:a.h
   Added //main:main -> @bazel_tools//tools/cpp:current_cc_toolchain
   Build failed: Build failed
 Processing node: @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove //liba:liba -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove //libb:libb -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove //main:main -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove @bazel_tools//tools/cpp:empty_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove @bazel_tools//tools/cpp:link_extra_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove @bazel_tools//tools/cpp:malloc -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove @rules_cc//:empty_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
-  Failed to remove @rules_cc//:link_extra_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
+  Trying a new candidate set
+    Failed to remove //liba:liba -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Only consider deps for @bazel_tools//tools/cpp:current_cc_toolchain -> //libb:libb (because of no in-degree)
+    Failed to remove //libb:libb -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove //main:main -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:empty_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:link_extra_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:malloc -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove @rules_cc//:empty_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
+  Trying a new candidate set
+    Failed to remove @rules_cc//:link_extra_lib -> @bazel_tools//tools/cpp:current_cc_toolchain
+  No changes made, skipping build
 Processing node: @rules_cc//cc:current_cc_toolchain
-  Failed to remove @bazel_tools//tools/cpp:current_cc_toolchain -> @rules_cc//cc:current_cc_toolchain
+  Trying a new candidate set
+    Failed to remove @bazel_tools//tools/cpp:current_cc_toolchain -> @rules_cc//cc:current_cc_toolchain
+  No changes made, skipping build
 Processing node: //liba:a.h
-  Removed //liba:liba -> //liba:a.h
+  Trying a new candidate set
+    Removed //liba:liba -> //liba:a.h
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //liba:a.h
   Build failed: Build failed
 Processing node: //liba:a.cpp
-  Removed //liba:liba -> //liba:a.cpp
+  Trying a new candidate set
+    Removed //liba:liba -> //liba:a.cpp
   Build failed: Build failed
+
   Trying to add transitive dependencies for node //liba:a.cpp
   Build failed: Build failed

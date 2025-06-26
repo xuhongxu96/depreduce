@@ -91,6 +91,89 @@ fn split_location(location: &str) -> (String, usize, usize) {
     (path.to_string(), start_line, end_col)
 }
 
+fn get_list_insert_pos(
+    expr: &rustpython_parser::ast::Expr,
+    keywords: &HashSet<String>,
+) -> Option<usize> {
+    use rustpython_parser::ast;
+
+    match expr {
+        ast::Expr::Call(e) => {
+            let dep_kw = e
+                .keywords
+                .iter()
+                .filter(|kw| {
+                    if let Some(ident) = &kw.arg {
+                        keywords.contains(ident.as_str())
+                    } else {
+                        false
+                    }
+                })
+                .next();
+            if let Some(kw) = dep_kw {
+                return get_list_insert_pos(&kw.value, keywords);
+            }
+        }
+        ast::Expr::List(e) => {
+            return Some(e.range.start().to_usize());
+        }
+        _ => {}
+    }
+    None
+}
+
+fn extract_list_items(
+    expr: &rustpython_parser::ast::Expr,
+    keywords: &HashSet<String>,
+) -> Vec<(String, Interval)> {
+    use rustpython_parser::ast;
+
+    let mut res = vec![];
+
+    match expr {
+        ast::Expr::Call(e) => {
+            e.keywords
+                .iter()
+                .filter(|kw| {
+                    kw.arg
+                        .as_ref()
+                        .map(|ident| keywords.contains(ident.as_str()))
+                        .unwrap_or(false)
+                })
+                .for_each(|kw| {
+                    res.extend(extract_list_items(&kw.value, keywords));
+                });
+        }
+        ast::Expr::List(e) => {
+            for (i, item) in e.elts.iter().enumerate() {
+                if i > 0 {
+                    res.last_mut().unwrap().1.end = item.range().start().to_usize();
+                }
+
+                let mut label = String::new();
+                if let ast::Expr::Constant(c) = item {
+                    label = c.value.as_str().cloned().unwrap_or("".to_string());
+                }
+
+                res.push((
+                    label,
+                    Interval {
+                        start: item.range().start().to_usize(),
+                        end: item.range().end().to_usize(),
+                    },
+                ));
+            }
+
+            if let Some(last) = res.last_mut() {
+                last.1.end = e.range().end().to_usize() - 1;
+            }
+        }
+        _ => {}
+    }
+
+    res
+}
+
 impl BazelDepEditor {
     pub fn new(query: &Query, workspace_root: String) -> Self {
         let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
@@ -135,83 +218,6 @@ impl BazelDepEditor {
         }
     }
 
-    fn get_list_insert_pos(&self, expr: &rustpython_parser::ast::Expr) -> Option<usize> {
-        use rustpython_parser::ast;
-
-        match expr {
-            ast::Expr::Call(e) => {
-                let dep_kw = e
-                    .keywords
-                    .iter()
-                    .filter(|kw| {
-                        if let Some(ident) = &kw.arg {
-                            self.keywords_for_deps_insertion.contains(ident.as_str())
-                        } else {
-                            false
-                        }
-                    })
-                    .next();
-                if let Some(kw) = dep_kw {
-                    return self.get_list_insert_pos(&kw.value);
-                }
-            }
-            ast::Expr::List(e) => {
-                return Some(e.range.start().to_usize());
-            }
-            _ => {}
-        }
-        None
-    }
-
-    fn extract_list_items(&self, expr: &rustpython_parser::ast::Expr) -> Vec<(String, Interval)> {
-        use rustpython_parser::ast;
-
-        let mut res = vec![];
-
-        match expr {
-            ast::Expr::Call(e) => {
-                e.keywords
-                    .iter()
-                    .filter(|kw| {
-                        kw.arg
-                            .as_ref()
-                            .map(|ident| self.keywords_for_deps_removal.contains(ident.as_str()))
-                            .unwrap_or(false)
-                    })
-                    .for_each(|kw| {
-                        res.extend(self.extract_list_items(&kw.value));
-                    });
-            }
-            ast::Expr::List(e) => {
-                for (i, item) in e.elts.iter().enumerate() {
-                    if i > 0 {
-                        res.last_mut().unwrap().1.end = item.range().start().to_usize();
-                    }
-
-                    let mut label = String::new();
-                    if let ast::Expr::Constant(c) = item {
-                        label = c.value.as_str().cloned().unwrap_or("".to_string());
-                    }
-
-                    res.push((
-                        label,
-                        Interval {
-                            start: item.range().start().to_usize(),
-                            end: item.range().end().to_usize(),
-                        },
-                    ));
-                }
-
-                if let Some(last) = res.last_mut() {
-                    last.1.end = e.range().end().to_usize() - 1;
-                }
-            }
-            _ => {}
-        }
-
-        res
-    }
-
     fn normalize_label(&self, label: &BazelLabel, build_file_path: &str) -> BazelLabel {
         let dir = Path::new(build_file_path).parent().unwrap();
         let dir = dir.strip_prefix(&self.workspace_root).unwrap_or(dir);
@@ -238,6 +244,7 @@ impl BazelDepEditor {
         path: &str,
         build_content: &str,
         start_line: usize,
+        keywords: Option<&HashSet<String>>,
     ) -> Option<usize> {
         use rustpython_parser::ast;
 
@@ -256,7 +263,10 @@ impl BazelDepEditor {
             }
             match stmt {
                 ast::Stmt::Expr(e) => {
-                    res = self.get_list_insert_pos(&e.value);
+                    res = get_list_insert_pos(
+                        &e.value,
+                        keywords.unwrap_or(&self.keywords_for_deps_insertion),
+                    );
                 }
                 _ => {}
             }
@@ -276,6 +286,7 @@ impl BazelDepEditor {
         path: &str,
         build_content: &str,
         start_line: usize,
+        keywords: Option<&HashSet<String>>,
     ) -> Vec<(BazelLabel, Interval)> {
         use rustpython_parser::ast;
 
@@ -293,7 +304,10 @@ impl BazelDepEditor {
                 continue;
             }
             match stmt {
-                ast::Stmt::Expr(e) => res.extend(self.extract_list_items(&e.value)),
+                ast::Stmt::Expr(e) => res.extend(extract_list_items(
+                    &e.value,
+                    keywords.unwrap_or(&self.keywords_for_deps_removal),
+                )),
                 _ => {}
             }
             break;
@@ -310,11 +324,16 @@ impl BazelDepEditor {
 }
 
 impl DepEditor for BazelDepEditor {
-    fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
+    fn add(
+        &self,
+        label: &str,
+        dep_label: &str,
+        keywords: Option<&HashSet<String>>,
+    ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
             let build = std::fs::read_to_string(&path).unwrap();
-            if let Some(pos) = self.get_insertion_pos(&path, &build, start_line) {
+            if let Some(pos) = self.get_insertion_pos(&path, &build, start_line, keywords) {
                 Ok(FileEdit {
                     path: path,
                     content: format!("{}\"{}\",{}", &build[..pos], dep_label, &build[pos..]),
@@ -327,11 +346,16 @@ impl DepEditor for BazelDepEditor {
         }
     }
 
-    fn remove(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
+    fn remove(
+        &self,
+        label: &str,
+        dep_label: &str,
+        keywords: Option<&HashSet<String>>,
+    ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
             let mut build = std::fs::read_to_string(&path).unwrap();
-            let candidate_labels = self.extract_all_labels(&path, &build, start_line);
+            let candidate_labels = self.extract_all_labels(&path, &build, start_line, keywords);
 
             if let Some((_label, interval)) = candidate_labels
                 .iter()
@@ -467,7 +491,8 @@ mod tests {
         );
 
         let path = "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD";
-        let labels = editor.extract_all_labels(path, &std::fs::read_to_string(path).unwrap(), 3);
+        let labels =
+            editor.extract_all_labels(path, &std::fs::read_to_string(path).unwrap(), 3, None);
         let res = format!("{:#?}", labels);
         assert_eq!(
             res,
@@ -485,6 +510,7 @@ mod tests {
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
+            None,
         );
         let res = format!("{:#?}", labels);
         assert_eq!(
@@ -503,6 +529,7 @@ mod tests {
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
+            None,
         );
         assert_eq!(pos, Some(119));
     }
@@ -513,7 +540,7 @@ mod tests {
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
-        let edit = editor.remove("//main:main", "//liba:liba").unwrap();
+        let edit = editor.remove("//main:main", "//liba:liba", None).unwrap();
         assert_eq!(
             edit.path,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
@@ -533,7 +560,9 @@ mod tests {
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
-        let edit = editor.remove("//main:main", "//main:main.cpp").unwrap();
+        let edit = editor
+            .remove("//main:main", "//main:main.cpp", None)
+            .unwrap();
         assert_eq!(
             edit.path,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
@@ -553,7 +582,7 @@ mod tests {
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
-        let edit = editor.add("//main:main", "//libc:libc").unwrap();
+        let edit = editor.add("//main:main", "//libc:libc", None).unwrap();
         assert_eq!(
             edit.path,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
