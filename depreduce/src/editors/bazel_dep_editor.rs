@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{self, Path};
 
 use rustpython_parser::Parse;
@@ -11,6 +11,8 @@ use crate::graph::bazel_xml_parser::{Query, SkyValue};
 pub struct BazelDepEditor {
     label2location: HashMap<String, String>,
     workspace_root: String,
+    keywords_for_deps_insertion: HashSet<String>,
+    keywords_for_deps_removal: HashSet<String>,
 }
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
@@ -78,75 +80,6 @@ impl std::fmt::Debug for BazelLabel {
     }
 }
 
-fn get_list_start_pos(expr: &rustpython_parser::ast::Expr) -> Option<usize> {
-    use rustpython_parser::ast;
-
-    match expr {
-        ast::Expr::Call(e) => {
-            let dep_kw = e
-                .keywords
-                .iter()
-                .filter(|kw| {
-                    if let Some(ident) = &kw.arg {
-                        ident == "deps"
-                    } else {
-                        false
-                    }
-                })
-                .next();
-            if let Some(kw) = dep_kw {
-                return get_list_start_pos(&kw.value);
-            }
-        }
-        ast::Expr::List(e) => {
-            return Some(e.range.start().to_usize());
-        }
-        _ => {}
-    }
-    None
-}
-
-fn extract_list_items(expr: &rustpython_parser::ast::Expr) -> Vec<(String, Interval)> {
-    use rustpython_parser::ast;
-
-    let mut res = vec![];
-
-    match expr {
-        ast::Expr::Call(e) => {
-            e.keywords.iter().for_each(|kw| {
-                res.extend(extract_list_items(&kw.value));
-            });
-        }
-        ast::Expr::List(e) => {
-            for (i, item) in e.elts.iter().enumerate() {
-                if i > 0 {
-                    res.last_mut().unwrap().1.end = item.range().start().to_usize();
-                }
-
-                let mut label = String::new();
-                if let ast::Expr::Constant(c) = item {
-                    label = c.value.as_str().cloned().unwrap_or("".to_string());
-                }
-
-                res.push((
-                    label,
-                    Interval {
-                        start: item.range().start().to_usize(),
-                        end: item.range().end().to_usize(),
-                    },
-                ));
-            }
-
-            if let Some(last) = res.last_mut() {
-                last.1.end = e.range().end().to_usize() - 1;
-            }
-        }
-        _ => {}
-    }
-
-    res
-}
-
 fn split_location(location: &str) -> (String, usize, usize) {
     let parts: Vec<&str> = location.split(':').collect();
     assert_eq!(parts.len(), 3, "Invalid location format: {}", location);
@@ -160,6 +93,24 @@ fn split_location(location: &str) -> (String, usize, usize) {
 
 impl BazelDepEditor {
     pub fn new(query: &Query, workspace_root: String) -> Self {
+        let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
+        let keywords_for_deps_removal =
+            HashSet::from(["deps".to_string(), "srcs".to_string(), "hdrs".to_string()]);
+
+        Self::new_with_custom_keywords(
+            query,
+            workspace_root,
+            keywords_for_deps_insertion,
+            keywords_for_deps_removal,
+        )
+    }
+
+    pub fn new_with_custom_keywords(
+        query: &Query,
+        workspace_root: String,
+        keywords_for_deps_insertion: HashSet<String>,
+        keywords_for_deps_removal: HashSet<String>,
+    ) -> Self {
         let mut label2location = HashMap::new();
         for value in &query.values {
             match value {
@@ -179,7 +130,86 @@ impl BazelDepEditor {
         Self {
             label2location,
             workspace_root,
+            keywords_for_deps_insertion,
+            keywords_for_deps_removal,
         }
+    }
+
+    fn get_list_insert_pos(&self, expr: &rustpython_parser::ast::Expr) -> Option<usize> {
+        use rustpython_parser::ast;
+
+        match expr {
+            ast::Expr::Call(e) => {
+                let dep_kw = e
+                    .keywords
+                    .iter()
+                    .filter(|kw| {
+                        if let Some(ident) = &kw.arg {
+                            self.keywords_for_deps_insertion.contains(ident.as_str())
+                        } else {
+                            false
+                        }
+                    })
+                    .next();
+                if let Some(kw) = dep_kw {
+                    return self.get_list_insert_pos(&kw.value);
+                }
+            }
+            ast::Expr::List(e) => {
+                return Some(e.range.start().to_usize());
+            }
+            _ => {}
+        }
+        None
+    }
+
+    fn extract_list_items(&self, expr: &rustpython_parser::ast::Expr) -> Vec<(String, Interval)> {
+        use rustpython_parser::ast;
+
+        let mut res = vec![];
+
+        match expr {
+            ast::Expr::Call(e) => {
+                e.keywords
+                    .iter()
+                    .filter(|kw| {
+                        kw.arg
+                            .as_ref()
+                            .map(|ident| self.keywords_for_deps_removal.contains(ident.as_str()))
+                            .unwrap_or(false)
+                    })
+                    .for_each(|kw| {
+                        res.extend(self.extract_list_items(&kw.value));
+                    });
+            }
+            ast::Expr::List(e) => {
+                for (i, item) in e.elts.iter().enumerate() {
+                    if i > 0 {
+                        res.last_mut().unwrap().1.end = item.range().start().to_usize();
+                    }
+
+                    let mut label = String::new();
+                    if let ast::Expr::Constant(c) = item {
+                        label = c.value.as_str().cloned().unwrap_or("".to_string());
+                    }
+
+                    res.push((
+                        label,
+                        Interval {
+                            start: item.range().start().to_usize(),
+                            end: item.range().end().to_usize(),
+                        },
+                    ));
+                }
+
+                if let Some(last) = res.last_mut() {
+                    last.1.end = e.range().end().to_usize() - 1;
+                }
+            }
+            _ => {}
+        }
+
+        res
     }
 
     fn normalize_label(&self, label: &BazelLabel, build_file_path: &str) -> BazelLabel {
@@ -211,8 +241,6 @@ impl BazelDepEditor {
     ) -> Option<usize> {
         use rustpython_parser::ast;
 
-        // split location as 3 parts: path, start_line, end_line
-
         // convert start_line and end_line to char offsets
         let start_offset = build_content
             .lines()
@@ -228,7 +256,7 @@ impl BazelDepEditor {
             }
             match stmt {
                 ast::Stmt::Expr(e) => {
-                    res = get_list_start_pos(&e.value);
+                    res = self.get_list_insert_pos(&e.value);
                 }
                 _ => {}
             }
@@ -251,8 +279,6 @@ impl BazelDepEditor {
     ) -> Vec<(BazelLabel, Interval)> {
         use rustpython_parser::ast;
 
-        // split location as 3 parts: path, start_line, end_line
-
         // convert start_line and end_line to char offsets
         let start_offset = build_content
             .lines()
@@ -267,7 +293,7 @@ impl BazelDepEditor {
                 continue;
             }
             match stmt {
-                ast::Stmt::Expr(e) => res.extend(extract_list_items(&e.value)),
+                ast::Stmt::Expr(e) => res.extend(self.extract_list_items(&e.value)),
                 _ => {}
             }
             break;

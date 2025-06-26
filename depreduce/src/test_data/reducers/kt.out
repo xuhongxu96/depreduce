@@ -237,8 +237,7 @@ Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_fi
 Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
   Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
 Processing node: //main:main_lib
-  Removed //main:main -> //main:main_lib
-  Build succeeded
+  Failed to remove //main:main -> //main:main_lib
   Failed to remove //main:main_lib.jar -> //main:main_lib
   Failed to remove //main:main_lib-sources.jar -> //main:main_lib
 Processing node: //main:Main.kt
