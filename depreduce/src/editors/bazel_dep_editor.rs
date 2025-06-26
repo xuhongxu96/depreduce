@@ -536,7 +536,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove(cxx_query: &Query) {
-        let mut editor = BazelDepEditor::new(
+        let editor = BazelDepEditor::new(
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
@@ -556,7 +556,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove_cpp(cxx_query: &Query) {
-        let mut editor = BazelDepEditor::new(
+        let editor = BazelDepEditor::new(
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
@@ -578,7 +578,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_add(cxx_query: &Query) {
-        let mut editor = BazelDepEditor::new(
+        let editor = BazelDepEditor::new(
             cxx_query,
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );

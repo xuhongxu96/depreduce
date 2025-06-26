@@ -10,14 +10,14 @@ pub trait DepEditor {
         &self,
         label: &str,
         dep_label: &str,
-        keywords: Option<&HashSet<String>>,
+        override_keywords: Option<&HashSet<String>>,
     ) -> Result<FileEdit, String>;
 
     fn remove(
         &self,
         label: &str,
         dep_label: &str,
-        keywords: Option<&HashSet<String>>,
+        override_keywords: Option<&HashSet<String>>,
     ) -> Result<FileEdit, String>;
 }
 
