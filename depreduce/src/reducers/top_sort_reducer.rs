@@ -1,11 +1,16 @@
 use std::collections::{HashMap, HashSet};
-use std::process::Command;
+use std::io::Read;
+use std::process::{Command, Stdio};
+
+use utils::indent_all_lines;
 
 use crate::editors::{DepEditor, FileEdit};
 use crate::graph::{DependencyGraph, EdgeId, NodeId};
 use crate::reducers::candidate_generators::{
     ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
 };
+
+const INDENT_SIZE_FOR_STDERR: usize = 8;
 
 struct TopSortReducer {
     editor: Box<dyn DepEditor>,
@@ -59,18 +64,28 @@ impl<'a> ReduceContext<'a> {
     }
 
     fn try_build(&mut self) -> Result<(), std::io::Error> {
-        let exit = Command::new("/bin/bash")
+        let mut process = Command::new("/bin/bash")
             .arg(&self.settings.build_command)
             .current_dir(&self.settings.cwd)
-            .spawn()?
-            .wait()?;
+            .stderr(Stdio::piped())
+            .spawn()?;
+        let exit = process.wait()?;
+        let mut stderr_str = String::new();
+        process
+            .stderr
+            .map(|mut stderr| stderr.read_to_string(&mut stderr_str));
+
         if exit.success() {
-            Ok(())
+            return Ok(());
         } else {
-            Err(std::io::Error::new(
+            return Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                "Build failed",
-            ))
+                format!(
+                    "Build failed with exit code {}:\n{}",
+                    exit.code().unwrap_or(-1),
+                    indent_all_lines(&stderr_str, INDENT_SIZE_FOR_STDERR)
+                ),
+            ));
         }
     }
 
@@ -106,6 +121,8 @@ impl TopSortReducer {
         candidates: &Vec<(NodeId, EdgeId)>,
         node_id: NodeId,
     ) -> bool {
+        let history_size = ctx.history.len();
+
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         ctx.logs.push_str(&format!(
             "  Trying to add transitive dependencies for node {}\n",
@@ -135,7 +152,28 @@ impl TopSortReducer {
 
         for (dep_node, _edge_id) in candidates {
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
-            for (_, transitive_dep_label) in &transitive_deps {
+            for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
+                if let Some(edges) = ctx.settings.graph.node2out_edges.get(dep_node) {
+                    if edges.contains_key(transitive_dep_id) {
+                        ctx.logs.push_str(&format!(
+                            "  Skipping {} -> {} (already exists)\n",
+                            dep_node_label, transitive_dep_label
+                        ));
+                        continue;
+                    }
+                }
+
+                match ctx.settings.graph.nodes[*transitive_dep_id].props.t {
+                    crate::graph::NodeType::Target => {}
+                    _ => {
+                        ctx.logs.push_str(&format!(
+                            "  Skipping {} -> {} (non-target)\n",
+                            dep_node_label, transitive_dep_label
+                        ));
+                        continue;
+                    }
+                }
+
                 if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label, None) {
                     ctx.backup(&edit);
                     ctx.apply(&edit);
@@ -152,6 +190,12 @@ impl TopSortReducer {
                     return false;
                 }
             }
+        }
+
+        if ctx.history.len() == history_size {
+            ctx.logs.push_str("  No changes made, skipping build\n");
+            ctx.restore_backup();
+            return false;
         }
 
         match ctx.try_build() {
@@ -281,78 +325,69 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_cxx() {
-        let xml = read_test_data!("cxx-deps.xml");
+    fn run_reducer_test(
+        xml_file: &str,
+        workspace_root: &str,
+        project_dir: &str,
+        build_script: &str,
+        expected_out: &str,
+    ) {
+        let xml = read_test_data!(xml_file);
         let query: Query = parse_bazel_xml(&xml).unwrap();
         let graph = convert_query_to_dep_graph(&query).unwrap();
-        let editor = BazelDepEditor::new(
-            &query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
-        );
+        let editor = BazelDepEditor::new(&query, workspace_root.to_string());
 
         let reducer = TopSortReducer::new(Box::new(editor));
         let settings = ReduceSettings {
             reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
-            build_command: get_test_data_path!("build.sh")
+            build_command: get_test_data_path!(build_script)
                 .to_string_lossy()
                 .to_string(),
-            cwd: get_test_data_path!("../../../examples/simple-cxx-project")
+            cwd: get_test_data_path!(project_dir)
                 .to_string_lossy()
                 .to_string(),
         };
         let res = reducer.reduce(&settings).unwrap();
-        assert_eq!(res, read_or_create_test_data!("reducers/cxx.out", res));
+        assert_eq!(
+            remove_lines_with_indent(&res, INDENT_SIZE_FOR_STDERR),
+            remove_lines_with_indent(
+                &read_or_create_test_data!(expected_out, res),
+                INDENT_SIZE_FOR_STDERR
+            )
+        );
+    }
+
+    #[test]
+    fn test_cxx() {
+        run_reducer_test(
+            "cxx-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+            "../../../examples/simple-cxx-project",
+            "build.sh",
+            "reducers/cxx.out",
+        );
     }
 
     #[test]
     fn test_java() {
-        let xml = read_test_data!("java-deps.xml");
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query).unwrap();
-        let editor = BazelDepEditor::new(
-            &query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project".to_string(),
+        run_reducer_test(
+            "java-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
+            "../../../examples/simple-java-project",
+            "build.sh",
+            "reducers/java.out",
         );
-
-        let reducer = TopSortReducer::new(Box::new(editor));
-        let settings = ReduceSettings {
-            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
-            graph: &graph,
-            build_command: get_test_data_path!("build.sh")
-                .to_string_lossy()
-                .to_string(),
-            cwd: get_test_data_path!("../../../examples/simple-java-project")
-                .to_string_lossy()
-                .to_string(),
-        };
-        let res = reducer.reduce(&settings).unwrap();
-        assert_eq!(res, read_or_create_test_data!("reducers/java.out", res));
     }
 
     #[test]
     fn test_kotlin() {
-        let xml = read_test_data!("kt-deps.xml");
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query).unwrap();
-        let editor = BazelDepEditor::new(
-            &query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project".to_string(),
+        run_reducer_test(
+            "kt-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project",
+            "../../../examples/simple-kotlin-project",
+            "build.sh",
+            "reducers/kt.out",
         );
-
-        let reducer = TopSortReducer::new(Box::new(editor));
-        let settings = ReduceSettings {
-            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
-            graph: &graph,
-            build_command: get_test_data_path!("build.sh")
-                .to_string_lossy()
-                .to_string(),
-            cwd: get_test_data_path!("../../../examples/simple-kotlin-project")
-                .to_string_lossy()
-                .to_string(),
-        };
-        let res = reducer.reduce(&settings).unwrap();
-        assert_eq!(res, read_or_create_test_data!("reducers/kt.out", res));
     }
 }

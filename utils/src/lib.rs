@@ -121,3 +121,19 @@ where
         .lines()
         .filter_map(|line| serde_json::from_str(line).ok())
 }
+
+pub fn indent_all_lines(text: &str, indent_size: usize) -> String {
+    let indent = " ".repeat(indent_size);
+    text.lines()
+        .map(|line| format!("{}{}", indent, line))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+pub fn remove_lines_with_indent(text: &str, indent_size: usize) -> String {
+    let indent = " ".repeat(indent_size);
+    text.lines()
+        .filter(|line| !line.starts_with(&indent))
+        .collect::<Vec<_>>()
+        .join("\n")
+}

@@ -108,21 +108,60 @@ Processing node: //src/com/example/libb:libb
 Processing node: //src/com/example/libb:ClassB.java
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
-  Build failed: Build failed
+  Build failed: Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (1 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (1 packages loaded, 0 targets configured)
+        
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13: in java_library rule //src/com/example/libb:libb: 
+        Traceback (most recent call last):
+        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_library.bzl", line 26, column 35, in _proxy
+        		return bazel_java_library_rule(
+        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/common/rules/impl/bazel_java_library_impl.bzl", line 66, column 13, in bazel_java_library_rule
+        		fail("deps not allowed without srcs; move to runtime_deps?")
+        Error in fail: deps not allowed without srcs; move to runtime_deps?
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13: Analysis of target '//src/com/example/libb:libb' failed
+        Use --verbose_failures to see the command lines of failed build steps.
+        ERROR: Analysis of target '//src/com/example/libb:libb' failed; build aborted
+        INFO: Elapsed time: 0.124s, Critical Path: 0.00s
+        INFO: 1 process: 1 internal.
+        ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //src/com/example/libb:ClassB.java
-  Build failed: Build failed
+  No changes made, skipping build
 Processing node: //src/com/example/liba:liba
   Trying a new candidate set
     Removed //:Main -> //src/com/example/liba:liba
-  Build failed: Build failed
+  Build failed: Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Building Main.jar (1 source file) failed: (Exit 1): java failed: error executing Javac command (from target //:Main) external/rules_java++toolchains+remotejdk21_linux/bin/java '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED' ... (remaining 19 arguments skipped)
+        src/com/example/Main.java:3: error: package com.example.liba does not exist
+        import com.example.liba.ClassA;
+                               ^
+        src/com/example/Main.java:7: error: cannot find symbol
+                System.out.println(ClassA.add(2, 3));
+                                   ^
+          symbol:   variable ClassA
+          location: class Main
+        Use --verbose_failures to see the command lines of failed build steps.
+        INFO: Elapsed time: 0.246s, Critical Path: 0.10s
+        INFO: 6 processes: 1 action cache hit, 6 internal.
+        ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //src/com/example/liba:liba
-  Added //:Main -> //src/com/example/liba:ClassA.java
-  Added //:Main -> @bazel_tools//tools/jdk:current_java_toolchain
-  Added //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias
-  Added //:Main -> @bazel_tools//tools/jdk:toolchain_type
-  Build failed: Build failed
+  Skipping //:Main -> //src/com/example/liba:ClassA.java (non-target)
+  Skipping //:Main -> @bazel_tools//tools/jdk:current_java_toolchain (already exists)
+  Skipping //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias (already exists)
+  Skipping //:Main -> @bazel_tools//tools/jdk:toolchain_type (already exists)
+  No changes made, skipping build
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
   Build succeeded
@@ -172,14 +211,54 @@ Processing node: @rules_java//toolchains:current_java_toolchain
 Processing node: //src/com/example/liba:ClassA.java
   Trying a new candidate set
     Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
-  Build failed: Build failed
+  Build failed: Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (1 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (1 packages loaded, 0 targets configured)
+        
+        INFO: Analyzed 3 targets (1 packages loaded, 2 targets configured).
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Building Main.jar (1 source file) failed: (Exit 1): java failed: error executing Javac command (from target //:Main) external/rules_java++toolchains+remotejdk21_linux/bin/java '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED' ... (remaining 19 arguments skipped)
+        src/com/example/Main.java:3: error: package com.example.liba does not exist
+        import com.example.liba.ClassA;
+                               ^
+        src/com/example/Main.java:7: error: cannot find symbol
+                System.out.println(ClassA.add(2, 3));
+                                   ^
+          symbol:   variable ClassA
+          location: class Main
+        INFO: Elapsed time: 0.246s, Critical Path: 0.09s
+        INFO: 7 processes: 6 internal, 1 worker.
+        ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //src/com/example/liba:ClassA.java
-  Build failed: Build failed
+  No changes made, skipping build
 Processing node: //:src/com/example/Main.java
   Trying a new candidate set
     Removed //:Main -> //:src/com/example/Main.java
-  Build failed: Build failed
+  Build failed: Build failed with exit code 1:
+        Computing main repo mapping: 
+        Loading: 
+        Loading: 0 packages loaded
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+        
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: in java_binary rule //:Main: 
+        Traceback (most recent call last):
+        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_binary.bzl", line 32, column 34, in _bazel_java_binary_impl
+        		return bazel_base_binary_impl(ctx, is_test_rule_class = False) + helper.executable_providers(ctx)
+        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_binary.bzl", line 47, column 43, in bazel_base_binary_impl
+        		main_class = _check_and_get_main_class(ctx)
+        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_binary.bzl", line 160, column 17, in _check_and_get_main_class
+        		fail("need at least one of 'main_class' or Java source files")
+        Error in fail: need at least one of 'main_class' or Java source files
+        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Analysis of target '//:Main' failed
+        Use --verbose_failures to see the command lines of failed build steps.
+        ERROR: Analysis of target '//:Main' failed; build aborted
+        INFO: Elapsed time: 0.128s, Critical Path: 0.00s
+        INFO: 1 process: 1 internal.
+        ERROR: Build did NOT complete successfully
 
   Trying to add transitive dependencies for node //:src/com/example/Main.java
-  Build failed: Build failed
+  No changes made, skipping build
