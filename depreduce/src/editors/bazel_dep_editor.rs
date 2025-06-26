@@ -332,6 +332,12 @@ impl DepEditor for BazelDepEditor {
     ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
+            if !Path::new(&path).starts_with(Path::new(&self.workspace_root)) {
+                return Err(format!(
+                    "Path '{}' is not within the workspace root '{}'",
+                    path, self.workspace_root
+                ));
+            }
             let build = std::fs::read_to_string(&path).unwrap();
             if let Some(pos) = self.get_insertion_pos(&path, &build, start_line, keywords) {
                 Ok(FileEdit {
@@ -354,6 +360,12 @@ impl DepEditor for BazelDepEditor {
     ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
+            if !Path::new(&path).starts_with(Path::new(&self.workspace_root)) {
+                return Err(format!(
+                    "Path '{}' is not within the workspace root '{}'",
+                    path, self.workspace_root
+                ));
+            }
             let mut build = std::fs::read_to_string(&path).unwrap();
             let candidate_labels = self.extract_all_labels(&path, &build, start_line, keywords);
 

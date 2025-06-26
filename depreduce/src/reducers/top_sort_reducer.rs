@@ -121,7 +121,7 @@ impl TopSortReducer {
         candidates: &Vec<(NodeId, EdgeId)>,
         node_id: NodeId,
     ) -> bool {
-        let history_size = ctx.history.len();
+        let mut changed = false;
 
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         ctx.logs.push_str(&format!(
@@ -175,6 +175,7 @@ impl TopSortReducer {
                 }
 
                 if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label, None) {
+                    changed = true;
                     ctx.backup(&edit);
                     ctx.apply(&edit);
                     ctx.logs.push_str(&format!(
@@ -192,7 +193,7 @@ impl TopSortReducer {
             }
         }
 
-        if ctx.history.len() == history_size {
+        if !changed {
             ctx.logs.push_str("  No changes made, skipping build\n");
             ctx.restore_backup();
             return false;
@@ -388,6 +389,20 @@ mod tests {
             "../../../examples/simple-kotlin-project",
             "build.sh",
             "reducers/kt.out",
+        );
+    }
+
+    #[test]
+    fn test_kotlin_transitive() {
+        // What we want to test it whether the reducer can add deps of deps correctly, and
+        // it also needs to deduplicate the added deps because main already depends on a.
+        // See examples/kotlin-transitive/README.md for details.
+        run_reducer_test(
+            "kt-transitive-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive",
+            "../../../examples/kotlin-transitive",
+            "build.sh",
+            "reducers/kt-transitive.out",
         );
     }
 }
