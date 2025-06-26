@@ -5,9 +5,9 @@ Dependency Reduction for Bazel
 
 ## Pushing the Limit of Previous Works
 
-### Dynamic Dependency Analysis via `buildfuzz`
+### Dynamic Dependency Analysis via [`buildfuzz`]
 
-`buildfuzz` is basically the reproduction of the build fuzz testing algorithm proposed by 
+[`buildfuzz`] is basically the reproduction of the build fuzz testing algorithm proposed by 
 [`mkcheck`] (https://github.com/nandor/mkcheck) with a new feature:
 
 1. Use **custom touchers** instead of the `touch` file operation, 
@@ -53,15 +53,25 @@ and compile an executable depending on this library, even though the executable
 does not use the library in the source code, as long as you specify the dependency 
 in the build script, the executable jar will be repackaged, and of course, modified.
 
-Same thing happens while linking `liba.o` and `libb.o` to `main`, even though `main` does not need `libb`
-in its source code. Thus, the original [`mkcheck`] cannot detect redundant dependency very well, especially
-for linking and higher level programming languages.
+Same thing happens for C/C++, while linking `liba.o` and `libb.o` to `main`, 
+even though `main` does not need `libb` in its source code. 
+Thus, the original [`mkcheck`] cannot detect redundant dependency very well.
 
 To mitigate this issue, we detect file changes by SHA256 instead of the timestamp. This is feasible
 because we don't just touch the file but modify the file using custom touchers. And in this way,
 we can ensure the modified files are truly changed.
 
-#### How to Run `buildfuzz`
+Nevertheless, it can miss some dependencies too. When archiving a
+static library depending on other static libraries, it won't actually package those 
+dependencies into the current static library. Jar package in Java works similarly.
+So, for these kinds of artifacts, if we modify their dependencies, they keep the same.
+And their dependencies cannot be captured by [`mkcheck`] or build fuzzing method.
+
+You can try to run [`buildfuzz`] on `examples/kotlin-transitive` project.
+And you will find that `libd.jar` only depends on `ClassD.kt`, which
+definitely misses a lot.
+
+#### How to Run [`buildfuzz`]
 
 ```sh
 buildfuzz --input examples/simple-cxx-project \
@@ -80,9 +90,9 @@ The result is a JSONL file like below.
 ```
 
 
-### Dynamic Dependency Analaysis via `strace`
+### Dynamic Dependency Analaysis via [`strace_parser`]
 
-`strace_parser` is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
+[`strace_parser`] is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
 
 1. **`stat`/`lstat`/`statfs` syscalls were ignored** because we don't know if the accessed file truly exists, 
    and they are mostly used to detect file changes, i.e., usually not a real sign of file consumption.
@@ -134,7 +144,7 @@ strace -s 300 \
     bash ../build.sh
 ```
 
-#### How to use `strace_parser`
+#### How to use [`strace_parser`]
 
 ```sh
 strace_parser -i examples/simple-java-project/strace.log -c examples/simple-java-project -o result_deps.log
@@ -338,7 +348,7 @@ The overall sum of $R$ will be definitely reduced.
 
 ### Static Dependency Analysis via `depreduce`
 
-`depreduce` is a novel tool for static dependency analysis and reduction proposed by ourself.
+`depreduce` is a novel tool for static dependency analysis and reduction proposed by us.
 
 #### Get Dependency Graph from Bazel Query
 
@@ -354,3 +364,5 @@ bazel query "deps(//...)" --notool_deps --noimplicit_deps --output xml
 [`mkcheck`]: https://ieeexplore.ieee.org/document/8812082
 [Skyframe - Bazel]: https://bazel.build/reference/skyframe
 [Sandboxing - Bazel]: https://bazel.build/docs/sandboxing
+[`buildfuzz`]: buildfuzz
+[`strace_parser`]: strace_parser
