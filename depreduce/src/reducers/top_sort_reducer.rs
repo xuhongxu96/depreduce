@@ -205,4 +205,29 @@ mod tests {
         assert!(res.is_ok());
         println!("{}", res.unwrap());
     }
+
+    #[test]
+    fn test_kotlin() {
+        let xml = read_test_data!("kt-deps.xml");
+        let query: Query = parse_bazel_xml(&xml).unwrap();
+        let graph = convert_query_to_dep_graph(&query).unwrap();
+        let editor = BazelDepEditor::new(
+            &query,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project".to_string(),
+        );
+
+        let reducer = TopSortReducer::new(Box::new(editor));
+        let settings = ReduceSettings {
+            graph: &graph,
+            build_command: get_test_data_path!("build.sh")
+                .to_string_lossy()
+                .to_string(),
+            cwd: get_test_data_path!("../../../examples/simple-kotlin-project")
+                .to_string_lossy()
+                .to_string(),
+        };
+        let res = reducer.reduce(&settings);
+        assert!(res.is_ok());
+        println!("{}", res.unwrap());
+    }
 }
