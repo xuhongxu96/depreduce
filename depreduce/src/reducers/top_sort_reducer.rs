@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::process::Command;
 
 use crate::editors::{DepEditor, FileEdit};
-use crate::graph::{DependencyGraph, NodeId};
+use crate::graph::{DependencyGraph, EdgeId, NodeId};
 use crate::reducers::candidate_generators::{
     ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
 };
@@ -34,14 +34,18 @@ impl<'a> ReduceContext<'a> {
         }
     }
 
-    fn backup_and_apply(&mut self, edit: FileEdit) {
+    fn backup(&mut self, edit: &FileEdit) {
         let backup_content = std::fs::read_to_string(&edit.path)
             .unwrap_or_else(|err| panic!("Failed to read file {}: {}", edit.path, err));
 
+        if !self.history.contains_key(&edit.path) {
+            self.history.insert(edit.path.clone(), backup_content);
+        }
+    }
+
+    fn apply(&self, edit: &FileEdit) {
         std::fs::write(&edit.path, &edit.content)
             .unwrap_or_else(|err| panic!("Failed to write file {}: {}", edit.path, err));
-
-        self.history.insert(edit.path, backup_content);
     }
 
     fn restore_backup(&mut self) {
@@ -93,12 +97,111 @@ impl TopSortReducer {
         Self { editor }
     }
 
+    fn try_add_transitive_deps(
+        &self,
+        ctx: &mut ReduceContext,
+        candidates: &Vec<(NodeId, EdgeId)>,
+        node_id: NodeId,
+    ) -> bool {
+        let label = ctx.settings.graph.nodes[node_id].label.clone();
+        ctx.logs.push_str(&format!(
+            "  Trying to add transitive dependencies for node {}\n",
+            label
+        ));
+
+        let mut transitive_deps: HashSet<(NodeId, String)> = HashSet::new();
+        if let Some(tgt2edge) = ctx.settings.graph.node2out_edges.get(&node_id) {
+            tgt2edge.keys().for_each(|dep_node| {
+                transitive_deps.insert((
+                    *dep_node,
+                    ctx.settings
+                        .graph
+                        .nodes
+                        .get(*dep_node)
+                        .unwrap()
+                        .label
+                        .clone(),
+                ));
+            });
+        }
+
+        for (dep_node, _edge_id) in candidates {
+            let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
+            for (_, transitive_dep_label) in &transitive_deps {
+                if let Ok(edit) = self.editor.add(&dep_node_label, transitive_dep_label) {
+                    ctx.backup(&edit);
+                    ctx.apply(&edit);
+                    ctx.logs.push_str(&format!(
+                        "  Added {} -> {}\n",
+                        dep_node_label, transitive_dep_label
+                    ));
+                } else {
+                    ctx.logs.push_str(&format!(
+                        "Failed to add {} -> {}\n",
+                        dep_node_label, transitive_dep_label
+                    ));
+                    ctx.restore_backup();
+                    return false;
+                }
+            }
+        }
+
+        match ctx.try_build() {
+            Ok(_) => {
+                ctx.commit_changes();
+                ctx.logs.push_str(&format!("  Build succeeded\n"));
+                return true;
+            }
+            Err(e) => {
+                ctx.restore_backup();
+                ctx.logs.push_str(&format!("  Build failed: {}\n", e));
+                return false;
+            }
+        }
+    }
+
+    fn try_remove_dep(
+        &self,
+        ctx: &mut ReduceContext,
+        candidates: &Vec<(NodeId, EdgeId)>,
+        node_id: NodeId,
+    ) -> bool {
+        let label = ctx.settings.graph.nodes[node_id].label.clone();
+        for (dep_node, _edge_id) in candidates {
+            let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
+            if let Ok(edit) = self.editor.remove(&dep_node_label, &label) {
+                ctx.backup(&edit);
+                ctx.apply(&edit);
+                ctx.logs
+                    .push_str(&format!("  Removed {} -> {}\n", dep_node_label, label));
+            } else {
+                ctx.logs.push_str(&format!(
+                    "  Failed to remove {} -> {}\n",
+                    dep_node_label, label
+                ));
+                ctx.restore_backup();
+                return false;
+            }
+        }
+
+        match ctx.try_build() {
+            Ok(_) => {
+                ctx.commit_changes();
+                ctx.logs.push_str("  Build succeeded");
+                true
+            }
+            Err(e) => {
+                ctx.logs.push_str(&format!("  Build failed: {}\n", e));
+                self.try_add_transitive_deps(ctx, candidates, node_id)
+            }
+        }
+    }
+
     pub fn reduce(&self, settings: &ReduceSettings) -> Result<String, String> {
         let &ReduceSettings { graph, .. } = settings;
 
         let mut ctx = ReduceContext::new(settings);
-
-        let mut sorted_nodes = graph.topsort();
+        let sorted_nodes = graph.topsort();
 
         ctx.logs.push_str("Sorted nodes in topological order:\n");
         for node_id in sorted_nodes.iter() {
@@ -107,45 +210,16 @@ impl TopSortReducer {
         }
 
         for node_id in sorted_nodes {
-            let label = graph.nodes[node_id].label.clone();
+            ctx.logs.push_str(&format!(
+                "Processing node: {}\n",
+                graph.nodes.get(node_id).unwrap().label
+            ));
+
             let mut generator = ctx.generate_reduction_candidates(node_id);
 
             while let Some(candidates) = generator.next() {
-                for (dep_node, _edge_id) in candidates {
-                    let dep_node_label = graph.nodes[dep_node].label.clone();
-                    if let Ok(edit) = self.editor.remove(&dep_node_label, &label) {
-                        ctx.backup_and_apply(edit);
-                        ctx.logs.push_str(&format!(
-                            "Applied reduction candidate for {} -> {}\n",
-                            label, dep_node_label
-                        ));
-
-                        match ctx.try_build() {
-                            Ok(_) => {
-                                ctx.commit_changes();
-                                ctx.logs.push_str(&format!(
-                                    "  Build succeeded after applying reduction candidate for {} -> {}\n",
-                                    label, dep_node_label
-                                ));
-                                generator.report_result(true);
-                            }
-                            Err(e) => {
-                                ctx.restore_backup();
-                                ctx.logs.push_str(&format!(
-                                    "  Build failed after applying reduction candidate for {} -> {}, error: {}\n",
-                                    label, dep_node_label, e
-                                ));
-                                generator.report_result(false);
-                            }
-                        }
-                    } else {
-                        ctx.logs.push_str(&format!(
-                            "Failed to apply reduction candidate for {} -> {}\n",
-                            label, dep_node_label
-                        ));
-                        generator.report_result(false);
-                    }
-                }
+                let res = self.try_remove_dep(&mut ctx, &candidates, node_id);
+                generator.report_result(res);
             }
         }
 
