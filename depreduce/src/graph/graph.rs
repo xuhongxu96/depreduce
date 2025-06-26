@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Write;
 use utils::DependencyMap;
 
-type NodeId = usize;
-type EdgeId = usize;
+pub type NodeId = usize;
+pub type EdgeId = usize;
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum NodeType {

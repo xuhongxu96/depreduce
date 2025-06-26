@@ -1,8 +1,8 @@
 type CheckpointId = usize;
 
 pub struct FileEdit {
-    path: String,
-    content: String,
+    pub path: String,
+    pub content: String,
 }
 
 pub trait DepEditor {

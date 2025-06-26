@@ -3,7 +3,7 @@
         //:main.cpp,
         Interval {
             start: 94,
-            end: 105,
+            end: 104,
         },
     ),
     (
@@ -24,7 +24,7 @@
         //libc:libc,
         Interval {
             start: 185,
-            end: 199,
+            end: 198,
         },
     ),
 ]

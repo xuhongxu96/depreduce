@@ -231,35 +231,35 @@ Suppose $n_1 \leq n_2 \leq \dots \leq n_N$ after topological sort on dependencie
 We have:
 $$
 \begin{align*}
-deps(n_1) & = \emptyset \\
-dependents(n_N) & = \emptyset \\
-n_j \in deps(n_i) & \Rightarrow j < i \Rightarrow n_j \leq n_i \\
-deps(n_i) & \subseteq \left\{ n_j | j < i \right\} \\
-n_j \in dependents(n_i) & \Rightarrow j > i \Rightarrow n_j \geq n_i \\
-dependents(n_i) & \subseteq \left\{ n_j | j > i \right\}
+dependents(n_1) & = \emptyset \\
+deps(n_N) & = \emptyset \\
+n_j \in dependents(n_i) & \Rightarrow j < i \Rightarrow n_j \leq n_i \\
+dependents(n_i) & \subseteq \left\{ n_j | j < i \right\} \\
+n_j \in deps(n_i) & \Rightarrow j > i \Rightarrow n_j \geq n_i \\
+deps(n_i) & \subseteq \left\{ n_j | j > i \right\}
 \end{align*}
 $$
 
 Because $R_i$ of $n_i$ is only relevant to $R_j$ of the dependents of $n_i$,
-we can minimize $R_i$ in the **reversed** topological order.
+we can minimize $R_i$ in the topological order.
 
-For example, first consider the $n_N$,
+For example, first consider the $n_1$,
 $$
-dependents(n_N) = \emptyset \Longrightarrow R_N = 0
+dependents(n_1) = \emptyset \Longrightarrow R_1 = 0
 $$
 
-We have nothing to do with minimizing the $R_N$ for $n_N$, as it is already $0$.
+We have nothing to do with minimizing the $R_1$ for $n_1$, as it is already $0$.
 
 Now let's look at $n_{i}$,
 $$
 \begin{split}
-& dependents(n_i) \subseteq \left\{ n_j | j > i \right\} \\
-\Longrightarrow \quad & R_i = \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j > i \right\}} (1 + R_j) \\
-\Longrightarrow \quad & R_i = \left|dependents(n_i)\right| + \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j > i \right\}} R_j
+& dependents(n_i) \subseteq \left\{ n_j | j < i \right\} \\
+\Longrightarrow \quad & R_i = \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j < i \right\}} (1 + R_j) \\
+\Longrightarrow \quad & R_i = \left|dependents(n_i)\right| + \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j < i \right\}} R_j
 \end{split}
 $$
 
-Remember that we minimize $R_*$ from $R_N$ to $R_1$, which means, at the moment, all $R_j \text{s}$ such that $j > i$ have already been minimized.
+Remember that we minimize $R_*$ from $R_1$ to $R_N$, which means, at the moment, all $R_j \text{s}$ such that $j < i$ have already been minimized.
 
 So, to minimize $R_i$, we only need to minimize the number of dependents for each $n_i$.
 

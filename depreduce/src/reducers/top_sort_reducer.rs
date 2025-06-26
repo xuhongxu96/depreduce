@@ -1,52 +1,147 @@
-use crate::editors::DepEditor;
-use crate::graph::DependencyGraph;
-use crate::graph::bazel_xml_parser::Query;
+use std::collections::HashMap;
+use std::process::Command;
+
+use crate::editors::{DepEditor, FileEdit};
+use crate::graph::{DependencyGraph, NodeId};
+use crate::reducers::candidate_generators::ReductionCandidateGenerator;
 
 struct TopSortReducer {
-    graph: DependencyGraph,
     editor: Box<dyn DepEditor>,
 }
 
-impl TopSortReducer {
-    pub fn new(graph: DependencyGraph, editor: Box<dyn DepEditor>) -> Self {
-        Self { graph, editor }
+struct ReduceSettings<'a> {
+    graph: &'a DependencyGraph,
+    build_command: String,
+    cwd: String,
+}
+
+struct ReduceContext<'a> {
+    history: HashMap<String, String>,
+    logs: String,
+
+    settings: &'a ReduceSettings<'a>,
+}
+
+impl<'a> ReduceContext<'a> {
+    pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
+        Self {
+            logs: String::new(),
+            history: HashMap::new(),
+            settings,
+        }
     }
 
-    pub fn reduce(&self) -> Result<String, String> {
-        let mut logs = String::new();
+    fn backup_and_apply(&mut self, edit: FileEdit) {
+        let backup_content = std::fs::read_to_string(&edit.path)
+            .unwrap_or_else(|err| panic!("Failed to read file {}: {}", edit.path, err));
 
-        let mut sorted_nodes = self.graph.topsort();
-        sorted_nodes.reverse();
+        std::fs::write(&edit.path, &edit.content)
+            .unwrap_or_else(|err| panic!("Failed to write file {}: {}", edit.path, err));
+
+        self.history.insert(edit.path, backup_content);
+    }
+
+    fn restore_backup(&mut self) {
+        for (path, content) in &self.history {
+            std::fs::write(path, content)
+                .unwrap_or_else(|err| panic!("Failed to restore file {}: {}", path, err));
+        }
+        self.history.clear();
+    }
+
+    fn try_build(&mut self) -> Result<(), std::io::Error> {
+        let exit = Command::new("/bin/bash")
+            .arg(&self.settings.build_command)
+            .current_dir(&self.settings.cwd)
+            .spawn()?
+            .wait()?;
+        if exit.success() {
+            Ok(())
+        } else {
+            Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Build failed",
+            ))
+        }
+    }
+
+    fn commit_changes(&mut self) {
+        self.history.clear();
+    }
+
+    fn generate_reduction_candidates(&mut self, node_id: NodeId) -> ReductionCandidateGenerator {
+        let mut dependents_vec = Vec::new();
+
+        if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
+            dependents_vec = dependents.iter().map(|(a, b)| (*a, *b)).collect();
+        }
+
+        ReductionCandidateGenerator::new(dependents_vec)
+    }
+}
+
+impl TopSortReducer {
+    pub fn new(editor: Box<dyn DepEditor>) -> Self {
+        Self { editor }
+    }
+
+    pub fn reduce(&self, settings: &ReduceSettings) -> Result<String, String> {
+        let &ReduceSettings { graph, .. } = settings;
+
+        let mut ctx = ReduceContext::new(settings);
+
+        let mut sorted_nodes = graph.topsort();
+
+        ctx.logs.push_str("Sorted nodes in topological order:\n");
+        for node_id in sorted_nodes.iter() {
+            ctx.logs
+                .push_str(&format!("  {}\n", graph.nodes.get(*node_id).unwrap().label));
+        }
 
         for node_id in sorted_nodes {
-            let label = &self.graph.nodes[node_id].label;
+            let label = graph.nodes[node_id].label.clone();
+            let mut generator = ctx.generate_reduction_candidates(node_id);
 
-            if let Some(dependents) = self.graph.node2in_edges.get(&node_id) {
-                for (dep_node_id, edge_id) in dependents {
-                    let dep_label = &self.graph.nodes[*dep_node_id].label;
-                    match self.editor.remove(dep_label, label) {
-                        Ok(file_edit) => {
-                            logs.push_str(&format!(
-                                "Removed dependency from {} to {}\n",
-                                dep_label, label
-                            ));
+            while let Some(candidates) = generator.next() {
+                for (dep_node, _edge_id) in candidates {
+                    let dep_node_label = graph.nodes[dep_node].label.clone();
+                    if let Ok(edit) = self.editor.remove(&dep_node_label, &label) {
+                        ctx.backup_and_apply(edit);
+                        ctx.logs.push_str(&format!(
+                            "Applied reduction candidate for {} -> {}\n",
+                            label, dep_node_label
+                        ));
 
-                            // TODO: Apply the file edit
+                        match ctx.try_build() {
+                            Ok(_) => {
+                                ctx.commit_changes();
+                                ctx.logs.push_str(&format!(
+                                    "  Build succeeded after applying reduction candidate for {} -> {}\n",
+                                    label, dep_node_label
+                                ));
+                                generator.report_result(true);
+                            }
+                            Err(e) => {
+                                ctx.restore_backup();
+                                ctx.logs.push_str(&format!(
+                                    "  Build failed after applying reduction candidate for {} -> {}, error: {}\n",
+                                    label, dep_node_label, e
+                                ));
+                                generator.report_result(false);
+                            }
                         }
-                        Err(err) => {
-                            logs.push_str(&format!(
-                                "Failed to remove dependency from {} to {}: {}\n",
-                                dep_label, label, err
-                            ));
-                        }
+                    } else {
+                        ctx.logs.push_str(&format!(
+                            "Failed to apply reduction candidate for {} -> {}\n",
+                            label, dep_node_label
+                        ));
+                        generator.report_result(false);
                     }
                 }
-            } else {
-                logs.push_str(&format!("No dependent for node {}\n", label));
             }
         }
 
-        Ok(logs)
+        Ok(ctx.logs)
     }
 }
 
@@ -56,7 +151,7 @@ mod tests {
 
     use crate::{
         editors::BazelDepEditor,
-        graph::bazel_xml_parser::{convert_query_to_dep_graph, parse_bazel_xml},
+        graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
     };
 
     use super::*;
@@ -71,8 +166,42 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
         );
 
-        let reducer = TopSortReducer::new(graph, Box::new(editor));
-        let res = reducer.reduce();
+        let reducer = TopSortReducer::new(Box::new(editor));
+        let settings = ReduceSettings {
+            graph: &graph,
+            build_command: get_test_data_path!("build.sh")
+                .to_string_lossy()
+                .to_string(),
+            cwd: get_test_data_path!("../../../examples/simple-cxx-project")
+                .to_string_lossy()
+                .to_string(),
+        };
+        let res = reducer.reduce(&settings);
+        assert!(res.is_ok());
+        println!("{}", res.unwrap());
+    }
+
+    #[test]
+    fn test_java() {
+        let xml = read_test_data!("java-deps.xml");
+        let query: Query = parse_bazel_xml(&xml).unwrap();
+        let graph = convert_query_to_dep_graph(&query).unwrap();
+        let editor = BazelDepEditor::new(
+            &query,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project".to_string(),
+        );
+
+        let reducer = TopSortReducer::new(Box::new(editor));
+        let settings = ReduceSettings {
+            graph: &graph,
+            build_command: get_test_data_path!("build.sh")
+                .to_string_lossy()
+                .to_string(),
+            cwd: get_test_data_path!("../../../examples/simple-java-project")
+                .to_string_lossy()
+                .to_string(),
+        };
+        let res = reducer.reduce(&settings);
         assert!(res.is_ok());
         println!("{}", res.unwrap());
     }

@@ -138,7 +138,7 @@ fn extract_list_items(expr: &rustpython_parser::ast::Expr) -> Vec<(String, Inter
             }
 
             if let Some(last) = res.last_mut() {
-                last.1.end = e.range().end().to_usize();
+                last.1.end = e.range().end().to_usize() - 1;
             }
         }
         _ => {}
@@ -496,6 +496,26 @@ mod tests {
             edit.content,
             read_or_create_test_data!(
                 "dep_editors/bazel_dep_editor/remove_main_liba.BUILD",
+                edit.content
+            )
+        );
+    }
+
+    #[rstest]
+    fn test_bazel_dep_editor_remove_cpp(cxx_query: &Query) {
+        let mut editor = BazelDepEditor::new(
+            cxx_query,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
+        );
+        let edit = editor.remove("//main:main", "//main:main.cpp").unwrap();
+        assert_eq!(
+            edit.path,
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+        );
+        assert_eq!(
+            edit.content,
+            read_or_create_test_data!(
+                "dep_editors/bazel_dep_editor/remove_main_cpp.BUILD",
                 edit.content
             )
         );
