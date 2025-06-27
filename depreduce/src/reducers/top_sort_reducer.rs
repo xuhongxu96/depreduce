@@ -116,6 +116,7 @@ impl<'a> ReduceContext<'a> {
         let mut dependents_vec = Vec::new();
 
         if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
+            // TODO: union the original dependents with the newly added ones
             dependents_vec = dependents.iter().map(|(a, b)| (*a, *b)).collect();
             dependents_vec.sort();
         }

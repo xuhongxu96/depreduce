@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     io::{BufRead, BufReader, Read},
     path::Path,
     process::{Command, exit},
@@ -27,12 +28,29 @@ struct Args {
 
     #[arg(short, long, default_value = "depreduce.log")]
     log: String,
+
+    #[arg(short, long)]
+    deps_only: bool,
 }
 
-fn run_reducer_test(xml: &str, workspace_root: String, build_script: String) -> String {
+fn run_reducer_test(
+    xml: &str,
+    workspace_root: String,
+    build_script: String,
+    deps_only: bool,
+) -> String {
     let query: Query = parse_bazel_xml(xml).unwrap();
     let graph = convert_query_to_dep_graph(&query).unwrap();
-    let editor = BazelDepEditor::new(&query, workspace_root.to_string());
+    let editor = if deps_only {
+        BazelDepEditor::new_with_custom_keywords(
+            &query,
+            workspace_root.to_string(),
+            HashSet::from(["deps".to_string()]),
+            HashSet::from(["deps".to_string()]),
+        )
+    } else {
+        BazelDepEditor::new(&query, workspace_root.to_string())
+    };
 
     let reducer = TopSortReducer::new(Box::new(editor));
     let settings = ReduceSettings {
@@ -105,6 +123,7 @@ fn main() {
             .unwrap()
             .to_string_lossy()
             .to_string(),
+        args.deps_only,
     );
     std::fs::write(&args.log, log).expect("Failed to write log file");
 }
