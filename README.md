@@ -344,11 +344,11 @@ So, $R_k$ actually does not change and $R_i$ decreased by $1 + R_j$.
 The overall sum of $R$ will be definitely reduced.
 
 
-## Usage
+## Our Approach
 
-### Static Dependency Analysis via `depreduce`
+### Static Dependency Analysis via [`depreduce`]
 
-`depreduce` is a novel tool for static dependency analysis and reduction proposed by us.
+[`depreduce`] is a novel tool for static dependency analysis and reduction proposed by us.
 
 #### Get Dependency Graph from Bazel Query
 
@@ -358,6 +358,11 @@ The overall sum of $R$ will be definitely reduced.
 bazel query "deps(//...)" --notool_deps --noimplicit_deps --output xml
 ```
 
+#### How to Run [`depreduce`]
+
+```sh
+depreduce --workspace /data/h445xu/repo/perses-private --command scripts/build_perses.sh
+```
 
 [`buildfs`]: https://dl.acm.org/doi/10.1145/3428212
 [`BuildChecker`]: https://ieeexplore.ieee.org/document/10981616
