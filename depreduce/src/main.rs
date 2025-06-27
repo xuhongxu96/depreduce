@@ -1,5 +1,5 @@
 use std::{
-    io::Read,
+    io::{BufRead, BufReader, Read},
     path::Path,
     process::{Command, exit},
 };
@@ -77,12 +77,21 @@ fn main() {
         .spawn()
         .expect("Failed to run bazel query");
 
-    p.wait().expect("Bazel query did not finish successfully");
     let mut xml_str = String::new();
-    p.stdout
-        .expect("Failed to get bazel query stdout")
-        .read_to_string(&mut xml_str)
-        .expect("Failed to read bazel query output");
+    let stdout = p.stdout.as_mut().unwrap();
+    let stdout_reader = BufReader::new(stdout);
+    let stdout_lines = stdout_reader.lines();
+
+    for (i, line) in stdout_lines.enumerate() {
+        let line = line.expect("Failed to read line from bazel query output");
+
+        xml_str.push_str(&line);
+        if i % 1000 == 0 {
+            eprintln!("Read {} lines from bazel query output...", i);
+        }
+    }
+
+    p.wait().expect("Bazel query did not finish successfully");
 
     let log = run_reducer_test(
         &xml_str,

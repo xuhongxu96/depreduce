@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::io::Read;
+use std::io::{BufRead, BufReader, Read};
 use std::process::{Command, Stdio};
 
 use utils::indent_all_lines;
@@ -69,25 +69,24 @@ impl<'a> ReduceContext<'a> {
             .current_dir(&self.settings.cwd)
             .stderr(Stdio::piped())
             .spawn()?;
-        let exit = process.wait()?;
-        let mut stderr_str = String::new();
-        process
-            .stderr
-            .map(|mut stderr| stderr.read_to_string(&mut stderr_str));
 
+        let stderr = process.stderr.as_mut().unwrap();
+        let stderr_reader = BufReader::new(stderr);
+        let stderr_lines = stderr_reader.lines();
+
+        for line in stderr_lines {
+            let line = line.expect("Failed to read line from bazel query output");
+            self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDERR));
+            self.log("\n");
+        }
+
+        let exit = process.wait()?;
         if exit.success() {
-            return Ok(format!(
-                "Build succeeded: \n{}",
-                indent_all_lines(&stderr_str, INDENT_SIZE_FOR_STDERR)
-            ));
+            return Ok(format!("Build succeeded"));
         } else {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                format!(
-                    "Build failed with exit code {}:\n{}",
-                    exit.code().unwrap_or(-1),
-                    indent_all_lines(&stderr_str, INDENT_SIZE_FOR_STDERR)
-                ),
+                format!("Build failed with exit code {}", exit.code().unwrap_or(-1),),
             ));
         }
     }
@@ -111,6 +110,11 @@ impl<'a> ReduceContext<'a> {
             .reduction_candidate_generator_factory
             .create(dependents_vec)
     }
+
+    fn log(&mut self, message: &str) {
+        self.logs.push_str(message);
+        print!("{}", message);
+    }
 }
 
 impl TopSortReducer {
@@ -127,7 +131,7 @@ impl TopSortReducer {
         let mut changed = false;
 
         let label = ctx.settings.graph.nodes[node_id].label.clone();
-        ctx.logs.push_str(&format!(
+        ctx.log(&format!(
             "  Trying to add transitive dependencies for node {}\n",
             label
         ));
@@ -158,7 +162,7 @@ impl TopSortReducer {
             for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
                 if let Some(edges) = ctx.settings.graph.node2out_edges.get(dep_node) {
                     if edges.contains_key(transitive_dep_id) {
-                        ctx.logs.push_str(&format!(
+                        ctx.log(&format!(
                             "  Skipping {} -> {} (already exists)\n",
                             dep_node_label, transitive_dep_label
                         ));
@@ -169,7 +173,7 @@ impl TopSortReducer {
                 match ctx.settings.graph.nodes[*transitive_dep_id].props.t {
                     crate::graph::NodeType::Target => {}
                     _ => {
-                        ctx.logs.push_str(&format!(
+                        ctx.log(&format!(
                             "  Skipping {} -> {} (non-target)\n",
                             dep_node_label, transitive_dep_label
                         ));
@@ -182,13 +186,13 @@ impl TopSortReducer {
                         changed = true;
                         ctx.backup(&edit);
                         ctx.apply(&edit);
-                        ctx.logs.push_str(&format!(
+                        ctx.log(&format!(
                             "  Added {} -> {}\n",
                             dep_node_label, transitive_dep_label
                         ));
                     }
                     Err(e) => {
-                        ctx.logs.push_str(&format!(
+                        ctx.log(&format!(
                             "Failed to add {} -> {}: {}\n",
                             dep_node_label, transitive_dep_label, e
                         ));
@@ -200,7 +204,7 @@ impl TopSortReducer {
         }
 
         if !changed {
-            ctx.logs.push_str("  No changes made, skipping build\n");
+            ctx.log("  No changes made, skipping build\n");
             ctx.restore_backup();
             return false;
         }
@@ -208,12 +212,12 @@ impl TopSortReducer {
         match ctx.try_build() {
             Ok(stderr) => {
                 ctx.commit_changes();
-                ctx.logs.push_str(&format!("  {}\n", stderr));
+                ctx.log(&format!("  {}\n", stderr));
                 return true;
             }
             Err(e) => {
                 ctx.restore_backup();
-                ctx.logs.push_str(&format!("  {}\n", e));
+                ctx.log(&format!("  {}\n", e));
                 return false;
             }
         }
@@ -227,12 +231,12 @@ impl TopSortReducer {
     ) -> bool {
         let deps_keyword = HashSet::from(["deps".to_string()]);
 
-        ctx.logs.push_str("  Trying a new candidate set\n");
+        ctx.log("  Trying a new candidate set\n");
 
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         for (dep_node, _edge_id) in candidates {
             if ctx.in_degrees[*dep_node] == 0 {
-                ctx.logs.push_str(
+                ctx.log(
                     format!(
                         "    Only consider deps for {} -> {} (because of no in-degree)\n",
                         label, ctx.settings.graph.nodes[*dep_node].label
@@ -249,11 +253,10 @@ impl TopSortReducer {
                 Ok(edit) => {
                     ctx.backup(&edit);
                     ctx.apply(&edit);
-                    ctx.logs
-                        .push_str(&format!("    Removed {} -> {}\n", dep_node_label, label));
+                    ctx.log(&format!("    Removed {} -> {}\n", dep_node_label, label));
                 }
                 Err(e) => {
-                    ctx.logs.push_str(&format!(
+                    ctx.log(&format!(
                         "    Failed to remove {} -> {}: {}\n",
                         dep_node_label, label, e
                     ));
@@ -263,18 +266,18 @@ impl TopSortReducer {
         }
 
         if ctx.history.is_empty() {
-            ctx.logs.push_str("  No changes made, skipping build\n");
+            ctx.log("  No changes made, skipping build\n");
             return false;
         }
 
         match ctx.try_build() {
             Ok(stderr) => {
                 ctx.commit_changes();
-                ctx.logs.push_str(&format!("  {}\n\n", stderr));
+                ctx.log(&format!("  {}\n\n", stderr));
                 true
             }
             Err(e) => {
-                ctx.logs.push_str(&format!("  {}\n\n", e));
+                ctx.log(&format!("  {}\n\n", e));
                 self.try_add_transitive_deps(ctx, candidates, node_id)
             }
         }
@@ -286,10 +289,9 @@ impl TopSortReducer {
         let mut ctx = ReduceContext::new(settings);
         let sorted_nodes = graph.topsort();
 
-        ctx.logs.push_str("Sorted nodes in topological order:\n");
+        ctx.log("Sorted nodes in topological order:\n");
         for node_id in sorted_nodes.iter() {
-            ctx.logs
-                .push_str(&format!("  {}\n", graph.nodes.get(*node_id).unwrap().label));
+            ctx.log(&format!("  {}\n", graph.nodes.get(*node_id).unwrap().label));
         }
 
         for i in 0..graph.nodes.len() {
@@ -298,7 +300,7 @@ impl TopSortReducer {
         }
 
         for node_id in sorted_nodes {
-            ctx.logs.push_str(&format!(
+            ctx.log(&format!(
                 "Processing node: {}\n",
                 graph.nodes.get(node_id).unwrap().label
             ));

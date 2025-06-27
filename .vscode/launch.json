@@ -7,6 +7,27 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug executable 'depreduce'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=depreduce",
+                    "--package=depreduce"
+                ],
+                "filter": {
+                    "name": "depreduce",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "--workspace",
+                "/data/h445xu/repo/perses-private/",
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug unit tests in library 'buildfuzz'",
             "cargo": {
                 "args": [

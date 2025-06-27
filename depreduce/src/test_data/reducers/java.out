@@ -95,22 +95,18 @@ Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatil
 Processing node: //src/com/example/libb:libb
   Trying a new candidate set
     Removed //:Main -> //src/com/example/libb:libb
-  Build succeeded: 
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        
-        Analyzing: 3 targets (4 packages loaded, 2346 targets configured)
-        [1 / 1] no actions running
-        INFO: Analyzed 3 targets (4 packages loaded, 2346 targets configured).
-        [7 / 11] [Prepa] Building src/com/example/liba/libliba.jar (1 source file)
-        [8 / 11] Building src/com/example/liba/libliba.jar (1 source file); 1s multiplex-worker ... (3 actions running)
+
+        INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
         INFO: Found 3 targets...
-        INFO: Elapsed time: 4.237s, Critical Path: 3.04s
-        INFO: 11 processes: 1 action cache hit, 5 internal, 3 linux-sandbox, 3 worker.
-        INFO: Build completed successfully, 11 total actions
+        INFO: Elapsed time: 0.262s, Critical Path: 0.08s
+        INFO: 8 processes: 2 action cache hit, 5 internal, 3 worker.
+        INFO: Build completed successfully, 8 total actions
+  Build succeeded
 
   Trying a new candidate set
     Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb.jar (because of no in-degree)
@@ -123,13 +119,12 @@ Processing node: //src/com/example/libb:libb
 Processing node: //src/com/example/libb:ClassB.java
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13: in java_library rule //src/com/example/libb:libb: 
         Traceback (most recent call last):
         	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_library.bzl", line 26, column 35, in _proxy
@@ -140,22 +135,22 @@ Processing node: //src/com/example/libb:ClassB.java
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD:3:13: Analysis of target '//src/com/example/libb:libb' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//src/com/example/libb:libb' failed; build aborted
-        INFO: Elapsed time: 0.120s, Critical Path: 0.00s
+        INFO: Elapsed time: 0.118s, Critical Path: 0.00s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/libb:ClassB.java
   No changes made, skipping build
 Processing node: //src/com/example/liba:liba
   Trying a new candidate set
     Removed //:Main -> //src/com/example/liba:liba
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Building Main.jar (1 source file) failed: (Exit 1): java failed: error executing Javac command (from target //:Main) external/rules_java++toolchains+remotejdk21_linux/bin/java '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED' ... (remaining 19 arguments skipped)
         src/com/example/Main.java:3: error: package com.example.liba does not exist
@@ -166,9 +161,10 @@ Processing node: //src/com/example/liba:liba
                                    ^
           symbol:   variable ClassA
           location: class Main
-        INFO: Elapsed time: 0.272s, Critical Path: 0.14s
+        INFO: Elapsed time: 0.253s, Critical Path: 0.10s
         INFO: 6 processes: 1 action cache hit, 6 internal.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/liba:liba
   Skipping //:Main -> //src/com/example/liba:ClassA.java (non-target)
@@ -178,18 +174,18 @@ Processing node: //src/com/example/liba:liba
   No changes made, skipping build
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
-  Build succeeded: 
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
         INFO: Found 3 targets...
-        INFO: Elapsed time: 0.232s, Critical Path: 0.09s
+        INFO: Elapsed time: 0.222s, Critical Path: 0.08s
         INFO: 7 processes: 1 action cache hit, 5 internal, 2 worker.
         INFO: Build completed successfully, 7 total actions
+  Build succeeded
 
   Trying a new candidate set
     Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba.jar (because of no in-degree)
@@ -236,13 +232,12 @@ Processing node: @rules_java//toolchains:current_java_toolchain
 Processing node: //src/com/example/liba:ClassA.java
   Trying a new candidate set
     Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (1 packages loaded, 2 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Building Main.jar (1 source file) failed: (Exit 1): java failed: error executing Javac command (from target //:Main) external/rules_java++toolchains+remotejdk21_linux/bin/java '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED' ... (remaining 19 arguments skipped)
         src/com/example/Main.java:3: error: package com.example.liba does not exist
@@ -253,23 +248,22 @@ Processing node: //src/com/example/liba:ClassA.java
                                    ^
           symbol:   variable ClassA
           location: class Main
-        Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.287s, Critical Path: 0.11s
+        INFO: Elapsed time: 0.261s, Critical Path: 0.11s
         INFO: 7 processes: 6 internal, 1 worker.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/liba:ClassA.java
   No changes made, skipping build
 Processing node: //:src/com/example/Main.java
   Trying a new candidate set
     Removed //:Main -> //:src/com/example/Main.java
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        Analyzing: 3 targets (2 packages loaded, 1 target configured)
-        
+        Analyzing: 3 targets (2 packages loaded, 0 targets configured)
+
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: in java_binary rule //:Main: 
         Traceback (most recent call last):
         	File "/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/rules_java+/java/bazel/rules/bazel_java_binary.bzl", line 32, column 34, in _bazel_java_binary_impl
@@ -282,9 +276,10 @@ Processing node: //:src/com/example/Main.java
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD:3:12: Analysis of target '//:Main' failed
         Use --verbose_failures to see the command lines of failed build steps.
         ERROR: Analysis of target '//:Main' failed; build aborted
-        INFO: Elapsed time: 0.109s, Critical Path: 0.00s
+        INFO: Elapsed time: 0.098s, Critical Path: 0.00s
         INFO: 1 process: 1 internal.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //:src/com/example/Main.java
   No changes made, skipping build

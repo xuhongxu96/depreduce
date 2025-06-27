@@ -62,41 +62,42 @@ Processing node: @bazel_tools//tools/cpp:empty_lib
 Processing node: //main:main.cpp
   Trying a new candidate set
     Removed //main:main -> //main:main.cpp
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (3 packages loaded, 0 targets configured)
         Analyzing: 3 targets (3 packages loaded, 0 targets configured)
-        
-        INFO: Analyzed 3 targets (4 packages loaded, 12 targets configured).
+
+        INFO: Analyzed 3 targets (3 packages loaded, 7 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10: Linking main/main failed: (Exit 1): gcc failed: error executing CppLink command (from target //main:main) /usr/bin/gcc @bazel-out/k8-fastbuild/bin/main/main-0.params
-        
+
         Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
         ld.lld: error: undefined symbol: main
         >>> referenced by /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o:(_start)
         collect2: error: ld returned 1 exit status
-        INFO: Elapsed time: 0.273s, Critical Path: 0.09s
-        INFO: 10 processes: 1 action cache hit, 4 internal, 6 linux-sandbox.
+        Use --verbose_failures to see the command lines of failed build steps.
+        INFO: Elapsed time: 0.230s, Critical Path: 0.08s
+        INFO: 5 processes: 6 action cache hit, 3 internal, 2 linux-sandbox.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //main:main.cpp
   No changes made, skipping build
 Processing node: //libb:libb
   Trying a new candidate set
     Removed //main:main -> //libb:libb
-  Build succeeded: 
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (1 packages loaded, 2 targets configured).
         INFO: Found 3 targets...
-        INFO: Elapsed time: 0.356s, Critical Path: 0.27s
-        INFO: 4 processes: 3 action cache hit, 2 internal, 2 linux-sandbox.
-        INFO: Build completed successfully, 4 total actions
+        INFO: Elapsed time: 0.156s, Critical Path: 0.06s
+        INFO: 3 processes: 4 action cache hit, 2 internal, 1 linux-sandbox.
+        INFO: Build completed successfully, 3 total actions
+  Build succeeded
 
 Processing node: //libb:b.h
   Trying a new candidate set
@@ -112,40 +113,40 @@ Processing node: //liba:liba
   Trying a new candidate set
     Only consider deps for //liba:liba -> //libb:libb (because of no in-degree)
     Removed //libb:libb -> //liba:liba
-  Build succeeded: 
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (1 packages loaded, 3 targets configured).
         INFO: Found 3 targets...
-        INFO: Elapsed time: 0.110s, Critical Path: 0.02s
+        INFO: Elapsed time: 0.096s, Critical Path: 0.02s
         INFO: 2 processes: 2 action cache hit, 1 internal, 1 linux-sandbox.
         INFO: Build completed successfully, 2 total actions
+  Build succeeded
 
   Trying a new candidate set
     Removed //main:main -> //liba:liba
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (1 packages loaded, 2 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10: Compiling main/main.cpp failed: (Exit 1): gcc failed: error executing CppCompile command (from target //main:main) /usr/bin/gcc -U_FORTIFY_SOURCE -fstack-protector -Wall -Wunused-but-set-parameter -Wno-free-nonheap-object -fno-omit-frame-pointer '-std=c++17' -MD -MF ... (remaining 24 arguments skipped)
-        
+
         Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
         main/main.cpp:3:10: fatal error: a.h: No such file or directory
             3 | #include "a.h"
               |          ^~~~~
         compilation terminated.
         Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.160s, Critical Path: 0.04s
+        INFO: Elapsed time: 0.132s, Critical Path: 0.04s
         INFO: 3 processes: 2 action cache hit, 3 internal.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
   Skipping //main:main -> //liba:a.cpp (non-target)
@@ -185,50 +186,50 @@ Processing node: @rules_cc//cc:current_cc_toolchain
 Processing node: //liba:a.h
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.h
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
         Analyzing: 3 targets (2 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (2 packages loaded, 4 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/BUILD:3:11: Compiling liba/a.cpp failed: (Exit 1): gcc failed: error executing CppCompile command (from target //liba:liba) /usr/bin/gcc -U_FORTIFY_SOURCE -fstack-protector -Wall -Wunused-but-set-parameter -Wno-free-nonheap-object -fno-omit-frame-pointer '-std=c++17' -MD -MF ... (remaining 20 arguments skipped)
-        
+
         Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
         liba/a.cpp:1:10: fatal error: a.h: No such file or directory
             1 | #include "a.h"
               |          ^~~~~
         compilation terminated.
         Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.121s, Critical Path: 0.02s
+        INFO: Elapsed time: 0.104s, Critical Path: 0.02s
         INFO: 4 processes: 2 action cache hit, 4 internal.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:a.h
   No changes made, skipping build
 Processing node: //liba:a.cpp
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.cpp
-  Build failed with exit code 1:
         Computing main repo mapping: 
         Loading: 
         Loading: 0 packages loaded
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
         Analyzing: 3 targets (1 packages loaded, 0 targets configured)
-        
+
         INFO: Analyzed 3 targets (1 packages loaded, 3 targets configured).
         ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD:3:10: Linking main/main failed: (Exit 1): gcc failed: error executing CppLink command (from target //main:main) /usr/bin/gcc @bazel-out/k8-fastbuild/bin/main/main-0.params
-        
+
         Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
         ld.lld: error: undefined symbol: add(int, int)
         >>> referenced by main.cpp
         >>>               bazel-out/k8-fastbuild/bin/main/_objs/main/main.pic.o:(main)
         collect2: error: ld returned 1 exit status
         Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.462s, Critical Path: 0.32s
+        INFO: Elapsed time: 0.345s, Critical Path: 0.25s
         INFO: 3 processes: 3 action cache hit, 2 internal, 1 linux-sandbox.
         ERROR: Build did NOT complete successfully
+  Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:a.cpp
   No changes made, skipping build
