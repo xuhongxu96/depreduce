@@ -284,44 +284,18 @@ Processing node: //main:main_lib
 Processing node: //main:Main.kt
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (3 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (3 packages loaded, 0 targets configured)
 
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD:4:15: in kt_jvm_library rule //main:main_lib: 
-        Traceback (most recent call last):
-        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/jvm/impl.bzl", line 218, column 13, in kt_jvm_library_impl
-        		fail(
-        Error in fail: attribute deps: deps without srcs is invalid.
-        To add runtime dependencies use runtime_deps.
-        To export libraries use exports.
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD:4:15: Analysis of target '//main:main_lib' failed
-        Use --verbose_failures to see the command lines of failed build steps.
-        ERROR: Analysis of target '//main:main_lib' failed; build aborted
-        INFO: Elapsed time: 0.162s, Critical Path: 0.00s
-        INFO: 1 process: 1 internal.
-        ERROR: Build did NOT complete successfully
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //main:Main.kt
   No changes made, skipping build
+  Restoring backups:
+    /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD
 Processing node: //libb:libb
   Trying a new candidate set
     Removed //main:main_lib -> //libb:libb
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
 
-        INFO: Analyzed 4 targets (1 packages loaded, 3 targets configured).
-        INFO: Found 4 targets...
-        INFO: Elapsed time: 0.386s, Critical Path: 0.25s
-        INFO: 10 processes: 7 action cache hit, 5 internal, 1 linux-sandbox, 4 worker.
-        INFO: Build completed successfully, 10 total actions
-  Build succeeded
+  Committed changes: Build succeeded
 
   Trying a new candidate set
     Only consider deps for //libb:libb -> //libb:libb.jar (because of no in-degree)
@@ -334,72 +308,22 @@ Processing node: //libb:libb
 Processing node: //libb:ClassB.kt
   Trying a new candidate set
     Removed //libb:libb -> //libb:ClassB.kt
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
 
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/libb/BUILD:3:15: in kt_jvm_library rule //libb:libb: 
-        Traceback (most recent call last):
-        	File "/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/jvm/impl.bzl", line 218, column 13, in kt_jvm_library_impl
-        		fail(
-        Error in fail: attribute deps: deps without srcs is invalid.
-        To add runtime dependencies use runtime_deps.
-        To export libraries use exports.
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/libb/BUILD:3:15: Analysis of target '//libb:libb' failed
-        Use --verbose_failures to see the command lines of failed build steps.
-        ERROR: Analysis of target '//libb:libb' failed; build aborted
-        INFO: Elapsed time: 0.147s, Critical Path: 0.00s
-        INFO: 1 process: 1 internal.
-        ERROR: Build did NOT complete successfully
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libb:ClassB.kt
   No changes made, skipping build
+  Restoring backups:
+    /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/libb/BUILD
 Processing node: //liba:liba
   Trying a new candidate set
     Removed //libb:libb -> //liba:liba
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
 
-        INFO: Analyzed 4 targets (1 packages loaded, 2 targets configured).
-        INFO: Found 4 targets...
-        INFO: Elapsed time: 0.369s, Critical Path: 0.25s
-        INFO: 3 processes: 1 action cache hit, 1 internal, 2 worker.
-        INFO: Build completed successfully, 3 total actions
-  Build succeeded
+  Committed changes: Build succeeded
 
   Trying a new candidate set
     Removed //main:main_lib -> //liba:liba
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (1 packages loaded, 0 targets configured)
 
-        INFO: Analyzed 4 targets (1 packages loaded, 3 targets configured).
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
-        main/Main.kt:3:8: error: unresolved reference: liba
-        import liba.ClassA
-               ^
-        main/Main.kt:9:21: error: unresolved reference: ClassA
-                    println(ClassA.add(2, 3))
-                            ^
-        Jun 27, 2025 12:34:08 AM worker request 0
-        SEVERE: Compilation failure: compile phase failed:
-        main/Main.kt:3:8: error: unresolved reference: liba
-        import liba.ClassA
-               ^
-        main/Main.kt:9:21: error: unresolved reference: ClassA
-                    println(ClassA.add(2, 3))
-                            ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.351s, Critical Path: 0.22s
-        INFO: 6 processes: 1 action cache hit, 6 internal.
-        ERROR: Build did NOT complete successfully
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
@@ -410,6 +334,8 @@ Processing node: //liba:liba
   Skipping //main:main_lib -> @rules_kotlin//third_party:empty.jar (already exists)
   Skipping //main:main_lib -> @rules_kotlin//third_party:empty.jdeps (already exists)
   No changes made, skipping build
+  Restoring backups:
+    /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD
   Trying a new candidate set
     Only consider deps for //liba:liba -> //liba:liba.jar (because of no in-degree)
     Failed to remove //liba:liba.jar -> //liba:liba: Label '//liba:liba.jar' not found
@@ -1164,32 +1090,10 @@ Processing node: @rules_java//toolchains:current_java_toolchain
 Processing node: //liba:ClassA.kt
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
-        Computing main repo mapping: 
-        Loading: 
-        Loading: 0 packages loaded
-        Analyzing: 4 targets (2 packages loaded, 0 targets configured)
-        Analyzing: 4 targets (2 packages loaded, 0 targets configured)
 
-        INFO: Analyzed 4 targets (2 packages loaded, 4 targets configured).
-        ERROR: /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD:4:15: KotlinCompile //main:main_lib { kt: 1, java: 0, srcjars: 0 } for k8 failed: (Exit 1): build failed: error executing KotlinCompile command (from target //main:main_lib) bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_kotlin+/src/main/kotlin/build '--flagfile=bazel-out/k8-fastbuild/bin/main/main_lib-kt.jar-0.params'
-        main/Main.kt:3:8: error: unresolved reference: liba
-        import liba.ClassA
-               ^
-        main/Main.kt:9:21: error: unresolved reference: ClassA
-                    println(ClassA.add(2, 3))
-                            ^
-        Jun 27, 2025 12:34:09 AM worker request 0
-        SEVERE: Compilation failure: compile phase failed:
-        main/Main.kt:3:8: error: unresolved reference: liba
-        import liba.ClassA
-               ^
-        main/Main.kt:9:21: error: unresolved reference: ClassA
-                    println(ClassA.add(2, 3))
-                            ^Use --verbose_failures to see the command lines of failed build steps.
-        INFO: Elapsed time: 0.304s, Critical Path: 0.19s
-        INFO: 8 processes: 1 action cache hit, 8 internal.
-        ERROR: Build did NOT complete successfully
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:ClassA.kt
   No changes made, skipping build
+  Restoring backups:
+    /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/liba/BUILD

@@ -10,7 +10,7 @@ use crate::reducers::candidate_generators::{
     ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
 };
 
-const INDENT_SIZE_FOR_STDERR: usize = 8;
+const INDENT_SIZE_FOR_STDOUT: usize = 8;
 
 pub struct TopSortReducer {
     editor: Box<dyn DepEditor>,
@@ -56,10 +56,14 @@ impl<'a> ReduceContext<'a> {
     }
 
     fn restore_backup(&mut self) {
+        let mut log = String::new();
+        log.push_str("  Restoring backups:\n");
         for (path, content) in &self.history {
             std::fs::write(path, content)
                 .unwrap_or_else(|err| panic!("Failed to restore file {}: {}", path, err));
+            log.push_str(&format!("    {}\n", path));
         }
+        self.log(&log);
         self.history.clear();
     }
 
@@ -76,11 +80,21 @@ impl<'a> ReduceContext<'a> {
 
         for line in stderr_lines {
             let line = line.expect("Failed to read line from bazel query output");
-            self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDERR));
+            self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDOUT));
             self.log("\n");
         }
 
         let exit = process.wait()?;
+
+        process.stdout.take().map(|mut stdout| {
+            let mut output = String::new();
+            stdout.read_to_string(&mut output).unwrap();
+            if !output.is_empty() {
+                self.log(&indent_all_lines("--- stdout ---", INDENT_SIZE_FOR_STDOUT));
+                self.log(&indent_all_lines(&output, INDENT_SIZE_FOR_STDOUT));
+            }
+        });
+
         if exit.success() {
             return Ok(format!("Build succeeded"));
         } else {
@@ -113,7 +127,9 @@ impl<'a> ReduceContext<'a> {
 
     fn log(&mut self, message: &str) {
         self.logs.push_str(message);
-        print!("{}", message);
+        if !cfg!(test) {
+            print!("{}", message);
+        }
     }
 }
 
@@ -210,9 +226,9 @@ impl TopSortReducer {
         }
 
         match ctx.try_build() {
-            Ok(stderr) => {
+            Ok(status) => {
                 ctx.commit_changes();
-                ctx.log(&format!("  {}\n", stderr));
+                ctx.log(&format!("  Committed changes: {}\n", status));
                 return true;
             }
             Err(e) => {
@@ -271,9 +287,9 @@ impl TopSortReducer {
         }
 
         match ctx.try_build() {
-            Ok(stderr) => {
+            Ok(status) => {
                 ctx.commit_changes();
-                ctx.log(&format!("  {}\n\n", stderr));
+                ctx.log(&format!("  Committed changes: {}\n\n", status));
                 true
             }
             Err(e) => {
@@ -355,14 +371,9 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
         };
-        let res = reducer.reduce(&settings).unwrap();
-        assert_eq!(
-            remove_lines_with_indent(&res, INDENT_SIZE_FOR_STDERR),
-            remove_lines_with_indent(
-                &read_or_create_test_data!(expected_out, res),
-                INDENT_SIZE_FOR_STDERR
-            )
-        );
+        let res =
+            remove_lines_with_indent(&reducer.reduce(&settings).unwrap(), INDENT_SIZE_FOR_STDOUT);
+        assert_eq!(res, read_or_create_test_data!(expected_out, res));
     }
 
     #[test]
