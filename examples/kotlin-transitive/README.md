@@ -16,6 +16,18 @@ graph LR;
     d --> c;
 ```
 
+## Intermediate State
+
+```mermaid
+graph LR;
+    main --> a;
+    main --> b;
+    main --> c;
+    d --> a;
+    d --> b;
+    d --> c;
+```
+
 ## After
 
 ```mermaid
