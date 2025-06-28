@@ -52,6 +52,14 @@ impl<'a> ReduceContext<'a> {
         }
     }
 
+    pub fn get_removed_dependents(&self, node_id: NodeId) -> &HashSet<NodeId> {
+        &self.removed_node2in_nodes[node_id]
+    }
+
+    pub fn get_added_dependents(&self, node_id: NodeId) -> &HashSet<NodeId> {
+        &self.added_node2in_nodes[node_id]
+    }
+
     pub fn add_dependents(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
         assert!(
             !self.added_node2in_nodes[node_id].contains(&dependent_node_id),

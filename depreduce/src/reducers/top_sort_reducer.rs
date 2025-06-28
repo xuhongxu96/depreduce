@@ -1,14 +1,7 @@
-use std::collections::{HashMap, HashSet};
-use std::io::{BufRead, BufReader, Read};
-use std::process::{Command, Stdio};
+use std::collections::HashSet;
 
-use utils::indent_all_lines;
-
-use crate::editors::{DepEditor, FileEdit};
-use crate::graph::{DependencyGraph, EdgeId, NodeId};
-use crate::reducers::candidate_generators::{
-    ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
-};
+use crate::editors::DepEditor;
+use crate::graph::NodeId;
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 
 pub struct TopSortReducer {
@@ -47,6 +40,7 @@ impl TopSortReducer {
                 ));
             });
         }
+
         let mut transitive_deps: Vec<_> = transitive_deps
             .into_iter()
             .map(|(id, label)| (id, label))
