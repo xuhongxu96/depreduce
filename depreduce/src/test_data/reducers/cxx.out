@@ -62,8 +62,6 @@ Processing node: @bazel_tools//tools/cpp:empty_lib (11/20)
 Processing node: //main:main.cpp (12/20)
   Trying a new candidate set
     Removed //main:main -> //main:main.cpp
-
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //main:main.cpp
@@ -73,7 +71,6 @@ Processing node: //main:main.cpp (12/20)
 Processing node: //libb:libb (13/20)
   Trying a new candidate set
     Removed //main:main -> //libb:libb
-
   Committed changes: Build succeeded
 
 Processing node: //libb:b.h (14/20)
@@ -90,13 +87,10 @@ Processing node: //liba:liba (16/20)
   Trying a new candidate set
     Only consider deps for //liba:liba -> //libb:libb (because of no in-degree)
     Removed //libb:libb -> //liba:liba
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
     Removed //main:main -> //liba:liba
-
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
@@ -139,8 +133,6 @@ Processing node: @rules_cc//cc:current_cc_toolchain (18/20)
 Processing node: //liba:a.h (19/20)
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.h
-
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:a.h
@@ -150,8 +142,6 @@ Processing node: //liba:a.h (19/20)
 Processing node: //liba:a.cpp (20/20)
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.cpp
-
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:a.cpp

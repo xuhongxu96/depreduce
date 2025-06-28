@@ -129,6 +129,9 @@ impl<'a> ReduceContext<'a> {
 
         for line in stderr_lines {
             let line = line.expect("Failed to read line from bazel query output");
+            if line.is_empty() {
+                continue;
+            }
             self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDOUT));
             self.log("\n");
         }
@@ -138,9 +141,10 @@ impl<'a> ReduceContext<'a> {
         process.stdout.take().map(|mut stdout| {
             let mut output = String::new();
             stdout.read_to_string(&mut output).unwrap();
-            if !output.is_empty() {
+            let trimmed_output = output.trim();
+            if !trimmed_output.is_empty() {
                 self.log(&indent_all_lines("--- stdout ---", INDENT_SIZE_FOR_STDOUT));
-                self.log(&indent_all_lines(&output, INDENT_SIZE_FOR_STDOUT));
+                self.log(&indent_all_lines(&trimmed_output, INDENT_SIZE_FOR_STDOUT));
             }
         });
 

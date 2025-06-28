@@ -284,7 +284,6 @@ Processing node: //main:main_lib (27/197)
 Processing node: //main:Main.kt (28/197)
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //main:Main.kt
@@ -294,7 +293,6 @@ Processing node: //main:Main.kt (28/197)
 Processing node: //libb:libb (29/197)
   Trying a new candidate set
     Removed //main:main_lib -> //libb:libb
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
@@ -308,7 +306,6 @@ Processing node: //libb:libb (29/197)
 Processing node: //libb:ClassB.kt (30/197)
   Trying a new candidate set
     Removed //libb:libb -> //libb:ClassB.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libb:ClassB.kt
@@ -318,12 +315,10 @@ Processing node: //libb:ClassB.kt (30/197)
 Processing node: //liba:liba (31/197)
   Trying a new candidate set
     Removed //libb:libb -> //liba:liba
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
     Removed //main:main_lib -> //liba:liba
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
@@ -1090,7 +1085,6 @@ Processing node: @rules_java//toolchains:current_java_toolchain (196/197)
 Processing node: //liba:ClassA.kt (197/197)
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:ClassA.kt

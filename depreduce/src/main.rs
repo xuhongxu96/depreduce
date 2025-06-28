@@ -12,10 +12,9 @@ use depreduce::{
     graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
     reducers::{
         candidate_generators::NaiveReductionCandidateGeneratorFactory,
-        top_sort_reducer::{ReduceSettings, TopSortReducer},
+        reduce_context::ReduceSettings, top_sort_reducer::TopSortReducer,
     },
 };
-use utils::get_test_data_path;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -59,7 +58,7 @@ fn run_reducer_test(
         build_command: build_script,
         cwd: workspace_root,
     };
-    reducer.reduce(&settings).unwrap()
+    reducer.reduce(&settings).unwrap().get_logs().to_string()
 }
 
 fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {

@@ -95,7 +95,6 @@ Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatil
 Processing node: //src/com/example/libb:libb (21/29)
   Trying a new candidate set
     Removed //:Main -> //src/com/example/libb:libb
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
@@ -109,7 +108,6 @@ Processing node: //src/com/example/libb:libb (21/29)
 Processing node: //src/com/example/libb:ClassB.java (22/29)
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/libb:ClassB.java
@@ -119,7 +117,6 @@ Processing node: //src/com/example/libb:ClassB.java (22/29)
 Processing node: //src/com/example/liba:liba (23/29)
   Trying a new candidate set
     Removed //:Main -> //src/com/example/liba:liba
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/liba:liba
@@ -132,7 +129,6 @@ Processing node: //src/com/example/liba:liba (23/29)
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/BUILD
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/liba:liba
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
@@ -180,7 +176,6 @@ Processing node: @rules_java//toolchains:current_java_toolchain (27/29)
 Processing node: //src/com/example/liba:ClassA.java (28/29)
   Trying a new candidate set
     Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //src/com/example/liba:ClassA.java
@@ -190,7 +185,6 @@ Processing node: //src/com/example/liba:ClassA.java (28/29)
 Processing node: //:src/com/example/Main.java (29/29)
   Trying a new candidate set
     Removed //:Main -> //:src/com/example/Main.java
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //:src/com/example/Main.java

@@ -81,7 +81,6 @@ Processing node: //main:main_lib (18/27)
 Processing node: //main:Main.kt (19/27)
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //main:Main.kt
@@ -91,7 +90,6 @@ Processing node: //main:Main.kt (19/27)
 Processing node: //libd:libd (20/27)
   Trying a new candidate set
     Removed //main:main_lib -> //libd:libd
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libd:libd
@@ -99,7 +97,6 @@ Processing node: //libd:libd (20/27)
   Added //main:main_lib -> //libb:libb
   Added //main:main_lib -> //libc:libc
   Skipping //main:main_lib -> //libd:ClassD.kt (non-target)
-
   Committed changes: Build succeeded
   Trying a new candidate set
     Only consider deps for //libd:libd -> //libd:libd.jar (because of no in-degree)
@@ -112,7 +109,6 @@ Processing node: //libd:libd (20/27)
 Processing node: //libd:ClassD.kt (21/27)
   Trying a new candidate set
     Removed //libd:libd -> //libd:ClassD.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libd:ClassD.kt
@@ -122,7 +118,6 @@ Processing node: //libd:ClassD.kt (21/27)
 Processing node: //libc:libc (22/27)
   Trying a new candidate set
     Removed //libd:libd -> //libc:libc
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libc:libc
@@ -132,7 +127,6 @@ Processing node: //libc:libc (22/27)
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
   Trying a new candidate set
     Removed //main:main_lib -> //libc:libc
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libc:libc
@@ -151,7 +145,6 @@ Processing node: //libc:libc (22/27)
 Processing node: //libc:ClassC.kt (23/27)
   Trying a new candidate set
     Removed //libc:libc -> //libc:ClassC.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libc:ClassC.kt
@@ -161,7 +154,6 @@ Processing node: //libc:ClassC.kt (23/27)
 Processing node: //libb:libb (24/27)
   Trying a new candidate set
     Removed //libd:libd -> //libb:libb
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libb:libb
@@ -171,7 +163,6 @@ Processing node: //libb:libb (24/27)
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
   Trying a new candidate set
     Removed //main:main_lib -> //libb:libb
-
   Committed changes: Build succeeded
 
   Trying a new candidate set
@@ -185,7 +176,6 @@ Processing node: //libb:libb (24/27)
 Processing node: //libb:ClassB.kt (25/27)
   Trying a new candidate set
     Removed //libb:libb -> //libb:ClassB.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //libb:ClassB.kt
@@ -195,7 +185,6 @@ Processing node: //libb:ClassB.kt (25/27)
 Processing node: //liba:liba (26/27)
   Trying a new candidate set
     Removed //libd:libd -> //liba:liba
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
@@ -205,7 +194,6 @@ Processing node: //liba:liba (26/27)
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
   Trying a new candidate set
     Removed //main:main_lib -> //liba:liba
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:liba
@@ -224,7 +212,6 @@ Processing node: //liba:liba (26/27)
 Processing node: //liba:ClassA.kt (27/27)
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
-
   Build failed with exit code 1
 
   Trying to add transitive dependencies for node //liba:ClassA.kt
