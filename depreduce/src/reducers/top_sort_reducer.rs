@@ -9,129 +9,10 @@ use crate::graph::{DependencyGraph, EdgeId, NodeId};
 use crate::reducers::candidate_generators::{
     ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
 };
-
-const INDENT_SIZE_FOR_STDOUT: usize = 8;
+use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 
 pub struct TopSortReducer {
     editor: Box<dyn DepEditor>,
-}
-
-pub struct ReduceSettings<'a> {
-    pub reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
-    pub graph: &'a DependencyGraph,
-    pub build_command: String,
-    pub cwd: String,
-}
-
-pub struct ReduceContext<'a> {
-    history: HashMap<String, String>,
-    in_degrees: Vec<usize>,
-    logs: String,
-
-    settings: &'a ReduceSettings<'a>,
-}
-
-impl<'a> ReduceContext<'a> {
-    pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
-        Self {
-            history: HashMap::new(),
-            in_degrees: Vec::new(),
-            logs: String::new(),
-            settings,
-        }
-    }
-
-    fn backup(&mut self, edit: &FileEdit) {
-        let backup_content = std::fs::read_to_string(&edit.path)
-            .unwrap_or_else(|err| panic!("Failed to read file {}: {}", edit.path, err));
-
-        if !self.history.contains_key(&edit.path) {
-            self.history.insert(edit.path.clone(), backup_content);
-        }
-    }
-
-    fn apply(&self, edit: &FileEdit) {
-        std::fs::write(&edit.path, &edit.content)
-            .unwrap_or_else(|err| panic!("Failed to write file {}: {}", edit.path, err));
-    }
-
-    fn restore_backup(&mut self) {
-        let mut log = String::new();
-        log.push_str("  Restoring backups:\n");
-        for (path, content) in &self.history {
-            std::fs::write(path, content)
-                .unwrap_or_else(|err| panic!("Failed to restore file {}: {}", path, err));
-            log.push_str(&format!("    {}\n", path));
-        }
-        self.log(&log);
-        self.history.clear();
-    }
-
-    fn try_build(&mut self) -> Result<String, std::io::Error> {
-        let mut process = Command::new("/bin/bash")
-            .arg(&self.settings.build_command)
-            .current_dir(&self.settings.cwd)
-            .stderr(Stdio::piped())
-            .spawn()?;
-
-        let stderr = process.stderr.as_mut().unwrap();
-        let stderr_reader = BufReader::new(stderr);
-        let stderr_lines = stderr_reader.lines();
-
-        for line in stderr_lines {
-            let line = line.expect("Failed to read line from bazel query output");
-            self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDOUT));
-            self.log("\n");
-        }
-
-        let exit = process.wait()?;
-
-        process.stdout.take().map(|mut stdout| {
-            let mut output = String::new();
-            stdout.read_to_string(&mut output).unwrap();
-            if !output.is_empty() {
-                self.log(&indent_all_lines("--- stdout ---", INDENT_SIZE_FOR_STDOUT));
-                self.log(&indent_all_lines(&output, INDENT_SIZE_FOR_STDOUT));
-            }
-        });
-
-        if exit.success() {
-            return Ok(format!("Build succeeded"));
-        } else {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("Build failed with exit code {}", exit.code().unwrap_or(-1),),
-            ));
-        }
-    }
-
-    fn commit_changes(&mut self) {
-        self.history.clear();
-    }
-
-    fn generate_reduction_candidates(
-        &mut self,
-        node_id: NodeId,
-    ) -> Box<dyn ReductionCandidateGenerator> {
-        let mut dependents_vec = Vec::new();
-
-        if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
-            // TODO: union the original dependents with the newly added ones
-            dependents_vec = dependents.iter().map(|(a, b)| (*a, *b)).collect();
-            dependents_vec.sort();
-        }
-
-        self.settings
-            .reduction_candidate_generator_factory
-            .create(dependents_vec)
-    }
-
-    fn log(&mut self, message: &str) {
-        self.logs.push_str(message);
-        if !cfg!(test) {
-            print!("{}", message);
-        }
-    }
 }
 
 impl TopSortReducer {
@@ -142,11 +23,9 @@ impl TopSortReducer {
     fn try_add_transitive_deps(
         &self,
         ctx: &mut ReduceContext,
-        candidates: &Vec<(NodeId, EdgeId)>,
+        candidates: &Vec<NodeId>,
         node_id: NodeId,
     ) -> bool {
-        let mut changed = false;
-
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         ctx.log(&format!(
             "  Trying to add transitive dependencies for node {}\n",
@@ -174,7 +53,9 @@ impl TopSortReducer {
             .collect();
         transitive_deps.sort();
 
-        for (dep_node, _edge_id) in candidates {
+        let mut added_edges: Vec<(NodeId, NodeId)> = Vec::new();
+
+        for dep_node in candidates {
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
             for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
                 if let Some(edges) = ctx.settings.graph.node2out_edges.get(dep_node) {
@@ -200,13 +81,13 @@ impl TopSortReducer {
 
                 match self.editor.add(&dep_node_label, transitive_dep_label) {
                     Ok(edit) => {
-                        changed = true;
                         ctx.backup(&edit);
                         ctx.apply(&edit);
                         ctx.log(&format!(
                             "  Added {} -> {}\n",
                             dep_node_label, transitive_dep_label
                         ));
+                        added_edges.push((*dep_node, *transitive_dep_id));
                     }
                     Err(e) => {
                         ctx.log(&format!(
@@ -220,7 +101,7 @@ impl TopSortReducer {
             }
         }
 
-        if !changed {
+        if added_edges.is_empty() {
             ctx.log("  No changes made, skipping build\n");
             ctx.restore_backup();
             return false;
@@ -228,6 +109,9 @@ impl TopSortReducer {
 
         match ctx.try_build() {
             Ok(status) => {
+                for (from, to) in added_edges {
+                    ctx.add_dependents(to, from);
+                }
                 ctx.commit_changes();
                 ctx.log(&format!("  Committed changes: {}\n", status));
                 return true;
@@ -243,16 +127,16 @@ impl TopSortReducer {
     fn try_remove_dep(
         &self,
         ctx: &mut ReduceContext,
-        candidates: &Vec<(NodeId, EdgeId)>,
+        candidates: &Vec<NodeId>,
         node_id: NodeId,
     ) -> bool {
-        let deps_keyword = HashSet::from(["deps".to_string()]);
-
         ctx.log("  Trying a new candidate set\n");
 
+        let mut removed_edges: Vec<(NodeId, NodeId)> = Vec::new();
+
         let label = ctx.settings.graph.nodes[node_id].label.clone();
-        for (dep_node, _edge_id) in candidates {
-            if ctx.in_degrees[*dep_node] == 0 {
+        for dep_node in candidates {
+            if ctx.get_indegree(*dep_node) == 0 {
                 ctx.log(
                     format!(
                         "    Only consider deps for {} -> {} (because of no in-degree)\n",
@@ -265,9 +149,10 @@ impl TopSortReducer {
             let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
             match self
                 .editor
-                .remove(&dep_node_label, &label, ctx.in_degrees[*dep_node] == 0)
+                .remove(&dep_node_label, &label, ctx.get_indegree(*dep_node) == 0)
             {
                 Ok(edit) => {
+                    removed_edges.push((*dep_node, node_id));
                     ctx.backup(&edit);
                     ctx.apply(&edit);
                     ctx.log(&format!("    Removed {} -> {}\n", dep_node_label, label));
@@ -282,13 +167,17 @@ impl TopSortReducer {
             }
         }
 
-        if ctx.history.is_empty() {
+        if removed_edges.is_empty() {
             ctx.log("  No changes made, skipping build\n");
             return false;
         }
 
         match ctx.try_build() {
             Ok(status) => {
+                for (from, to) in removed_edges {
+                    ctx.remove_dependent(to, from);
+                }
+
                 ctx.commit_changes();
                 ctx.log(&format!("  Committed changes: {}\n\n", status));
                 true
@@ -300,7 +189,7 @@ impl TopSortReducer {
         }
     }
 
-    pub fn reduce(&self, settings: &ReduceSettings) -> Result<String, String> {
+    pub fn reduce<'a>(&self, settings: &'a ReduceSettings) -> Result<ReduceContext<'a>, String> {
         let &ReduceSettings { graph, .. } = settings;
 
         let mut ctx = ReduceContext::new(settings);
@@ -311,15 +200,12 @@ impl TopSortReducer {
             ctx.log(&format!("  {}\n", graph.nodes.get(*node_id).unwrap().label));
         }
 
-        for i in 0..graph.nodes.len() {
-            ctx.in_degrees
-                .push(graph.node2in_edges.get(&i).map_or(0, |edges| edges.len()));
-        }
-
-        for node_id in sorted_nodes {
+        for (i, &node_id) in sorted_nodes.iter().enumerate() {
             ctx.log(&format!(
-                "Processing node: {}\n",
-                graph.nodes.get(node_id).unwrap().label
+                "Processing node: {} ({}/{})\n",
+                graph.nodes.get(node_id).unwrap().label,
+                i + 1,
+                sorted_nodes.len()
             ));
 
             let mut generator = ctx.generate_reduction_candidates(node_id);
@@ -327,13 +213,10 @@ impl TopSortReducer {
             while let Some(candidates) = generator.next() {
                 let res = self.try_remove_dep(&mut ctx, &candidates, node_id);
                 generator.report_result(res);
-                if res {
-                    ctx.in_degrees[node_id] -= candidates.len();
-                }
             }
         }
 
-        Ok(ctx.logs)
+        Ok(ctx)
     }
 }
 
@@ -344,7 +227,10 @@ mod tests {
     use crate::{
         editors::BazelDepEditor,
         graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
-        reducers::candidate_generators::NaiveReductionCandidateGeneratorFactory,
+        reducers::{
+            candidate_generators::NaiveReductionCandidateGeneratorFactory,
+            reduce_context::INDENT_SIZE_FOR_STDOUT,
+        },
     };
 
     use super::*;
@@ -372,8 +258,10 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
         };
-        let res =
-            remove_lines_with_indent(&reducer.reduce(&settings).unwrap(), INDENT_SIZE_FOR_STDOUT);
+        let res = remove_lines_with_indent(
+            reducer.reduce(&settings).unwrap().get_logs(),
+            INDENT_SIZE_FOR_STDOUT,
+        );
         assert_eq!(res, read_or_create_test_data!(expected_out, res));
     }
 

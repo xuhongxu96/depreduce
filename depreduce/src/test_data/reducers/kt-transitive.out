@@ -26,22 +26,22 @@ Sorted nodes in topological order:
   //libb:ClassB.kt
   //liba:liba
   //liba:ClassA.kt
-Processing node: //main:main_lib-sources.jar
-Processing node: //main:main_lib.jar
-Processing node: //main:main_deploy.jar.unstripped
-Processing node: //main:main_deploy.jar
-Processing node: //main:main_deploy-src.jar
-Processing node: //main:main-src.jar
-Processing node: //main:main.jar
-Processing node: //libd:libd-sources.jar
-Processing node: //libd:libd.jar
-Processing node: //libc:libc-sources.jar
-Processing node: //libc:libc.jar
-Processing node: //libb:libb-sources.jar
-Processing node: //libb:libb.jar
-Processing node: //liba:liba-sources.jar
-Processing node: //liba:liba.jar
-Processing node: //main:main
+Processing node: //main:main_lib-sources.jar (1/27)
+Processing node: //main:main_lib.jar (2/27)
+Processing node: //main:main_deploy.jar.unstripped (3/27)
+Processing node: //main:main_deploy.jar (4/27)
+Processing node: //main:main_deploy-src.jar (5/27)
+Processing node: //main:main-src.jar (6/27)
+Processing node: //main:main.jar (7/27)
+Processing node: //libd:libd-sources.jar (8/27)
+Processing node: //libd:libd.jar (9/27)
+Processing node: //libc:libc-sources.jar (10/27)
+Processing node: //libc:libc.jar (11/27)
+Processing node: //libb:libb-sources.jar (12/27)
+Processing node: //libb:libb.jar (13/27)
+Processing node: //liba:liba-sources.jar (14/27)
+Processing node: //liba:liba.jar (15/27)
+Processing node: //main:main (16/27)
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main.jar (because of no in-degree)
     Failed to remove //main:main.jar -> //main:main: Label '//main:main.jar' not found
@@ -62,11 +62,11 @@ Processing node: //main:main
     Only consider deps for //main:main -> //main:main_deploy.jar.unstripped (because of no in-degree)
     Failed to remove //main:main_deploy.jar.unstripped -> //main:main: Label '//main:main_deploy.jar.unstripped' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
+Processing node: @bazel_tools//tools/jdk:launcher_flag_alias (17/27)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/jdk:launcher_flag_alias: Dependency Label '@bazel_tools//tools/jdk:launcher_flag_alias' not found
   No changes made, skipping build
-Processing node: //main:main_lib
+Processing node: //main:main_lib (18/27)
   Trying a new candidate set
     Failed to remove //main:main -> //main:main_lib: Dependency Label '//main:main_lib' not found
   No changes made, skipping build
@@ -78,7 +78,7 @@ Processing node: //main:main_lib
     Only consider deps for //main:main_lib -> //main:main_lib-sources.jar (because of no in-degree)
     Failed to remove //main:main_lib-sources.jar -> //main:main_lib: Label '//main:main_lib-sources.jar' not found
   No changes made, skipping build
-Processing node: //main:Main.kt
+Processing node: //main:Main.kt (19/27)
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
 
@@ -88,7 +88,7 @@ Processing node: //main:Main.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD
-Processing node: //libd:libd
+Processing node: //libd:libd (20/27)
   Trying a new candidate set
     Removed //main:main_lib -> //libd:libd
 
@@ -109,7 +109,7 @@ Processing node: //libd:libd
     Only consider deps for //libd:libd -> //libd:libd-sources.jar (because of no in-degree)
     Failed to remove //libd:libd-sources.jar -> //libd:libd: Label '//libd:libd-sources.jar' not found
   No changes made, skipping build
-Processing node: //libd:ClassD.kt
+Processing node: //libd:ClassD.kt (21/27)
   Trying a new candidate set
     Removed //libd:libd -> //libd:ClassD.kt
 
@@ -119,7 +119,7 @@ Processing node: //libd:ClassD.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
-Processing node: //libc:libc
+Processing node: //libc:libc (22/27)
   Trying a new candidate set
     Removed //libd:libd -> //libc:libc
 
@@ -131,6 +131,16 @@ Processing node: //libc:libc
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
   Trying a new candidate set
+    Removed //main:main_lib -> //libc:libc
+
+  Build failed with exit code 1
+
+  Trying to add transitive dependencies for node //libc:libc
+  Skipping //main:main_lib -> //libc:ClassC.kt (non-target)
+  No changes made, skipping build
+  Restoring backups:
+    /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/main/BUILD
+  Trying a new candidate set
     Only consider deps for //libc:libc -> //libc:libc.jar (because of no in-degree)
     Failed to remove //libc:libc.jar -> //libc:libc: Label '//libc:libc.jar' not found
   No changes made, skipping build
@@ -138,7 +148,7 @@ Processing node: //libc:libc
     Only consider deps for //libc:libc -> //libc:libc-sources.jar (because of no in-degree)
     Failed to remove //libc:libc-sources.jar -> //libc:libc: Label '//libc:libc-sources.jar' not found
   No changes made, skipping build
-Processing node: //libc:ClassC.kt
+Processing node: //libc:ClassC.kt (23/27)
   Trying a new candidate set
     Removed //libc:libc -> //libc:ClassC.kt
 
@@ -148,7 +158,7 @@ Processing node: //libc:ClassC.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libc/BUILD
-Processing node: //libb:libb
+Processing node: //libb:libb (24/27)
   Trying a new candidate set
     Removed //libd:libd -> //libb:libb
 
@@ -160,6 +170,11 @@ Processing node: //libb:libb
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libd/BUILD
   Trying a new candidate set
+    Removed //main:main_lib -> //libb:libb
+
+  Committed changes: Build succeeded
+
+  Trying a new candidate set
     Only consider deps for //libb:libb -> //libb:libb.jar (because of no in-degree)
     Failed to remove //libb:libb.jar -> //libb:libb: Label '//libb:libb.jar' not found
   No changes made, skipping build
@@ -167,7 +182,7 @@ Processing node: //libb:libb
     Only consider deps for //libb:libb -> //libb:libb-sources.jar (because of no in-degree)
     Failed to remove //libb:libb-sources.jar -> //libb:libb: Label '//libb:libb-sources.jar' not found
   No changes made, skipping build
-Processing node: //libb:ClassB.kt
+Processing node: //libb:ClassB.kt (25/27)
   Trying a new candidate set
     Removed //libb:libb -> //libb:ClassB.kt
 
@@ -177,7 +192,7 @@ Processing node: //libb:ClassB.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive/libb/BUILD
-Processing node: //liba:liba
+Processing node: //liba:liba (26/27)
   Trying a new candidate set
     Removed //libd:libd -> //liba:liba
 
@@ -206,7 +221,7 @@ Processing node: //liba:liba
     Only consider deps for //liba:liba -> //liba:liba-sources.jar (because of no in-degree)
     Failed to remove //liba:liba-sources.jar -> //liba:liba: Label '//liba:liba-sources.jar' not found
   No changes made, skipping build
-Processing node: //liba:ClassA.kt
+Processing node: //liba:ClassA.kt (27/27)
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
 

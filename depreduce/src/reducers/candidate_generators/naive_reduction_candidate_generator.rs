@@ -1,15 +1,15 @@
 use super::{ReductionCandidateGenerator, ReductionCandidateGeneratorFactory};
-use crate::graph::{EdgeId, NodeId};
+use crate::graph::NodeId;
 
 pub struct NaiveReductionCandidateGeneratorFactory;
 
 pub struct NaiveReductionCandidateGenerator {
-    dependents: Vec<(NodeId, EdgeId)>,
+    dependents: Vec<NodeId>,
     iteration: usize,
 }
 
 impl ReductionCandidateGeneratorFactory for NaiveReductionCandidateGeneratorFactory {
-    fn create(&self, dependents: Vec<(NodeId, EdgeId)>) -> Box<dyn ReductionCandidateGenerator> {
+    fn create(&self, dependents: Vec<NodeId>) -> Box<dyn ReductionCandidateGenerator> {
         Box::new(NaiveReductionCandidateGenerator {
             dependents,
             iteration: 0,
@@ -22,7 +22,7 @@ impl ReductionCandidateGenerator for NaiveReductionCandidateGenerator {
         // no-op for now
     }
 
-    fn next(&mut self) -> Option<Vec<(NodeId, EdgeId)>> {
+    fn next(&mut self) -> Option<Vec<NodeId>> {
         let mut res = Vec::new();
 
         if self.iteration >= self.dependents.len() {

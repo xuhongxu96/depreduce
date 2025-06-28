@@ -19,10 +19,10 @@ Sorted nodes in topological order:
   @rules_cc//cc:current_cc_toolchain
   //liba:a.h
   //liba:a.cpp
-Processing node: //main:main.dwp
-Processing node: //main:main.stripped
-Processing node: @bazel_tools//tools/cpp:toolchain_type
-Processing node: //main:main
+Processing node: //main:main.dwp (1/20)
+Processing node: //main:main.stripped (2/20)
+Processing node: @bazel_tools//tools/cpp:toolchain_type (3/20)
+Processing node: //main:main (4/20)
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main.stripped (because of no in-degree)
     Failed to remove //main:main.stripped -> //main:main: Label '//main:main.stripped' not found
@@ -31,35 +31,35 @@ Processing node: //main:main
     Only consider deps for //main:main -> //main:main.dwp (because of no in-degree)
     Failed to remove //main:main.dwp -> //main:main: Label '//main:main.dwp' not found
   No changes made, skipping build
-Processing node: @rules_cc//:link_extra_lib
+Processing node: @rules_cc//:link_extra_lib (5/20)
   Trying a new candidate set
     Failed to remove //main:main -> @rules_cc//:link_extra_lib: Dependency Label '@rules_cc//:link_extra_lib' not found
   No changes made, skipping build
-Processing node: @rules_cc//:link_extra_libs
+Processing node: @rules_cc//:link_extra_libs (6/20)
   Trying a new candidate set
     Failed to remove @rules_cc//:link_extra_lib -> @rules_cc//:link_extra_libs: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: @rules_cc//:empty_lib
+Processing node: @rules_cc//:empty_lib (7/20)
   Trying a new candidate set
     Failed to remove @rules_cc//:link_extra_libs -> @rules_cc//:empty_lib: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/cpp:malloc
+Processing node: @bazel_tools//tools/cpp:malloc (8/20)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/cpp:malloc: Dependency Label '@bazel_tools//tools/cpp:malloc' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/cpp:link_extra_lib
+Processing node: @bazel_tools//tools/cpp:link_extra_lib (9/20)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/cpp:link_extra_lib: Dependency Label '@bazel_tools//tools/cpp:link_extra_lib' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/cpp:link_extra_libs
+Processing node: @bazel_tools//tools/cpp:link_extra_libs (10/20)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/cpp:link_extra_lib -> @bazel_tools//tools/cpp:link_extra_libs: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/cpp:empty_lib
+Processing node: @bazel_tools//tools/cpp:empty_lib (11/20)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/cpp:link_extra_libs -> @bazel_tools//tools/cpp:empty_lib: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: //main:main.cpp
+Processing node: //main:main.cpp (12/20)
   Trying a new candidate set
     Removed //main:main -> //main:main.cpp
 
@@ -70,23 +70,23 @@ Processing node: //main:main.cpp
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD
-Processing node: //libb:libb
+Processing node: //libb:libb (13/20)
   Trying a new candidate set
     Removed //main:main -> //libb:libb
 
   Committed changes: Build succeeded
 
-Processing node: //libb:b.h
+Processing node: //libb:b.h (14/20)
   Trying a new candidate set
     Only consider deps for //libb:b.h -> //libb:libb (because of no in-degree)
     Failed to remove //libb:libb -> //libb:b.h: Dependency Label '//libb:b.h' not found
   No changes made, skipping build
-Processing node: //libb:b.cpp
+Processing node: //libb:b.cpp (15/20)
   Trying a new candidate set
     Only consider deps for //libb:b.cpp -> //libb:libb (because of no in-degree)
     Failed to remove //libb:libb -> //libb:b.cpp: Dependency Label '//libb:b.cpp' not found
   No changes made, skipping build
-Processing node: //liba:liba
+Processing node: //liba:liba (16/20)
   Trying a new candidate set
     Only consider deps for //liba:liba -> //libb:libb (because of no in-degree)
     Removed //libb:libb -> //liba:liba
@@ -106,7 +106,7 @@ Processing node: //liba:liba
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD
-Processing node: @bazel_tools//tools/cpp:current_cc_toolchain
+Processing node: @bazel_tools//tools/cpp:current_cc_toolchain (17/20)
   Trying a new candidate set
     Failed to remove //liba:liba -> @bazel_tools//tools/cpp:current_cc_toolchain: Dependency Label '@bazel_tools//tools/cpp:current_cc_toolchain' not found
   No changes made, skipping build
@@ -132,11 +132,11 @@ Processing node: @bazel_tools//tools/cpp:current_cc_toolchain
   Trying a new candidate set
     Failed to remove @rules_cc//:link_extra_lib -> @bazel_tools//tools/cpp:current_cc_toolchain: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: @rules_cc//cc:current_cc_toolchain
+Processing node: @rules_cc//cc:current_cc_toolchain (18/20)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/cpp:current_cc_toolchain -> @rules_cc//cc:current_cc_toolchain: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project'
   No changes made, skipping build
-Processing node: //liba:a.h
+Processing node: //liba:a.h (19/20)
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.h
 
@@ -147,7 +147,7 @@ Processing node: //liba:a.h
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/liba/BUILD
-Processing node: //liba:a.cpp
+Processing node: //liba:a.cpp (20/20)
   Trying a new candidate set
     Removed //liba:liba -> //liba:a.cpp
 

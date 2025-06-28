@@ -28,18 +28,18 @@ Sorted nodes in topological order:
   @rules_java//toolchains:current_java_toolchain
   //src/com/example/liba:ClassA.java
   //:src/com/example/Main.java
-Processing node: //src/com/example/libb:liblibb-src.jar
-Processing node: //src/com/example/libb:liblibb.jar
-Processing node: //src/com/example/liba:libliba-src.jar
-Processing node: //src/com/example/liba:libliba.jar
-Processing node: //:Main_deploy.jar.unstripped
-Processing node: //:Main_deploy.jar
-Processing node: //:Main_deploy-src.jar
-Processing node: //:Main-src.jar
-Processing node: //:Main.jar
-Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type
-Processing node: @bazel_tools//tools/cpp:toolchain_type
-Processing node: //:Main
+Processing node: //src/com/example/libb:liblibb-src.jar (1/29)
+Processing node: //src/com/example/libb:liblibb.jar (2/29)
+Processing node: //src/com/example/liba:libliba-src.jar (3/29)
+Processing node: //src/com/example/liba:libliba.jar (4/29)
+Processing node: //:Main_deploy.jar.unstripped (5/29)
+Processing node: //:Main_deploy.jar (6/29)
+Processing node: //:Main_deploy-src.jar (7/29)
+Processing node: //:Main-src.jar (8/29)
+Processing node: //:Main.jar (9/29)
+Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type (10/29)
+Processing node: @bazel_tools//tools/cpp:toolchain_type (11/29)
+Processing node: //:Main (12/29)
   Trying a new candidate set
     Only consider deps for //:Main -> //:Main.jar (because of no in-degree)
     Failed to remove //:Main.jar -> //:Main: Label '//:Main.jar' not found
@@ -60,39 +60,39 @@ Processing node: //:Main
     Only consider deps for //:Main -> //:Main_deploy.jar.unstripped (because of no in-degree)
     Failed to remove //:Main_deploy.jar.unstripped -> //:Main: Label '//:Main_deploy.jar.unstripped' not found
   No changes made, skipping build
-Processing node: @rules_java//java/bazel/rules:java_stub_template.txt
+Processing node: @rules_java//java/bazel/rules:java_stub_template.txt (13/29)
   Trying a new candidate set
     Failed to remove //:Main -> @rules_java//java/bazel/rules:java_stub_template.txt: Dependency Label '@rules_java//java/bazel/rules:java_stub_template.txt' not found
   No changes made, skipping build
-Processing node: @@platforms//os:windows
+Processing node: @@platforms//os:windows (14/29)
   Trying a new candidate set
     Failed to remove //:Main -> @@platforms//os:windows: Dependency Label '@@platforms//os:windows' not found
   No changes made, skipping build
-Processing node: @@platforms//os:os
+Processing node: @@platforms//os:os (15/29)
   Trying a new candidate set
     Failed to remove @@platforms//os:windows -> @@platforms//os:os: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/platforms/os/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
+Processing node: @bazel_tools//tools/jdk:launcher_flag_alias (16/29)
   Trying a new candidate set
     Failed to remove //:Main -> @bazel_tools//tools/jdk:launcher_flag_alias: Dependency Label '@bazel_tools//tools/jdk:launcher_flag_alias' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info
+Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info (17/29)
   Trying a new candidate set
     Failed to remove //:Main -> @bazel_tools//tools/build_defs/build_info:java_build_info: Dependency Label '@bazel_tools//tools/build_defs/build_info:java_build_info' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template (18/29)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template (19/29)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template (20/29)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
-Processing node: //src/com/example/libb:libb
+Processing node: //src/com/example/libb:libb (21/29)
   Trying a new candidate set
     Removed //:Main -> //src/com/example/libb:libb
 
@@ -106,7 +106,7 @@ Processing node: //src/com/example/libb:libb
     Only consider deps for //src/com/example/libb:libb -> //src/com/example/libb:liblibb-src.jar (because of no in-degree)
     Failed to remove //src/com/example/libb:liblibb-src.jar -> //src/com/example/libb:libb: Label '//src/com/example/libb:liblibb-src.jar' not found
   No changes made, skipping build
-Processing node: //src/com/example/libb:ClassB.java
+Processing node: //src/com/example/libb:ClassB.java (22/29)
   Trying a new candidate set
     Removed //src/com/example/libb:libb -> //src/com/example/libb:ClassB.java
 
@@ -116,7 +116,7 @@ Processing node: //src/com/example/libb:ClassB.java
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/libb/BUILD
-Processing node: //src/com/example/liba:liba
+Processing node: //src/com/example/liba:liba (23/29)
   Trying a new candidate set
     Removed //:Main -> //src/com/example/liba:liba
 
@@ -143,7 +143,7 @@ Processing node: //src/com/example/liba:liba
     Only consider deps for //src/com/example/liba:liba -> //src/com/example/liba:libliba-src.jar (because of no in-degree)
     Failed to remove //src/com/example/liba:libliba-src.jar -> //src/com/example/liba:liba: Label '//src/com/example/liba:libliba-src.jar' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:toolchain_type
+Processing node: @bazel_tools//tools/jdk:toolchain_type (24/29)
   Trying a new candidate set
     Failed to remove //:Main -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
@@ -153,7 +153,7 @@ Processing node: @bazel_tools//tools/jdk:toolchain_type
   Trying a new candidate set
     Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
+Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias (25/29)
   Trying a new candidate set
     Failed to remove //:Main -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
@@ -163,7 +163,7 @@ Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
   Trying a new candidate set
     Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:current_java_toolchain
+Processing node: @bazel_tools//tools/jdk:current_java_toolchain (26/29)
   Trying a new candidate set
     Failed to remove //:Main -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
@@ -173,11 +173,11 @@ Processing node: @bazel_tools//tools/jdk:current_java_toolchain
   Trying a new candidate set
     Failed to remove //src/com/example/libb:libb -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
-Processing node: @rules_java//toolchains:current_java_toolchain
+Processing node: @rules_java//toolchains:current_java_toolchain (27/29)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/30b09389802ee50761e4561ca2c87861/external/bazel_tools/tools/jdk/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project'
   No changes made, skipping build
-Processing node: //src/com/example/liba:ClassA.java
+Processing node: //src/com/example/liba:ClassA.java (28/29)
   Trying a new candidate set
     Removed //src/com/example/liba:liba -> //src/com/example/liba:ClassA.java
 
@@ -187,7 +187,7 @@ Processing node: //src/com/example/liba:ClassA.java
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project/src/com/example/liba/BUILD
-Processing node: //:src/com/example/Main.java
+Processing node: //:src/com/example/Main.java (29/29)
   Trying a new candidate set
     Removed //:Main -> //:src/com/example/Main.java
 

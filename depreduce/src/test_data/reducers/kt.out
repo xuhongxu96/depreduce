@@ -196,23 +196,23 @@ Sorted nodes in topological order:
   @bazel_tools//tools/jdk:current_java_toolchain
   @rules_java//toolchains:current_java_toolchain
   //liba:ClassA.kt
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js.map
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js
-Processing node: //main:main_lib-sources.jar
-Processing node: //main:main_lib.jar
-Processing node: //main:main_deploy.jar.unstripped
-Processing node: //main:main_deploy.jar
-Processing node: //main:main_deploy-src.jar
-Processing node: //main:main-src.jar
-Processing node: //main:main.jar
-Processing node: //libb:libb-sources.jar
-Processing node: //libb:libb.jar
-Processing node: //liba:liba-sources.jar
-Processing node: //liba:liba.jar
-Processing node: @rules_kotlin//kotlin/internal:kt_toolchain_type
-Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type
-Processing node: @bazel_tools//tools/cpp:toolchain_type
-Processing node: //main:main
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js.map (1/197)
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js (2/197)
+Processing node: //main:main_lib-sources.jar (3/197)
+Processing node: //main:main_lib.jar (4/197)
+Processing node: //main:main_deploy.jar.unstripped (5/197)
+Processing node: //main:main_deploy.jar (6/197)
+Processing node: //main:main_deploy-src.jar (7/197)
+Processing node: //main:main-src.jar (8/197)
+Processing node: //main:main.jar (9/197)
+Processing node: //libb:libb-sources.jar (10/197)
+Processing node: //libb:libb.jar (11/197)
+Processing node: //liba:liba-sources.jar (12/197)
+Processing node: //liba:liba.jar (13/197)
+Processing node: @rules_kotlin//kotlin/internal:kt_toolchain_type (14/197)
+Processing node: @bazel_tools//tools/jdk:runtime_toolchain_type (15/197)
+Processing node: @bazel_tools//tools/cpp:toolchain_type (16/197)
+Processing node: //main:main (17/197)
   Trying a new candidate set
     Only consider deps for //main:main -> //main:main.jar (because of no in-degree)
     Failed to remove //main:main.jar -> //main:main: Label '//main:main.jar' not found
@@ -233,43 +233,43 @@ Processing node: //main:main
     Only consider deps for //main:main -> //main:main_deploy.jar.unstripped (because of no in-degree)
     Failed to remove //main:main_deploy.jar.unstripped -> //main:main: Label '//main:main_deploy.jar.unstripped' not found
   No changes made, skipping build
-Processing node: @rules_java//java/bazel/rules:java_stub_template.txt
+Processing node: @rules_java//java/bazel/rules:java_stub_template.txt (18/197)
   Trying a new candidate set
     Failed to remove //main:main -> @rules_java//java/bazel/rules:java_stub_template.txt: Dependency Label '@rules_java//java/bazel/rules:java_stub_template.txt' not found
   No changes made, skipping build
-Processing node: @@platforms//os:windows
+Processing node: @@platforms//os:windows (19/197)
   Trying a new candidate set
     Failed to remove //main:main -> @@platforms//os:windows: Dependency Label '@@platforms//os:windows' not found
   No changes made, skipping build
-Processing node: @@platforms//os:os
+Processing node: @@platforms//os:os (20/197)
   Trying a new candidate set
     Failed to remove @@platforms//os:windows -> @@platforms//os:os: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/platforms/os/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:launcher_flag_alias
+Processing node: @bazel_tools//tools/jdk:launcher_flag_alias (21/197)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/jdk:launcher_flag_alias: Dependency Label '@bazel_tools//tools/jdk:launcher_flag_alias' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias
+Processing node: @bazel_tools//tools/jdk:java_plugins_flag_alias (22/197)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/jdk:java_plugins_flag_alias: Dependency Label '@bazel_tools//tools/jdk:java_plugins_flag_alias' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info
+Processing node: @bazel_tools//tools/build_defs/build_info:java_build_info (23/197)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/build_defs/build_info:java_build_info: Dependency Label '@bazel_tools//tools/build_defs/build_info:java_build_info' not found
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template (24/197)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template (25/197)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:redacted_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template
+Processing node: @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template (26/197)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/build_defs/build_info:java_build_info -> @bazel_tools//tools/build_defs/build_info/templates:non_volatile_file.properties.template: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/bazel_tools/tools/build_defs/build_info/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: //main:main_lib
+Processing node: //main:main_lib (27/197)
   Trying a new candidate set
     Failed to remove //main:main -> //main:main_lib: Dependency Label '//main:main_lib' not found
   No changes made, skipping build
@@ -281,7 +281,7 @@ Processing node: //main:main_lib
     Only consider deps for //main:main_lib -> //main:main_lib-sources.jar (because of no in-degree)
     Failed to remove //main:main_lib-sources.jar -> //main:main_lib: Label '//main:main_lib-sources.jar' not found
   No changes made, skipping build
-Processing node: //main:Main.kt
+Processing node: //main:Main.kt (28/197)
   Trying a new candidate set
     Removed //main:main_lib -> //main:Main.kt
 
@@ -291,7 +291,7 @@ Processing node: //main:Main.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/main/BUILD
-Processing node: //libb:libb
+Processing node: //libb:libb (29/197)
   Trying a new candidate set
     Removed //main:main_lib -> //libb:libb
 
@@ -305,7 +305,7 @@ Processing node: //libb:libb
     Only consider deps for //libb:libb -> //libb:libb-sources.jar (because of no in-degree)
     Failed to remove //libb:libb-sources.jar -> //libb:libb: Label '//libb:libb-sources.jar' not found
   No changes made, skipping build
-Processing node: //libb:ClassB.kt
+Processing node: //libb:ClassB.kt (30/197)
   Trying a new candidate set
     Removed //libb:libb -> //libb:ClassB.kt
 
@@ -315,7 +315,7 @@ Processing node: //libb:ClassB.kt
   No changes made, skipping build
   Restoring backups:
     /data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project/libb/BUILD
-Processing node: //liba:liba
+Processing node: //liba:liba (31/197)
   Trying a new candidate set
     Removed //libb:libb -> //liba:liba
 
@@ -344,7 +344,7 @@ Processing node: //liba:liba
     Only consider deps for //liba:liba -> //liba:liba-sources.jar (because of no in-degree)
     Failed to remove //liba:liba-sources.jar -> //liba:liba: Label '//liba:liba-sources.jar' not found
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:default_toolchain_impl
+Processing node: @rules_kotlin//kotlin/internal:default_toolchain_impl (32/197)
   Trying a new candidate set
     Failed to remove //liba:liba -> @rules_kotlin//kotlin/internal:default_toolchain_impl: Dependency Label '@rules_kotlin//kotlin/internal:default_toolchain_impl' not found
   No changes made, skipping build
@@ -354,471 +354,471 @@ Processing node: @rules_kotlin//kotlin/internal:default_toolchain_impl
   Trying a new candidate set
     Failed to remove //main:main_lib -> @rules_kotlin//kotlin/internal:default_toolchain_impl: Dependency Label '@rules_kotlin//kotlin/internal:default_toolchain_impl' not found
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:home
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:home (33/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:home: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home (34/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_readme_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_readme_license.txt (35/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_readme_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_license.txt (36/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/trove_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/spring_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/spring_license.txt (37/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/spring_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/rxjava_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/rxjava_license.txt (38/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/rxjava_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/lombok_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/lombok_license.txt (39/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/lombok_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/jspecify_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/jspecify_license.txt (40/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/jspecify_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/findbugs_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/findbugs_license.txt (41/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/findbugs_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_license.txt (42/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_distribution_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_distribution_license.txt (43/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/eclipse_distribution_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/dagger_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/dagger_license.txt (44/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/testdata/dagger_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/teamcity-service-messages_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/teamcity-service-messages_LICENSE.txt (45/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/teamcity-service-messages_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sun_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sun_license.txt (46/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sun_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/stax2-api.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/stax2-api.txt (47/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/stax2-api.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sl4f_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sl4f_license.txt (48/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/sl4f_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/scala_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/scala_license.txt (49/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/scala_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/rhino_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/rhino_LICENSE.txt (50/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/rhino_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/qunit_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/qunit_license.txt (51/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/qunit_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/prototype_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/prototype_license.txt (52/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/prototype_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/okhttp_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/okhttp_license.txt (53/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/okhttp_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/mocha-teamcity-reporter_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/mocha-teamcity-reporter_LICENSE.txt (54/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/mocha-teamcity-reporter_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/maven_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/maven_LICENSE.txt (55/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/maven_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lombok_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lombok_LICENSE.txt (56/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lombok_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lodash_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lodash_LICENSE.txt (57/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/lodash_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma_LICENSE.txt (58/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma-teamcity-reporter_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma-teamcity-reporter_LICENSE.txt (59/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/karma-teamcity-reporter_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jshashtable_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jshashtable_license.txt (60/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jshashtable_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jquery_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jquery_license.txt (61/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jquery_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jgit_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jgit_license.txt (62/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/jgit_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gwt_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gwt_license.txt (63/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gwt_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/guava_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/guava_license.txt (64/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/guava_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle_license.txt (65/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle-node-plugin_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle-node-plugin_LICENSE.txt (66/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/gradle-node-plugin_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/fastutil_licence
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/fastutil_licence (67/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/fastutil_licence: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/dart_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/dart_LICENSE.txt (68/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/dart_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/closure-compiler_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/closure-compiler_LICENSE.txt (69/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/closure-compiler_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/caffeine_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/caffeine_LICENSE.txt (70/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/caffeine_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/boost_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/boost_LICENSE.txt (71/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/boost_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/assemblyscript_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/assemblyscript_license.txt (72/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/assemblyscript_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asmble_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asmble_license.txt (73/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asmble_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asm_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asm_license.txt (74/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/asm_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/args4j_LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/args4j_LICENSE.txt (75/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/args4j_LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aosp_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aosp_license.txt (76/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aosp_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aether_license.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aether_license.txt (77/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aether_license.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aalto_xml_licence.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aalto_xml_licence.txt (78/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/third_party/aalto_xml_licence.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/README.md
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/README.md (79/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/README.md: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/NOTICE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/NOTICE.txt (80/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/NOTICE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/LICENSE.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/LICENSE.txt (81/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/LICENSE.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT_HEADER.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT_HEADER.txt (82/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT_HEADER.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT.txt (83/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:license/COPYRIGHT.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/trove4j.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/trove4j.jar (84/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/trove4j.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/scripting-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/scripting-compiler.jar (85/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/scripting-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/sam-with-receiver-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/sam-with-receiver-compiler-plugin.jar (86/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/sam-with-receiver-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-runtime.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-runtime.jar (87/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-runtime.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-compiler.jar (88/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/parcelize-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/noarg-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/noarg-compiler-plugin.jar (89/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/noarg-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/mutability-annotations-compat.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/mutability-annotations-compat.jar (90/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/mutability-annotations-compat.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/lombok-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/lombok-compiler-plugin.jar (91/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/lombok-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-serialization-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-serialization-compiler-plugin.jar (92/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-serialization-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-coroutines-core-jvm.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-coroutines-core-jvm.jar (93/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlinx-coroutines-core-jvm.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test.jar (94/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng.jar (95/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng-sources.jar (96/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-testng-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-sources.jar (97/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5.jar (98/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5-sources.jar (99/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit5-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit.jar (100/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit-sources.jar (101/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-junit-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js.jar (102/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js-sources.jar (103/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-test-js-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.klib
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.klib (104/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.klib: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-serialization-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-serialization-compiler-plugin.jar (105/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-serialization-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-jvm.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-jvm.jar (106/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-jvm.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler.jar (107/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler-impl.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler-impl.jar (108/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-compiler-impl.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-common.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-common.jar (109/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-scripting-common.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime.jar (110/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime-sources.jar (111/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-script-runtime-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-runner.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-runner.jar (112/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-runner.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect.jar (113/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect-sources.jar (114/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-reflect-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-preloader.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-preloader.jar (115/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-preloader.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-main-kts.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-main-kts.jar (116/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-main-kts.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-imports-dumper-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-imports-dumper-compiler-plugin.jar (117/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-imports-dumper-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon.jar (118/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon-client.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon-client.jar (119/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-daemon-client.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-compiler.jar (120/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-ant.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-ant.jar (121/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-ant.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm.jar (122/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm-sources.jar (123/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotations-jvm-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing.jar (124/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-runtime.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-runtime.jar (125/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-runtime.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-compiler.jar (126/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-cli.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-cli.jar (127/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-annotation-processing-cli.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/jvm-abi-gen.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/jvm-abi-gen.jar (128/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/jvm-abi-gen.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/js.engines.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/js.engines.jar (129/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/js.engines.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/assignment-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/assignment-compiler-plugin.jar (130/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/assignment-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-runtime.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-runtime.jar (131/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-runtime.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-compiler.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-compiler.jar (132/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/android-extensions-compiler.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/allopen-compiler-plugin.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/allopen-compiler-plugin.jar (133/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/allopen-compiler-plugin.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:build.txt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:build.txt (134/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:build.txt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc.bat (135/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm.bat (136/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm (137/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-jvm: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js.bat (138/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js (139/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc-js: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc (140/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlinc: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin.bat (141/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js.bat (142/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js (143/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin-dce-js: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin (144/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kotlin: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt.bat
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt.bat (145/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt.bat: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt (146/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:bin/kapt: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:REPO.bazel
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:REPO.bazel (147/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:REPO.bazel: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:BUILD.bazel
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:BUILD.bazel (148/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:BUILD.bazel: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//third_party:empty.jdeps
+Processing node: @rules_kotlin//third_party:empty.jdeps (149/197)
   Trying a new candidate set
     Failed to remove //liba:liba -> @rules_kotlin//third_party:empty.jdeps: Dependency Label '@rules_kotlin//third_party:empty.jdeps' not found
   No changes made, skipping build
@@ -831,39 +831,39 @@ Processing node: @rules_kotlin//third_party:empty.jdeps
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//third_party:empty.jdeps: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/settings:jvm_emit_jdeps
+Processing node: @rules_kotlin//kotlin/settings:jvm_emit_jdeps (150/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/settings:jvm_emit_jdeps: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/settings:experimental_prune_transitive_deps
+Processing node: @rules_kotlin//kotlin/settings:experimental_prune_transitive_deps (151/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/settings:experimental_prune_transitive_deps: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:noexperimental_use_abi_jars
+Processing node: @rules_kotlin//kotlin/internal:noexperimental_use_abi_jars (152/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:noexperimental_use_abi_jars: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:experimental_use_abi_jars
+Processing node: @rules_kotlin//kotlin/internal:experimental_use_abi_jars (153/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:experimental_use_abi_jars: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:default_kotlinc_options
+Processing node: @rules_kotlin//kotlin/internal:default_kotlinc_options (154/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:default_kotlinc_options: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:default_javac_options
+Processing node: @rules_kotlin//kotlin/internal:default_javac_options (155/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:default_javac_options: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:builder_debug_trace
+Processing node: @rules_kotlin//kotlin/internal:builder_debug_trace (156/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:builder_debug_trace: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/internal:builder_debug_timings
+Processing node: @rules_kotlin//kotlin/internal:builder_debug_timings (157/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/internal:builder_debug_timings: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js (158/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/compiler:kotlin-stdlib-js: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
@@ -875,124 +875,124 @@ Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-js
     Only consider deps for @rules_kotlin//kotlin/compiler:kotlin-stdlib-js -> @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js.map (because of no in-degree)
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js.map -> @rules_kotlin//kotlin/compiler:kotlin-stdlib-js: Label '@rules_kotlin//kotlin/compiler:kotlin-stdlib-js.js.map' not found
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js-sources
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js-sources (159/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-js -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js-sources: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources_jar (160/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js-sources -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources.jar (161/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js (162/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-js -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js_jar (163/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-js -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.jar (164/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-js.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk8
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk8 (165/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk8: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8-sources
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8-sources (166/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk8 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8-sources: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources_jar (167/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8-sources -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources.jar (168/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8 (169/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk8 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8_jar (170/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk8 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8.jar (171/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk8.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk7
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk7 (172/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk7: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7-sources
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7-sources (173/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk7 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7-sources: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources_jar (174/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7-sources -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources.jar (175/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7 (176/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib-jdk7 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7_jar (177/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-jdk7 -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7.jar (178/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-jdk7.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/compiler:annotations
+Processing node: @rules_kotlin//kotlin/compiler:annotations (179/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/compiler:annotations: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:annotations
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:annotations (180/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:annotations -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:annotations: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13_0_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13_0_jar (181/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:annotations -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13_0_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13.0.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13.0.jar (182/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13.0.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13_0_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/annotations-13.0.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//third_party:empty.jar
+Processing node: @rules_kotlin//third_party:empty.jar (183/197)
   Trying a new candidate set
     Failed to remove //liba:liba -> @rules_kotlin//third_party:empty.jar: Dependency Label '@rules_kotlin//third_party:empty.jar' not found
   No changes made, skipping build
@@ -1008,26 +1008,26 @@ Processing node: @rules_kotlin//third_party:empty.jar
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//third_party:empty.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:JacocoCoverage
+Processing node: @bazel_tools//tools/jdk:JacocoCoverage (184/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @bazel_tools//tools/jdk:JacocoCoverage: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_java++toolchains+remote_java_tools//:jacoco_coverage_runner
+Processing node: @@rules_java++toolchains+remote_java_tools//:jacoco_coverage_runner (185/197)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/jdk:JacocoCoverage -> @@rules_java++toolchains+remote_java_tools//:jacoco_coverage_runner: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/bazel_tools/tools/jdk/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_java++toolchains+remote_java_tools//:java_tools/JacocoCoverage_jarjar_deploy.jar
+Processing node: @@rules_java++toolchains+remote_java_tools//:java_tools/JacocoCoverage_jarjar_deploy.jar (186/197)
   Trying a new candidate set
     Failed to remove @@rules_java++toolchains+remote_java_tools//:jacoco_coverage_runner -> @@rules_java++toolchains+remote_java_tools//:java_tools/JacocoCoverage_jarjar_deploy.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_java++toolchains+remote_java_tools/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:toolchain_type
+Processing node: @bazel_tools//tools/jdk:toolchain_type (187/197)
   Trying a new candidate set
     Failed to remove //main:main -> @bazel_tools//tools/jdk:toolchain_type: Dependency Label '@bazel_tools//tools/jdk:toolchain_type' not found
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_java++toolchains+remote_java_tools//:jacoco_coverage_runner -> @bazel_tools//tools/jdk:toolchain_type: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_java++toolchains+remote_java_tools/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib
+Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib (188/197)
   Trying a new candidate set
     Failed to remove //liba:liba -> @rules_kotlin//kotlin/compiler:kotlin-stdlib: Dependency Label '@rules_kotlin//kotlin/compiler:kotlin-stdlib' not found
   No changes made, skipping build
@@ -1040,37 +1040,37 @@ Processing node: @rules_kotlin//kotlin/compiler:kotlin-stdlib
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/internal:default_toolchain_impl -> @rules_kotlin//kotlin/compiler:kotlin-stdlib: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/internal/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-sources
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-sources (189/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-sources: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources_jar (190/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib-sources -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources.jar (191/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib-sources.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib (192/197)
   Trying a new candidate set
     Failed to remove @rules_kotlin//kotlin/compiler:kotlin-stdlib -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin+/kotlin/compiler/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib_jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib_jar (193/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin//:kotlin-stdlib -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib_jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib.jar
+Processing node: @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib.jar (194/197)
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:home -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
   Trying a new candidate set
     Failed to remove @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib_jar -> @@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git//:lib/kotlin-stdlib.jar: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin_git/BUILD.bazel' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: @bazel_tools//tools/jdk:current_java_toolchain
+Processing node: @bazel_tools//tools/jdk:current_java_toolchain (195/197)
   Trying a new candidate set
     Failed to remove //liba:liba -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
@@ -1083,11 +1083,11 @@ Processing node: @bazel_tools//tools/jdk:current_java_toolchain
   Trying a new candidate set
     Failed to remove //main:main_lib -> @bazel_tools//tools/jdk:current_java_toolchain: Dependency Label '@bazel_tools//tools/jdk:current_java_toolchain' not found
   No changes made, skipping build
-Processing node: @rules_java//toolchains:current_java_toolchain
+Processing node: @rules_java//toolchains:current_java_toolchain (196/197)
   Trying a new candidate set
     Failed to remove @bazel_tools//tools/jdk:current_java_toolchain -> @rules_java//toolchains:current_java_toolchain: Path '/home/hongxu/.cache/bazel/_bazel_hongxu/da3a76c15e2f109d2ac0b9d9292a67fb/external/bazel_tools/tools/jdk/BUILD' is not within the workspace root '/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project'
   No changes made, skipping build
-Processing node: //liba:ClassA.kt
+Processing node: //liba:ClassA.kt (197/197)
   Trying a new candidate set
     Removed //liba:liba -> //liba:ClassA.kt
 
