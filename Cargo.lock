@@ -226,6 +226,7 @@ dependencies = [
  "rstest",
  "rustpython-parser",
  "serde",
+ "serde_json",
  "utils",
 ]
 

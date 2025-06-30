@@ -9,12 +9,17 @@ use clap::Parser;
 
 use depreduce::{
     editors::BazelDepEditor,
-    graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
+    graph::{
+        DependencyGraph,
+        bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
+    },
     reducers::{
         candidate_generators::NaiveReductionCandidateGeneratorFactory,
-        reduce_context::ReduceSettings, top_sort_reducer::TopSortReducer,
+        reduce_context::{ReduceSettings, ReductionAttempt},
+        top_sort_reducer::TopSortReducer,
     },
 };
+use utils::to_json_lines;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -25,8 +30,13 @@ struct Args {
     #[arg(short, long, default_value = "${workspace}/build.sh")]
     command: String,
 
-    #[arg(short, long, default_value = "depreduce.log")]
-    log: String,
+    #[arg(
+        short,
+        long,
+        default_value = "logs/",
+        help = "Output directory for reduction attempts and dep graph"
+    )]
+    output: String,
 
     #[arg(short, long)]
     deps_only: bool,
@@ -37,7 +47,7 @@ fn run_reducer_test(
     workspace_root: String,
     build_script: String,
     deps_only: bool,
-) -> String {
+) -> (DependencyGraph, Vec<ReductionAttempt>) {
     let query: Query = parse_bazel_xml(xml).unwrap();
     let graph = convert_query_to_dep_graph(&query).unwrap();
     let editor = if deps_only {
@@ -57,8 +67,11 @@ fn run_reducer_test(
         graph: &graph,
         build_command: build_script,
         cwd: workspace_root,
+        save_build_log: true,
     };
-    reducer.reduce(&settings).unwrap().get_logs().to_string()
+    let res = reducer.reduce(&settings).unwrap();
+    let attempts = res.get_attempts().to_vec();
+    (graph, attempts)
 }
 
 fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {
@@ -110,7 +123,7 @@ fn main() {
 
     p.wait().expect("Bazel query did not finish successfully");
 
-    let log = run_reducer_test(
+    let (graph, attempts) = run_reducer_test(
         &xml_str,
         Path::new(&args.workspace)
             .canonicalize()
@@ -124,5 +137,16 @@ fn main() {
             .to_string(),
         args.deps_only,
     );
-    std::fs::write(&args.log, log).expect("Failed to write log file");
+
+    std::fs::create_dir_all(&args.output).expect("Failed to create output directory");
+
+    let graph_path = Path::new(&args.output).join("graph.json");
+    let attempt_json_path = Path::new(&args.output).join("attempts.jsonl");
+
+    let graph_json = serde_json::to_string(&graph).expect("Failed to serialize graph to JSON");
+    std::fs::write(graph_path, graph_json).expect("Failed to write graph to file");
+
+    let attempt_json_lines = to_json_lines(&attempts);
+    std::fs::write(attempt_json_path, attempt_json_lines)
+        .expect("Failed to write attempts to file");
 }

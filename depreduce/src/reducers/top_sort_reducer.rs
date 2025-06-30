@@ -88,7 +88,6 @@ impl TopSortReducer {
                             "Failed to add {} -> {}: {}\n",
                             dep_node_label, transitive_dep_label, e
                         ));
-                        ctx.restore_backup();
                         return false;
                     }
                 }
@@ -97,21 +96,18 @@ impl TopSortReducer {
 
         if added_edges.is_empty() {
             ctx.log("  No changes made, skipping build\n");
-            ctx.restore_backup();
             return false;
         }
 
         match ctx.try_build() {
             Ok(status) => {
                 for (from, to) in added_edges {
-                    ctx.add_dependents(to, from);
+                    ctx.add_dependent(to, from);
                 }
-                ctx.commit_changes();
                 ctx.log(&format!("  Committed changes: {}\n", status));
                 return true;
             }
             Err(e) => {
-                ctx.restore_backup();
                 ctx.log(&format!("  {}\n", e));
                 return false;
             }
@@ -178,7 +174,16 @@ impl TopSortReducer {
             }
             Err(e) => {
                 ctx.log(&format!("  {}\n\n", e));
-                self.try_add_transitive_deps(ctx, candidates, node_id)
+                if self.try_add_transitive_deps(ctx, candidates, node_id) {
+                    for (from, to) in removed_edges {
+                        ctx.remove_dependent(to, from);
+                    }
+                    ctx.commit_changes();
+                    true
+                } else {
+                    ctx.restore_backup();
+                    false
+                }
             }
         }
     }
@@ -205,6 +210,7 @@ impl TopSortReducer {
             let mut generator = ctx.generate_reduction_candidates(node_id);
 
             while let Some(candidates) = generator.next() {
+                ctx.start_attempt(node_id, candidates.clone());
                 let res = self.try_remove_dep(&mut ctx, &candidates, node_id);
                 generator.report_result(res);
             }
@@ -221,10 +227,7 @@ mod tests {
     use crate::{
         editors::BazelDepEditor,
         graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
-        reducers::{
-            candidate_generators::NaiveReductionCandidateGeneratorFactory,
-            reduce_context::INDENT_SIZE_FOR_STDOUT,
-        },
+        reducers::candidate_generators::NaiveReductionCandidateGeneratorFactory,
     };
 
     use super::*;
@@ -251,12 +254,21 @@ mod tests {
             cwd: get_test_data_path!(project_dir)
                 .to_string_lossy()
                 .to_string(),
+            save_build_log: false,
         };
-        let res = remove_lines_with_indent(
-            reducer.reduce(&settings).unwrap().get_logs(),
-            INDENT_SIZE_FOR_STDOUT,
+        let ctx = reducer.reduce(&settings).unwrap();
+        let attempts = ctx.get_attempts();
+        let res = to_json_lines(attempts);
+        assert_eq!(
+            res,
+            read_or_create_test_data!(format!("{}{}", expected_out, ".ops.jsonl"), res)
         );
-        assert_eq!(res, read_or_create_test_data!(expected_out, res));
+
+        let graph_json = serde_json::to_string(&graph).expect("Failed to serialize graph to JSON");
+        assert_eq!(
+            graph_json,
+            read_or_create_test_data!(format!("{}{}", expected_out, ".graph.json"), graph_json)
+        );
     }
 
     #[test]
@@ -266,7 +278,7 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
             "../../../examples/simple-cxx-project",
             "build.sh",
-            "reducers/cxx.out",
+            "reducers/cxx",
         );
     }
 
@@ -277,7 +289,7 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-java-project",
             "../../../examples/simple-java-project",
             "build.sh",
-            "reducers/java.out",
+            "reducers/java",
         );
     }
 
@@ -288,7 +300,7 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-kotlin-project",
             "../../../examples/simple-kotlin-project",
             "build.sh",
-            "reducers/kt.out",
+            "reducers/kt",
         );
     }
 
@@ -302,7 +314,7 @@ mod tests {
             "/data/h445xu/repo/bazel-dep-reduce/examples/kotlin-transitive",
             "../../../examples/kotlin-transitive",
             "build.sh",
-            "reducers/kt-transitive.out",
+            "reducers/kt-transitive",
         );
     }
 }

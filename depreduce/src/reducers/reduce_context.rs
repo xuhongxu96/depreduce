@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader, Read};
 use std::process::{Command, Stdio};
 
+use serde::{Deserialize, Serialize};
 use utils::indent_all_lines;
 
 use crate::editors::FileEdit;
@@ -17,6 +18,69 @@ pub struct ReduceSettings<'a> {
     pub graph: &'a DependencyGraph,
     pub build_command: String,
     pub cwd: String,
+    pub save_build_log: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AddOperation {
+    pub node_id: NodeId,
+    pub dependent_node_id: NodeId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RemoveOperation {
+    pub node_id: NodeId,
+    pub dependent_node_id: NodeId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BuildOperation {
+    pub exit_code: i32,
+    pub stdout: String,
+    pub stderr: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BackupOperation {
+    pub path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ApplyOperation {
+    pub path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RestoreOperation {
+    pub paths: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CommitOperation {
+    pub paths: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Operation {
+    Add(AddOperation),
+    Remove(RemoveOperation),
+    Build(BuildOperation),
+    Backup(BackupOperation),
+    Restore(RestoreOperation),
+    Apply(ApplyOperation),
+    Commit(CommitOperation),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GeneratedCandidates {
+    pub node_id: NodeId,
+    pub dependents: Vec<NodeId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ReductionAttempt {
+    candidates: GeneratedCandidates,
+    ops: Vec<Operation>,
 }
 
 pub struct ReduceContext<'a> {
@@ -26,7 +90,7 @@ pub struct ReduceContext<'a> {
     in_degrees: Vec<usize>,
     added_node2in_nodes: Vec<HashSet<NodeId>>,
     removed_node2in_nodes: Vec<HashSet<NodeId>>,
-    logs: String,
+    attempts: Vec<ReductionAttempt>,
 }
 
 impl<'a> ReduceContext<'a> {
@@ -48,7 +112,7 @@ impl<'a> ReduceContext<'a> {
                 .collect(),
             added_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
             removed_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
-            logs: String::new(),
+            attempts: Vec::new(),
         }
     }
 
@@ -60,7 +124,7 @@ impl<'a> ReduceContext<'a> {
         &self.added_node2in_nodes[node_id]
     }
 
-    pub fn add_dependents(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
+    pub fn add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
         assert!(
             !self.added_node2in_nodes[node_id].contains(&dependent_node_id),
             "Node {} is already added to node {}",
@@ -69,7 +133,16 @@ impl<'a> ReduceContext<'a> {
         );
 
         self.added_node2in_nodes[node_id].insert(dependent_node_id);
+        self.removed_node2in_nodes[node_id].remove(&dependent_node_id);
         self.in_degrees[node_id] += 1;
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Add(AddOperation {
+                node_id,
+                dependent_node_id,
+            }));
     }
 
     pub fn remove_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
@@ -86,16 +159,21 @@ impl<'a> ReduceContext<'a> {
             self.settings.graph.nodes[dependent_node_id].label
         );
 
+        self.added_node2in_nodes[node_id].remove(&dependent_node_id);
         self.removed_node2in_nodes[node_id].insert(dependent_node_id);
         self.in_degrees[node_id] -= 1;
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Remove(RemoveOperation {
+                node_id,
+                dependent_node_id,
+            }));
     }
 
     pub fn get_indegree(&self, node_id: NodeId) -> usize {
         self.in_degrees[node_id]
-    }
-
-    pub fn get_logs(&self) -> &str {
-        &self.logs
     }
 
     pub fn backup(&mut self, edit: &FileEdit) {
@@ -104,12 +182,26 @@ impl<'a> ReduceContext<'a> {
 
         if !self.history.contains_key(&edit.path) {
             self.history.insert(edit.path.clone(), backup_content);
+            self.attempts
+                .last_mut()
+                .unwrap()
+                .ops
+                .push(Operation::Backup(BackupOperation {
+                    path: edit.path.clone(),
+                }));
         }
     }
 
-    pub fn apply(&self, edit: &FileEdit) {
+    pub fn apply(&mut self, edit: &FileEdit) {
         std::fs::write(&edit.path, &edit.content)
             .unwrap_or_else(|err| panic!("Failed to write file {}: {}", edit.path, err));
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Apply(ApplyOperation {
+                path: edit.path.clone(),
+            }));
     }
 
     pub fn restore_backup(&mut self) {
@@ -120,6 +212,13 @@ impl<'a> ReduceContext<'a> {
                 .unwrap_or_else(|err| panic!("Failed to restore file {}: {}", path, err));
             log.push_str(&format!("    {}\n", path));
         }
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Restore(RestoreOperation {
+                paths: self.history.keys().cloned().collect(),
+            }));
         self.log(&log);
         self.history.clear();
     }
@@ -134,9 +233,12 @@ impl<'a> ReduceContext<'a> {
         let stderr = process.stderr.as_mut().unwrap();
         let stderr_reader = BufReader::new(stderr);
         let stderr_lines = stderr_reader.lines();
+        let mut stderr_str = String::new();
 
         for line in stderr_lines {
             let line = line.expect("Failed to read line from bazel query output");
+            stderr_str.push_str(&line);
+            stderr_str.push('\n');
             if line.is_empty() {
                 continue;
             }
@@ -146,7 +248,7 @@ impl<'a> ReduceContext<'a> {
 
         let exit = process.wait()?;
 
-        process.stdout.take().map(|mut stdout| {
+        let stdout = process.stdout.take().map(|mut stdout| {
             let mut output = String::new();
             stdout.read_to_string(&mut output).unwrap();
             let trimmed_output = output.trim();
@@ -154,7 +256,26 @@ impl<'a> ReduceContext<'a> {
                 self.log(&indent_all_lines("--- stdout ---", INDENT_SIZE_FOR_STDOUT));
                 self.log(&indent_all_lines(&trimmed_output, INDENT_SIZE_FOR_STDOUT));
             }
+            return output;
         });
+
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Build(BuildOperation {
+                exit_code: exit.code().unwrap_or(-1),
+                stdout: if self.settings.save_build_log {
+                    stdout.unwrap_or_default()
+                } else {
+                    String::new()
+                },
+                stderr: if self.settings.save_build_log {
+                    stderr_str
+                } else {
+                    String::new()
+                },
+            }));
 
         if exit.success() {
             return Ok(format!("Build succeeded"));
@@ -167,7 +288,24 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn commit_changes(&mut self) {
+        self.attempts
+            .last_mut()
+            .unwrap()
+            .ops
+            .push(Operation::Commit(CommitOperation {
+                paths: self.history.keys().cloned().collect(),
+            }));
         self.history.clear();
+    }
+
+    pub fn start_attempt(&mut self, node_id: NodeId, dependents_vec: Vec<NodeId>) {
+        self.attempts.push(ReductionAttempt {
+            candidates: GeneratedCandidates {
+                node_id,
+                dependents: dependents_vec,
+            },
+            ops: Vec::new(),
+        });
     }
 
     pub fn generate_reduction_candidates(
@@ -195,9 +333,12 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn log(&mut self, message: &str) {
-        self.logs.push_str(message);
         if !cfg!(test) {
             print!("{}", message);
         }
+    }
+
+    pub fn get_attempts(&self) -> &[ReductionAttempt] {
+        &self.attempts
     }
 }
