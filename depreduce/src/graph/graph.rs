@@ -8,11 +8,22 @@ pub type NodeId = usize;
 pub type EdgeId = usize;
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+pub struct TargetType {
+    pub is_alias: bool,
+}
+
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum NodeType {
     Unknown,
     Source,
-    Target,
+    Target(TargetType),
     GeneratedFile,
+}
+
+impl NodeType {
+    pub fn is_alias_target(&self) -> bool {
+        matches!(self, NodeType::Target(TargetType { is_alias: true }))
+    }
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
@@ -273,7 +284,7 @@ mod tests {
         let result = graph.add_node(
             "src/lib.rs".to_string(),
             NodeProps {
-                t: NodeType::Target,
+                t: NodeType::Target(TargetType { is_alias: false }),
             },
         );
         assert!(result.is_err());
@@ -294,7 +305,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -352,7 +363,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -394,7 +405,7 @@ mod tests {
             .add_node(
                 "y".into(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -440,7 +451,7 @@ mod tests {
             .add_node(
                 "bar".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -479,7 +490,7 @@ mod tests {
             .add_node(
                 "n2".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -517,7 +528,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -553,7 +564,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
@@ -561,7 +572,7 @@ mod tests {
             .add_node(
                 "c".to_string(),
                 NodeProps {
-                    t: NodeType::Target,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();

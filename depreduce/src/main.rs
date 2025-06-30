@@ -13,6 +13,7 @@ use depreduce::{
         DependencyGraph,
         bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
     },
+    postprocessors::AliasTargetPostprocessor,
     reducers::{
         candidate_generators::NaiveReductionCandidateGeneratorFactory,
         reduce_context::{ReduceSettings, ReductionAttempt},
@@ -61,16 +62,21 @@ fn run_reducer_test(
         BazelDepEditor::new(&query, workspace_root.to_string())
     };
 
-    let reducer = TopSortReducer::new(Box::new(editor));
+    let reducer = TopSortReducer {};
     let settings = ReduceSettings {
+        editor: &editor,
         reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
         graph: &graph,
         build_command: build_script,
         cwd: workspace_root,
         save_build_log: true,
     };
-    let res = reducer.reduce(&settings).unwrap();
-    let attempts = res.get_attempts().to_vec();
+    let mut ctx = reducer.reduce(&settings).unwrap();
+
+    let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
+    postprocessor.process();
+
+    let attempts = ctx.get_attempts().to_vec();
     (graph, attempts)
 }
 
@@ -140,8 +146,8 @@ fn main() {
 
     std::fs::create_dir_all(&args.output).expect("Failed to create output directory");
 
-    let graph_path = Path::new(&args.output).join("graph.json");
-    let attempt_json_path = Path::new(&args.output).join("attempts.jsonl");
+    let graph_path = Path::new(&args.output).join("00-graph.json");
+    let attempt_json_path = Path::new(&args.output).join("01-attempts.jsonl");
 
     let graph_json = serde_json::to_string(&graph).expect("Failed to serialize graph to JSON");
     std::fs::write(graph_path, graph_json).expect("Failed to write graph to file");

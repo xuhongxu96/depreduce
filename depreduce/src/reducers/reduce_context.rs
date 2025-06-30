@@ -5,8 +5,8 @@ use std::process::{Command, Stdio};
 use serde::{Deserialize, Serialize};
 use utils::indent_all_lines;
 
-use crate::editors::FileEdit;
-use crate::graph::{DependencyGraph, NodeId};
+use crate::editors::{DepEditor, FileEdit};
+use crate::graph::{DependencyGraph, NodeId, NodeProps, NodeType, TargetType};
 use crate::reducers::candidate_generators::{
     ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
 };
@@ -14,6 +14,7 @@ use crate::reducers::candidate_generators::{
 pub const INDENT_SIZE_FOR_STDOUT: usize = 8;
 
 pub struct ReduceSettings<'a> {
+    pub editor: &'a dyn DepEditor,
     pub reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
     pub graph: &'a DependencyGraph,
     pub build_command: String,
@@ -79,8 +80,12 @@ pub struct GeneratedCandidates {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ReductionAttempt {
-    candidates: GeneratedCandidates,
-    ops: Vec<Operation>,
+    pub candidates: GeneratedCandidates,
+    pub ops: Vec<Operation>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub remarks: Option<String>,
 }
 
 pub struct ReduceContext<'a> {
@@ -107,7 +112,15 @@ impl<'a> ReduceContext<'a> {
                         .graph
                         .node2in_edges
                         .get(&node.id)
-                        .map_or(0, |edges| edges.len())
+                        .map(|edges| {
+                            edges.iter().filter(|(tgt_node_id, _)| {
+                                !settings.graph.nodes[**tgt_node_id]
+                                    .props
+                                    .t
+                                    .is_alias_target()
+                            })
+                        })
+                        .map_or(0, |edges| edges.count())
                 })
                 .collect(),
             added_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
@@ -298,14 +311,23 @@ impl<'a> ReduceContext<'a> {
         self.history.clear();
     }
 
-    pub fn start_attempt(&mut self, node_id: NodeId, dependents_vec: Vec<NodeId>) {
+    pub fn start_attempt(&mut self, node_id: NodeId, dependents_vec: Vec<NodeId>, remarks: Option<String>) {
         self.attempts.push(ReductionAttempt {
             candidates: GeneratedCandidates {
                 node_id,
                 dependents: dependents_vec,
             },
             ops: Vec::new(),
+            remarks,
         });
+    }
+
+    pub fn get_current_attempt(&self) -> Option<&ReductionAttempt> {
+        self.attempts.last()
+    }
+
+    pub fn get_current_candidates(&self) -> &Vec<NodeId> {
+        &self.get_current_attempt().unwrap().candidates.dependents
     }
 
     pub fn generate_reduction_candidates(

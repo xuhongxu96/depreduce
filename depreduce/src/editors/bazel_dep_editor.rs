@@ -315,6 +315,26 @@ impl BazelDepEditor {
             })
             .collect()
     }
+
+    fn simplify_label(&self, dep_label: &str, path: &str) -> Option<String> {
+        let mut simplified_label = None;
+        if let Some(dep_location) = self.label2location.get(dep_label) {
+            let (dep_path, _dep_start_line, _dep_end_col) = split_location(dep_location);
+            if dep_path == path {
+                simplified_label = Some(format!(":{}", BazelLabel::parse(dep_label).name));
+            }
+        }
+
+        let parsed_dep_label = BazelLabel::parse(dep_label);
+        if parsed_dep_label.package.split('/').last().unwrap() == parsed_dep_label.name {
+            simplified_label = Some(format!(
+                "{}{}",
+                parsed_dep_label.repo, parsed_dep_label.package
+            ));
+        }
+
+        simplified_label
+    }
 }
 
 impl DepEditor for BazelDepEditor {
@@ -327,13 +347,24 @@ impl DepEditor for BazelDepEditor {
                     path, self.workspace_root
                 ));
             }
+
+            let simplified_label = self.simplify_label(dep_label, &path);
+
             let build = std::fs::read_to_string(&path).unwrap();
             if let Some(pos) =
                 self.get_insertion_pos(&path, &build, start_line, &self.keywords_for_deps)
             {
                 Ok(FileEdit {
                     path: path,
-                    content: format!("{}\"{}\",{}", &build[..pos], dep_label, &build[pos..]),
+                    content: format!(
+                        "{}\"{}\",{}",
+                        &build[..pos],
+                        simplified_label
+                            .as_ref()
+                            .map(|s| s.as_str())
+                            .unwrap_or(dep_label),
+                        &build[pos..]
+                    ),
                 })
             } else {
                 Err(format!("Label '{}' does not have 'deps' field", label))

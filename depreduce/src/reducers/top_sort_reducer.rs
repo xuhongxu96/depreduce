@@ -1,24 +1,15 @@
 use std::collections::HashSet;
 
+use clap::builder::Str;
+
 use crate::editors::DepEditor;
 use crate::graph::NodeId;
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 
-pub struct TopSortReducer {
-    editor: Box<dyn DepEditor>,
-}
+pub struct TopSortReducer {}
 
 impl TopSortReducer {
-    pub fn new(editor: Box<dyn DepEditor>) -> Self {
-        Self { editor }
-    }
-
-    fn try_add_transitive_deps(
-        &self,
-        ctx: &mut ReduceContext,
-        candidates: &Vec<NodeId>,
-        node_id: NodeId,
-    ) -> bool {
+    fn try_add_transitive_deps(&self, ctx: &mut ReduceContext, node_id: NodeId) -> bool {
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         ctx.log(&format!(
             "  Trying to add transitive dependencies for node {}\n",
@@ -49,10 +40,10 @@ impl TopSortReducer {
 
         let mut added_edges: Vec<(NodeId, NodeId)> = Vec::new();
 
-        for dep_node in candidates {
-            let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
+        for dep_node in ctx.get_current_candidates().clone() {
+            let dep_node_label = ctx.settings.graph.nodes[dep_node].label.clone();
             for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
-                if let Some(edges) = ctx.settings.graph.node2out_edges.get(dep_node) {
+                if let Some(edges) = ctx.settings.graph.node2out_edges.get(&dep_node) {
                     if edges.contains_key(transitive_dep_id) {
                         ctx.log(&format!(
                             "  Skipping {} -> {} (already exists)\n",
@@ -63,7 +54,7 @@ impl TopSortReducer {
                 }
 
                 match ctx.settings.graph.nodes[*transitive_dep_id].props.t {
-                    crate::graph::NodeType::Target => {}
+                    crate::graph::NodeType::Target(_) => {}
                     _ => {
                         ctx.log(&format!(
                             "  Skipping {} -> {} (non-target)\n",
@@ -73,7 +64,11 @@ impl TopSortReducer {
                     }
                 }
 
-                match self.editor.add(&dep_node_label, transitive_dep_label) {
+                match ctx
+                    .settings
+                    .editor
+                    .add(&dep_node_label, transitive_dep_label)
+                {
                     Ok(edit) => {
                         ctx.backup(&edit);
                         ctx.apply(&edit);
@@ -81,7 +76,7 @@ impl TopSortReducer {
                             "  Added {} -> {}\n",
                             dep_node_label, transitive_dep_label
                         ));
-                        added_edges.push((*dep_node, *transitive_dep_id));
+                        added_edges.push((dep_node, *transitive_dep_id));
                     }
                     Err(e) => {
                         ctx.log(&format!(
@@ -114,35 +109,31 @@ impl TopSortReducer {
         }
     }
 
-    fn try_remove_dep(
-        &self,
-        ctx: &mut ReduceContext,
-        candidates: &Vec<NodeId>,
-        node_id: NodeId,
-    ) -> bool {
+    fn try_remove_dep(&self, ctx: &mut ReduceContext, node_id: NodeId) -> bool {
         ctx.log("  Trying a new candidate set\n");
 
         let mut removed_edges: Vec<(NodeId, NodeId)> = Vec::new();
 
         let label = ctx.settings.graph.nodes[node_id].label.clone();
-        for dep_node in candidates {
-            if ctx.get_indegree(*dep_node) == 0 {
+        for dep_node in ctx.get_current_candidates().clone() {
+            if ctx.get_indegree(dep_node) == 0 {
                 ctx.log(
                     format!(
                         "    Only consider deps for {} -> {} (because of no in-degree)\n",
-                        label, ctx.settings.graph.nodes[*dep_node].label
+                        label, ctx.settings.graph.nodes[dep_node].label
                     )
                     .as_str(),
                 );
             }
 
-            let dep_node_label = ctx.settings.graph.nodes[*dep_node].label.clone();
-            match self
-                .editor
-                .remove(&dep_node_label, &label, ctx.get_indegree(*dep_node) == 0)
-            {
+            let dep_node_label = ctx.settings.graph.nodes[dep_node].label.clone();
+            match ctx.settings.editor.remove(
+                &dep_node_label,
+                &label,
+                ctx.get_indegree(dep_node) == 0,
+            ) {
                 Ok(edit) => {
-                    removed_edges.push((*dep_node, node_id));
+                    removed_edges.push((dep_node, node_id));
                     ctx.backup(&edit);
                     ctx.apply(&edit);
                     ctx.log(&format!("    Removed {} -> {}\n", dep_node_label, label));
@@ -174,7 +165,7 @@ impl TopSortReducer {
             }
             Err(e) => {
                 ctx.log(&format!("  {}\n\n", e));
-                if self.try_add_transitive_deps(ctx, candidates, node_id) {
+                if self.try_add_transitive_deps(ctx, node_id) {
                     for (from, to) in removed_edges {
                         ctx.remove_dependent(to, from);
                     }
@@ -210,8 +201,8 @@ impl TopSortReducer {
             let mut generator = ctx.generate_reduction_candidates(node_id);
 
             while let Some(candidates) = generator.next() {
-                ctx.start_attempt(node_id, candidates.clone());
-                let res = self.try_remove_dep(&mut ctx, &candidates, node_id);
+                ctx.start_attempt(node_id, candidates.clone(), None);
+                let res = self.try_remove_dep(&mut ctx, node_id);
                 generator.report_result(res);
             }
         }
@@ -244,8 +235,9 @@ mod tests {
         let graph = convert_query_to_dep_graph(&query).unwrap();
         let editor = BazelDepEditor::new(&query, workspace_root.to_string());
 
-        let reducer = TopSortReducer::new(Box::new(editor));
+        let reducer = TopSortReducer {};
         let settings = ReduceSettings {
+            editor: &editor,
             reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
             build_command: get_test_data_path!(build_script)

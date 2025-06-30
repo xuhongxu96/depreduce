@@ -5,7 +5,7 @@ cc_binary(
     srcs = [
         "main.cpp",
     ],
-    deps = ["//libc:libc",
+    deps = ["//libc",
         "//liba",
         "//libb",
     ],

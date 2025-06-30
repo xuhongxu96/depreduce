@@ -171,6 +171,25 @@ pub fn parse_bazel_xml(xml: &str) -> Result<Query, quick_xml::de::DeError> {
     quick_xml::de::from_str(xml)
 }
 
+fn is_alias_like_target(rule: &crate::graph::bazel_xml_parser::Rule) -> bool {
+    use crate::graph::bazel_xml_parser::VariantProp;
+
+    if let Some(props) = &rule.props {
+        for prop in props {
+            match prop {
+                VariantProp::List(list_prop) => {
+                    if list_prop.name == "srcs" {
+                        return false;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    true
+}
+
 pub fn convert_query_to_dep_graph(query: &Query) -> Result<DependencyGraph, String> {
     let mut graph = DependencyGraph::new();
 
@@ -188,7 +207,9 @@ pub fn convert_query_to_dep_graph(query: &Query) -> Result<DependencyGraph, Stri
                 graph.add_node(
                     rule.name.clone(),
                     NodeProps {
-                        t: NodeType::Target,
+                        t: NodeType::Target(crate::graph::graph::TargetType {
+                            is_alias: rule.class == "alias" || is_alias_like_target(rule),
+                        }),
                     },
                 )?;
             }
