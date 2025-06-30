@@ -116,7 +116,7 @@ impl TopSortReducer {
 
         let label = ctx.settings.graph.nodes[node_id].label.clone();
         for dep_node in ctx.get_current_candidates().clone() {
-            if ctx.get_indegree(dep_node) == 0 {
+            if ctx.get_indegree(dep_node) <= 0 {
                 ctx.log(
                     format!(
                         "    Only consider deps for {} -> {} (because of no in-degree)\n",
@@ -130,7 +130,7 @@ impl TopSortReducer {
             match ctx.settings.editor.remove(
                 &dep_node_label,
                 &label,
-                ctx.get_indegree(dep_node) == 0,
+                ctx.get_indegree(dep_node) <= 0,
             ) {
                 Ok(edit) => {
                     removed_edges.push((dep_node, node_id));

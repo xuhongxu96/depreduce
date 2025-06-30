@@ -165,12 +165,6 @@ impl<'a> ReduceContext<'a> {
             self.settings.graph.nodes[node_id].label,
             self.settings.graph.nodes[dependent_node_id].label
         );
-        assert!(
-            self.in_degrees[node_id] > 0,
-            "Node {} has no incoming edges, cannot remove from node {}",
-            self.settings.graph.nodes[node_id].label,
-            self.settings.graph.nodes[dependent_node_id].label
-        );
 
         self.added_node2in_nodes[node_id].remove(&dependent_node_id);
         self.removed_node2in_nodes[node_id].insert(dependent_node_id);
@@ -311,7 +305,12 @@ impl<'a> ReduceContext<'a> {
         self.history.clear();
     }
 
-    pub fn start_attempt(&mut self, node_id: NodeId, dependents_vec: Vec<NodeId>, remarks: Option<String>) {
+    pub fn start_attempt(
+        &mut self,
+        node_id: NodeId,
+        dependents_vec: Vec<NodeId>,
+        remarks: Option<String>,
+    ) {
         self.attempts.push(ReductionAttempt {
             candidates: GeneratedCandidates {
                 node_id,
