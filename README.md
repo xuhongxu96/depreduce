@@ -425,3 +425,4 @@ Some tips for build script:
 [Sandboxing - Bazel]: https://bazel.build/docs/sandboxing
 [`buildfuzz`]: buildfuzz
 [`strace_parser`]: strace_parser
+[`depreduce`]: depreduce
