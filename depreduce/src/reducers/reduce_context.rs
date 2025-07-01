@@ -92,10 +92,28 @@ pub struct ReduceContext<'a> {
     pub settings: &'a ReduceSettings<'a>,
 
     history: HashMap<String, String>,
-    in_degrees: Vec<usize>,
+    in_degrees: Vec<i32>,
     added_node2in_nodes: Vec<HashSet<NodeId>>,
     removed_node2in_nodes: Vec<HashSet<NodeId>>,
     attempts: Vec<ReductionAttempt>,
+}
+
+fn calculate_in_degrees(graph: &DependencyGraph) -> Vec<i32> {
+    graph
+        .nodes
+        .iter()
+        .map(|node| {
+            graph
+                .node2in_edges
+                .get(&node.id)
+                .map(|edges| {
+                    edges.iter().filter(|(src_node_id, _)| {
+                        !graph.nodes[**src_node_id].props.t.is_alias_target()
+                    })
+                })
+                .map_or(0, |edges| edges.count().try_into().unwrap())
+        })
+        .collect()
 }
 
 impl<'a> ReduceContext<'a> {
@@ -103,26 +121,7 @@ impl<'a> ReduceContext<'a> {
         Self {
             settings,
             history: HashMap::new(),
-            in_degrees: settings
-                .graph
-                .nodes
-                .iter()
-                .map(|node| {
-                    settings
-                        .graph
-                        .node2in_edges
-                        .get(&node.id)
-                        .map(|edges| {
-                            edges.iter().filter(|(src_node_id, _)| {
-                                !settings.graph.nodes[**src_node_id]
-                                    .props
-                                    .t
-                                    .is_alias_target()
-                            })
-                        })
-                        .map_or(0, |edges| edges.count())
-                })
-                .collect(),
+            in_degrees: calculate_in_degrees(settings.graph),
             added_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
             removed_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
             attempts: Vec::new(),
@@ -148,6 +147,13 @@ impl<'a> ReduceContext<'a> {
         self.added_node2in_nodes[node_id].insert(dependent_node_id);
         self.removed_node2in_nodes[node_id].remove(&dependent_node_id);
         self.in_degrees[node_id] += 1;
+        self.log(
+            format!(
+                "  In-degree of {} is now {}\n",
+                self.settings.graph.nodes[node_id].label, self.in_degrees[node_id]
+            )
+            .as_str(),
+        );
         self.attempts
             .last_mut()
             .unwrap()
@@ -169,6 +175,13 @@ impl<'a> ReduceContext<'a> {
         self.added_node2in_nodes[node_id].remove(&dependent_node_id);
         self.removed_node2in_nodes[node_id].insert(dependent_node_id);
         self.in_degrees[node_id] -= 1;
+        self.log(
+            format!(
+                "  In-degree of {} is now {}\n",
+                self.settings.graph.nodes[node_id].label, self.in_degrees[node_id]
+            )
+            .as_str(),
+        );
         self.attempts
             .last_mut()
             .unwrap()
@@ -179,7 +192,7 @@ impl<'a> ReduceContext<'a> {
             }));
     }
 
-    pub fn get_indegree(&self, node_id: NodeId) -> usize {
+    pub fn get_indegree(&self, node_id: NodeId) -> i32 {
         self.in_degrees[node_id]
     }
 
@@ -361,5 +374,32 @@ impl<'a> ReduceContext<'a> {
 
     pub fn get_attempts(&self) -> &[ReductionAttempt] {
         &self.attempts
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::graph::bazel_xml_parser::{convert_query_to_dep_graph, parse_bazel_xml};
+
+    use super::*;
+    use utils::*;
+
+    #[test]
+    fn test_calculate_in_degrees() {
+        let xml = read_test_data!("perses.xml");
+        let query = parse_bazel_xml(&xml).unwrap();
+        let graph = convert_query_to_dep_graph(&query).unwrap();
+
+        let in_degrees = calculate_in_degrees(&graph)
+            .iter()
+            .enumerate()
+            .map(|(i, &d)| (i, graph.nodes[i].label.to_string(), d))
+            .collect::<Vec<_>>();
+
+        let res = to_json_lines(&in_degrees);
+        assert_eq!(
+            res,
+            read_or_create_test_data!("reducers/perses-in-degrees.jsonl", res)
+        );
     }
 }

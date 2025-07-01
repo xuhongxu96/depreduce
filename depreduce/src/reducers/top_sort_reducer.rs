@@ -119,8 +119,10 @@ impl TopSortReducer {
             if ctx.get_indegree(dep_node) <= 0 {
                 ctx.log(
                     format!(
-                        "    Only consider deps for {} -> {} (because of no in-degree)\n",
-                        label, ctx.settings.graph.nodes[dep_node].label
+                        "    Only consider deps for {} -> {} (because in-degree = {})\n",
+                        label,
+                        ctx.settings.graph.nodes[dep_node].label,
+                        ctx.get_indegree(dep_node)
                     )
                     .as_str(),
                 );
