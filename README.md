@@ -399,13 +399,13 @@ reduce dependencies in the approach we proposed above.
 
 #### Get Dependency Graph from Bazel Query
 
-`depreduce` parses the dependency graph in the XML format output by Bazel Query:
+[`depreduce`] parses the dependency graph in the XML format output by Bazel Query:
 
 ```sh
 bazel query "deps(//...)" --notool_deps --noimplicit_deps --output xml
 ```
 
-> The query command will be executed by `depreduce`. You don't have to run it by yourself. But of course you can run it to see what it is.
+> The query command will be executed by [`depreduce`]. You don't have to run it by yourself. But of course you can run it to see what it is.
 
 #### How to Run [`depreduce`]
 
