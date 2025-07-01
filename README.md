@@ -291,17 +291,46 @@ And by removing $n_j \in \text{dependents}(n_i)$, $\bar R_i$ will be decreased b
 Process each $n_j \in \text{dependents}(n_i)$ in reverse topological order
 
 1. Remove $n_j \rightarrow n_i$ and attempt to build.
-2. If it fails, replace $n_i$ with $\text{deps}(n_i)$ in $n_j$'s dependency list and try again.
-3. If still failing, add $n_i$ as a dependency to all $\text{dependents}(n_j)$ and retry.
-4. If all fail, retain the original edge.
+1. If it fails, add $n_i$ as a dependency to all $\text{dependents}(n_j)$ and retry.
+1. If still failing, replace $n_i$ with $\text{deps}(n_i)$ in $n_j$'s dependency list and try again.
+1. If all fail, retain the original edge.
 
-#### Step 2: Dependency Flattening
+#### Step 2: Lifting Dependencies
+
+Suppose $n_k$ depends on both $n_j$ and $n_i$, but $n_j$ depends on nothing. 
+And the build dependency is declared as below:
+
+```mermaid
+graph LR;
+    n_k --> n_j;
+    n_j --> n_i;
+```
+
+$$
+R_k = 0, R_j = 1, R_i = 2 \Longrightarrow R_{sum} = 3
+$$
+
+Our goal is to optimize it as below:
+
+```mermaid
+graph LR;
+    n_k --> n_i;
+    n_k --> n_j;
+```
+
+$$
+R_k = 0, R_i = 1, R_j = 1 \Longrightarrow R_{sum} = 2
+$$
+
+This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
+
+Since $n_k$ appears after $n_j$ in the reverse topological order, the edge $n_k \rightarrow n_i$ will also be examined in a later step. This allows the dependency to be recursively lifted to the nodes that truly require it.
+
+#### Step 3: Dependency Flattening
 
 You may wonder whether the step 2 really reduce the sum of $\bar R$,
 as it adds some new dependencies and seems to increase the $\bar R_k$ at the same time where $n_k \in deps(n_i)$.
 In fact, $\bar R_k$ won't be changed. Let's do some calculations.
-
-##### Motivating Example
 
 Suppose $n_j$ depends on all $deps(n_i)$ transitively thru $n_i \in deps(n_j)$, but 
 $n_j$ does not actually depend on $n_i$.
@@ -359,60 +388,35 @@ One more thing, the added dependencies to $n_j$ will be optimized
 in later steps, since they are dependencies of $n_i$ 
 and appear later than $n_i$ in the topological order.
 
-#### Step 3: Lifting Dependencies
-
-##### Motivating Example
-
-Suppose $n_k$ depends on both $n_j$ and $n_i$, but $n_j$ depends on nothing. 
-And the build dependency is declared as below:
-
-```mermaid
-graph LR;
-    n_k --> n_j;
-    n_j --> n_i;
-```
-
-$$
-R_k = 0, R_j = 1, R_i = 2 \Longrightarrow R_{sum} = 3
-$$
-
-Our goal is to optimize it as below:
-
-```mermaid
-graph LR;
-    n_k --> n_i;
-    n_k --> n_j;
-```
-
-$$
-R_k = 0, R_i = 1, R_j = 1 \Longrightarrow R_{sum} = 2
-$$
-
-This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
-
-Since $n_k$ appears after $n_j$ in the reverse topological order, the edge $n_k \rightarrow n_i$ will also be examined in a later step. This allows the dependency to be recursively lifted to the nodes that truly require it.
-
-
-
-## Our Approach
+## Implementation
 
 ### Static Dependency Analysis via [`depreduce`]
 
 [`depreduce`] is a novel tool for static dependency analysis and reduction proposed by us.
 
+It will use a custom build script as the test oracle, and try to
+reduce dependencies in the approach we proposed above.
+
 #### Get Dependency Graph from Bazel Query
 
-`depreduce` can parse the dependency graph in the XML format output by Bazel Query:
+`depreduce` parses the dependency graph in the XML format output by Bazel Query:
 
 ```sh
 bazel query "deps(//...)" --notool_deps --noimplicit_deps --output xml
 ```
+
+> The query command will be executed by `depreduce`. You don't have to run it by yourself. But of course you can run it to see what it is.
 
 #### How to Run [`depreduce`]
 
 ```sh
 depreduce --workspace /data/h445xu/repo/perses-private --command scripts/build_perses.sh
 ```
+
+Some tips for build script:
+
+- Remember to `set -e` in your script if it has more than 1 line of code.
+- Use `--notest_keep_going` for `bazel test` command to fail fast.
 
 [`buildfs`]: https://dl.acm.org/doi/10.1145/3428212
 [`BuildChecker`]: https://ieeexplore.ieee.org/document/10981616
