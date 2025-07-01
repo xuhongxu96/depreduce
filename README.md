@@ -160,136 +160,151 @@ The result is a JSONL file like below.
 ```
 
 
-## What is a Good Dependency Graph?
+## What Makes a Good Dependency Graph?
 
-Our goal is to minimize the number of targets to be rebuilt after
-changes of any target.
+Our goal is to minimize the number of targets that must be rebuilt when any node in the graph changes.
 
 ### Node
 
-A node $n_i$ in the dependency graph can be a build target, a source file, or
-a generated file.
+Let $n_i$ denote a node in the dependency graph. 
+A node may represent a build target, a source file, or a generated file. 
 
-Let $N$ be the total number of nodes in the graph.
+Let $N$ denote the total number of nodes in the graph.
 
 ### Dependencies
 
-Let $deps(n_i)$ be the set of all dependencies that $n_i$ depends on in the graph,
-and $deps_{real}(n_i)$ be the set of all **real** direct dependencies that $n_i$ depends on.
+Let:
+
+- $\text{deps}(n_i)$: the set of all (declared) dependencies of $n_i$
+- $\text{deps}_{\text{real}}(n_i)$: the set of all **actual** direct dependencies required for a successful build
 
 #### Transitive Dependencies
 
 $$
-deps_{transitive}(n_i) = \bigcup_{\forall n_j \in deps(n_i)} \left[deps(n_j) \cup deps_{transitive}(n_j)\right]
+\text{deps}_{\text{trans}}(n_i) = \text{deps}(n_i) \cup \bigcup_{n_j \in \text{deps}(n_i)} \text{deps}_{\text{trans}}(n_j)
 $$
 
 ### Dependents
 
-Let $dependents(n_i)$ be the set of all dependents of $n_i$, i.e., all nodes that 
-depends on $n_i$ in the graph.
+Let $\text{dependents}(n_i)$ denote the set of all nodes that depend on $n_i$, i.e.,
 
-So, $n_j \in dependents(n_i) \Leftrightarrow n_i \in dependents(n_j)$.
+$$
+n_j \in \text{dependents}(n_i) \iff n_i \in \text{deps}(n_j)
+$$
 
-### Edge
+#### Transitive Dependents
 
-When $n_j \in deps(n_i)$ or $n_i \in dependents(n_j)$,
-we say there is a directed edge $e_{i,j}$.
+$$
+\text{dependents}_{\text{trans}}(n_i) = \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j)
+$$
+
+### Edges
+
+If $n_j \in \text{deps}(n_i)$, we say there is a directed edge $e_{i,j}$ from $n_i$ to $n_j$.
 
 ### In-Degree and Out-Degree
 
-The in-degree $d_{in}(n_i)$ represents the number of incoming edges for the node $n_i$. 
+- In-degree of $n_i$: number of incoming edges
+  $d_{\text{in}}(n_i) = |\text{dependents}(n_i)|$
 
-And the out-degree $d_{out}(n_i)$ represents the number of outcoming edges for the node $n_i$. 
+- Out-degree of $n_i$: number of outgoing edges
+  $d_{\text{out}}(n_i) = |\text{deps}(n_i)|$
 
-$$
-\begin{align*}
-d_{in}(n_i) &= \sum_{\forall n_j \in dependents(n_i)} 1 \\
-d_{out}(n_i)  &= \sum_{\forall n_j \in deps(n_i)} 1
-\end{align*}
-$$
+### Correctness Criterion
 
-### Successful Build
-
-The build will succeed if
+A build is considered correct if:
 
 $$
-\forall i, deps_{real}(n_i) \subseteq \left[deps(n_i) \cup deps_{transitive}(n_i)\right]
+\forall i, \quad \text{deps}_{\text{real}}(n_i) \subseteq \text{deps}_{\text{trans}}(n_i)
 $$
 
-### The Number of Targets to Rebuild
+That is, every actual dependency of a node must be reachable via its declared transitive dependencies.
 
-Suppose $R_i$ is the number of targets except itself that will be rebuilt after $n_i$
-changed.
+### Rebuild Cost
 
-$$
-\begin{split}
-R_i &= d_{in}(n_i) + \sum_{\forall n_j \in dependents(n_i)} R_j \\
-    &= \sum_{\forall n_j \in dependents(n_i)} (1 + R_j)
-\end{split}
-$$
-
-So, our goal is to:
+Let $R_i$ denote the number of nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
 
 $$
-\min R_{sum} = \min \sum_i^N R_i
+\begin{aligned}
+R_i &= |\text{dependents}_{\text{trans}}(n_i)| \\
+    &= \left| \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \right|
+\end{aligned}
 $$
 
-### Minimize $R$ in Topological Order
+Our global optimization goal is:
 
-Suppose $n_1 \leq n_2 \leq \dots \leq n_N$ after topological sort on dependencies.
-
-We have:
 $$
-\begin{align*}
-dependents(n_1) & = \emptyset \\
-deps(n_N) & = \emptyset \\
-n_j \in dependents(n_i) & \Rightarrow j < i \Rightarrow n_j \leq n_i \\
-dependents(n_i) & \subseteq \left\{ n_j | j < i \right\} \\
-n_j \in deps(n_i) & \Rightarrow j > i \Rightarrow n_j \geq n_i \\
-deps(n_i) & \subseteq \left\{ n_j | j > i \right\}
-\end{align*}
+\min R_{\text{sum}} = \min \sum_{i=1}^N R_i
 $$
 
-Because $R_i$ of $n_i$ is only relevant to $R_j$ of the dependents of $n_i$,
-we can minimize $R_i$ in the topological order.
+## Optimization Strategy via Topological Order
 
-For example, first consider the $n_1$,
-$$
-dependents(n_1) = \emptyset \Longrightarrow R_1 = 0
-$$
+Let $n_1, n_2, \dots, n_N$ be a topological ordering of the nodes such that:
 
-We have nothing to do with minimizing the $R_1$ for $n_1$, as it is already $0$.
-
-Now let's look at $n_{i}$,
 $$
-\begin{split}
-& dependents(n_i) \subseteq \left\{ n_j | j < i \right\} \\
-\Longrightarrow \quad & R_i = \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j < i \right\}} (1 + R_j) \\
-\Longrightarrow \quad & R_i = \left|dependents(n_i)\right| + \sum_{\forall n_j \in dependents(n_i) \subseteq \left\{ n_j | j < i \right\}} R_j
-\end{split}
+n_j \in \text{deps}(n_i) \Rightarrow j > i \quad \text{and} \quad n_j \in \text{dependents}(n_i) \Rightarrow j < i
 $$
 
-Remember that we minimize $R_*$ from $R_1$ to $R_N$, which means, at the moment, all $R_j \text{s}$ such that $j < i$ have already been minimized.
+This implies:
 
-So, to minimize $R_i$, we only need to minimize the number of dependents for each $n_i$.
+$$
+\begin{aligned}
+\text{dependents}(n_i) &\subseteq \{ n_j \mid j < i \} \\
+\text{deps}(n_i) &\subseteq \{ n_j \mid j > i \}
+\end{aligned}
+$$
 
-### How to Minimize Dependents?
+We process nodes in increasing topological order to minimize $R_i$ incrementally.
 
-For each node $n_i$, 
+For instance:
 
-1. Remove $n_j \in dependents(n_i)$ and rebuild the project to validate the change.
-1. If build fails, add $deps(n_i)$ to $n_j$ and rebuild the project.
-1. If build still fails, give up removing $n_j$.
+$$
+\text{dependents}(n_1) = \emptyset \Longrightarrow R_1 = 0 
+$$
 
-The step 1 is not required, and it's just a shortcut for the step 2 to reduce optimization attempts in the future steps.
+For $n_i$ in general:
 
-You may wonder whether the step 2 really reduce the sum of $R$,
-as it adds some new dependencies and seems to increase the $R_k$ at the same time where $n_k \in deps(n_i)$.
-In fact, $R_k$ won't be changed. Let's do some calculations.
+$$
+\begin{aligned}
+R_i &= \left| \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \right| \\
+&\leq |\text{dependents}(n_i)| + \sum_{n_j \in \text{dependents}(n_i)} R_j \\
+&= \sum_{n_j \in \text{dependents}(n_i)} (1 + R_j)
+\end{aligned}
+$$
 
-#### Why Does Replacing Useless Dependency with Its Dependencies Work?
+Since all $R_j$ with $j < i$ are already minimized, we can now focus on reducing this upper bound for $R_i$.
 
-##### Before
+### How to Minimize $R_i$?
+
+It's hard to optimize the original $R_i$. Let us assume there is no overlap of dependents and 
+minimize the upper bound of it, i.e. $\bar R_i$.
+
+$$
+\min \bar R_i = \min \sum_{n_j \in \text{dependents}(n_i) \subseteq \left\{ n_j | j < i \right\}} (1 + \bar R_j)
+$$
+
+To minimize it, we need to remove the dependents of $n_i$ as more as possible.
+And by removing $n_j \in \text{dependents}(n_i)$, $\bar R_i$ will be decreased by $1 + \bar R_j$.
+
+### Strategy for Removing a Dependent
+
+Process each $n_j \in \text{dependents}(n_i)$ in reverse topological order
+
+1. Remove $n_j \rightarrow n_i$ and attempt to build.
+2. If it fails, replace $n_i$ with $\text{deps}(n_i)$ in $n_j$'s dependency list and try again.
+3. If still failing, add $n_i$ as a dependency to all $\text{dependents}(n_j)$ and retry.
+4. If all fail, retain the original edge.
+
+#### Step 2: Dependency Flattening
+
+You may wonder whether the step 2 really reduce the sum of $\bar R$,
+as it adds some new dependencies and seems to increase the $\bar R_k$ at the same time where $n_k \in deps(n_i)$.
+In fact, $\bar R_k$ won't be changed. Let's do some calculations.
+
+##### Motivating Example
+
+Suppose $n_j$ depends on all $deps(n_i)$ transitively thru $n_i \in deps(n_j)$, but 
+$n_j$ does not actually depend on $n_i$.
 
 ```mermaid
 graph LR;
@@ -300,7 +315,7 @@ graph LR;
     2[...] --> B;
 ```
 
-##### After
+In such case, we replace the $n_i$ with all its dependencies as the dependencies of $n_j$.
 
 ```mermaid
 graph LR;
@@ -312,43 +327,71 @@ graph LR;
     2[...] --> B;
 ```
 
-Suppose $n_j$ depends on all $deps(n_i)$ transitively inherited from $n_i \in deps(n_j)$, but 
-does not actually depend on $n_i$.
-In such case, after replacing the $n_i$ with all its dependencies as the dependencies of $n_j$, 
-there will be no other available optimization.
-Let's see the change of $R$ for this. 
+Let's see the change of $\bar R$ for this.  Let $\bar R_*'$ be the updated value of $\bar R_*$.
 
-Let $R_*'$ be the updated value of $R_*$.
-
-For $n_i$ that is currently being optimized, $R_i' = R_i - (1 + R_j)$.
+For $n_i$ that is currently being optimized, $\bar R_i' = \bar R_i - (1 + \bar R_j)$.
 
 For $n_k \in deps(n_i)$, let $D_k$ be $dependents(n_k)$ before optimization and $D_k'$ be $dependents(n_k)$ after optimization.
 
-We have $D_k' = D_k \cup \{n_j\}$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $R_t$, i.e., $R_t' = R_t$.
+We have $D_k' = D_k \cup \{n_j\}$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $\bar R_t$, i.e., $\bar R_t' = \bar R_t$.
 
 $$
 \begin{split}
-R_k & = \sum_{\forall n_t \in D_k} (1 + R_t) \\
-    & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i) \\
+\bar R_k & = \sum_{\forall n_t \in D_k} (1 + \bar R_t) \\
+    & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + \bar R_t) + (1 + \bar R_i) \\
 \\
-R_k' & = \sum_{\forall n_t \in D_k' \setminus n_i} (1 + R_t') + (1 + R_i') \\
-     & = \sum_{\forall n_t \in D_k \cup \{n_j\} \setminus n_i} (1 + R_t') + (1 + R_i') \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t') + (1 + R_j) + (1 + R_i') \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_j) + (1 + R_i - (1 + R_j)) \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i) \\
-     & = R_k
+\bar R_k' & = \sum_{\forall n_t \in D_k' \setminus n_i} (1 + \bar R_t') + (1 + \bar R_i') \\
+     & = \sum_{\forall n_t \in D_k \cup \{n_j\} \setminus n_i} (1 + \bar R_t') + (1 + \bar R_i') \\
+     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t') + (1 + \bar R_j) + (1 + \bar R_i') \\
+     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t) + (1 + \bar R_j) + (1 + \bar R_i - (1 + \bar R_j)) \\
+     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t) + (1 + \bar R_i) \\
+     & = \bar R_k
 \end{split}
 $$
 
-So, $R_k$ actually does not change and $R_i$ decreased by $1 + R_j$. 
-The overall sum of $R$ will be definitely reduced.
+So, $\bar R_k$ actually does not change and $\bar R_i$ decreased by $1 + \bar R_j$. 
+The overall sum of $\bar R$ will be definitely reduced.
 
-Intuitively, we just avoid rebuilding $n_j$ and all its dependents including recursive dependents (which are $1 + R_j$ nodes in total) after changing $n_i$, because we disconnect
+Intuitively, we just avoid rebuilding $n_j$ and all its dependents including recursive dependents (which are $1 + \bar R_j$ nodes in total) after changing $n_i$, because we disconnect
 $n_i$ with $n_j$.
 
 One more thing, the added dependencies to $n_j$ will be optimized
-in later steps, since these dependencies are dependencies of $n_i$ 
-which is currently being opitmized and appear later in the topological order.
+in later steps, since they are dependencies of $n_i$ 
+and appear later than $n_i$ in the topological order.
+
+#### Step 3: Lifting Dependencies
+
+##### Motivating Example
+
+Suppose $n_k$ depends on both $n_j$ and $n_i$, but $n_j$ depends on nothing. 
+And the build dependency is declared as below:
+
+```mermaid
+graph LR;
+    n_k --> n_j;
+    n_j --> n_i;
+```
+
+$$
+R_k = 0, R_j = 1, R_i = 2 \Longrightarrow R_{sum} = 3
+$$
+
+Our goal is to optimize it as below:
+
+```mermaid
+graph LR;
+    n_k --> n_i;
+    n_k --> n_j;
+```
+
+$$
+R_k = 0, R_i = 1, R_j = 1 \Longrightarrow R_{sum} = 2
+$$
+
+This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
+
+Since $n_k$ appears after $n_j$ in the reverse topological order, the edge $n_k \rightarrow n_i$ will also be examined in a later step. This allows the dependency to be recursively lifted to the nodes that truly require it.
+
 
 
 ## Our Approach
