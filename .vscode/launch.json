@@ -22,6 +22,8 @@
             "args": [
                 "--workspace",
                 "/data/h445xu/repo/perses-private/",
+                "--command",
+                "scripts/build_perses.sh"
             ],
             "cwd": "${workspaceFolder}"
         },

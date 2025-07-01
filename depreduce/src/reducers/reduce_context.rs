@@ -113,8 +113,8 @@ impl<'a> ReduceContext<'a> {
                         .node2in_edges
                         .get(&node.id)
                         .map(|edges| {
-                            edges.iter().filter(|(tgt_node_id, _)| {
-                                !settings.graph.nodes[**tgt_node_id]
+                            edges.iter().filter(|(src_node_id, _)| {
+                                !settings.graph.nodes[**src_node_id]
                                     .props
                                     .t
                                     .is_alias_target()
