@@ -324,7 +324,7 @@ For $n_i$ that is currently being optimized, $R_i' = R_i - (1 + R_j)$.
 
 For $n_k \in deps(n_i)$, let $D_k$ be $dependents(n_k)$ before optimization and $D_k'$ be $dependents(n_k)$ after optimization.
 
-We have $D_k' = D_k \cup n_j$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $R_t$, i.e., $R_t' = R_t$.
+We have $D_k' = D_k \cup \{n_j\}$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $R_t$, i.e., $R_t' = R_t$.
 
 $$
 \begin{split}
@@ -332,7 +332,7 @@ R_k & = \sum_{\forall n_t \in D_k} (1 + R_t) \\
     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i) \\
 \\
 R_k' & = \sum_{\forall n_t \in D_k' \setminus n_i} (1 + R_t') + (1 + R_i') \\
-     & = \sum_{\forall n_t \in D_k \cup n_j \setminus n_i} (1 + R_t') + (1 + R_i') \\
+     & = \sum_{\forall n_t \in D_k \cup \{n_j\} \setminus n_i} (1 + R_t') + (1 + R_i') \\
      & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t') + (1 + R_j) + (1 + R_i') \\
      & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_j) + (1 + R_i - (1 + R_j)) \\
      & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + R_t) + (1 + R_i) \\
@@ -342,6 +342,13 @@ $$
 
 So, $R_k$ actually does not change and $R_i$ decreased by $1 + R_j$. 
 The overall sum of $R$ will be definitely reduced.
+
+Intuitively, we just avoid rebuilding $n_j$ and all its dependents including recursive dependents (which are $1 + R_j$ nodes in total) after changing $n_i$, because we disconnect
+$n_i$ with $n_j$.
+
+One more thing, the added dependencies to $n_j$ will be optimized
+in later steps, since these dependencies are dependencies of $n_i$ 
+which is currently being opitmized and appear later in the topological order.
 
 
 ## Our Approach
