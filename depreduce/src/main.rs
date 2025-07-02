@@ -3,6 +3,7 @@ use std::{
     io::{BufRead, BufReader, Read},
     path::Path,
     process::{Command, exit},
+    time::SystemTime,
 };
 
 use clap::Parser;
@@ -66,6 +67,11 @@ fn run_reducer_test(
     build_script: String,
     args: &Args,
 ) -> (DependencyGraph, Vec<ReductionAttempt>) {
+    println!(
+        "Starting reduction test at {:?}",
+        chrono::offset::Local::now()
+    );
+
     println!("Workspace root: {}", workspace_root);
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
@@ -99,6 +105,8 @@ fn run_reducer_test(
 
     let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
     postprocessor.process();
+
+    println!("End reduction test at {:?}", chrono::offset::Local::now());
 
     let attempts = ctx.get_attempts().to_vec();
     (graph, attempts)
