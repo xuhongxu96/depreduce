@@ -39,6 +39,21 @@ impl TopSortReducer {
                     .label
                     .clone();
 
+                if let Some(edges) = ctx
+                    .settings
+                    .graph
+                    .node2out_edges
+                    .get(&dependent_of_dependent)
+                {
+                    if edges.contains_key(&node_id) {
+                        ctx.log(&format!(
+                            "  Skipping {} -> {} (already exists)\n",
+                            dependent_of_dependent_label, label
+                        ));
+                        continue;
+                    }
+                }
+
                 match ctx
                     .settings
                     .editor
