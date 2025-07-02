@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use clap::builder::Str;
 
 use crate::editors::DepEditor;
 use crate::graph::NodeId;

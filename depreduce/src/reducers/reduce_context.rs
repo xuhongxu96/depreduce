@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use utils::indent_all_lines;
 
 use crate::editors::{DepEditor, FileEdit};
-use crate::graph::{DependencyGraph, NodeId, NodeProps, NodeType, TargetType};
+use crate::graph::{DependencyGraph, NodeId};
 
 pub const INDENT_SIZE_FOR_STDOUT: usize = 8;
 

@@ -1,9 +1,8 @@
-use std::collections::HashSet;
 
 use crate::reducers::reduce_context::Operation;
 use crate::{
-    graph::{NodeId, bazel_xml_parser::Query},
-    reducers::reduce_context::{ReduceContext, ReduceSettings, ReductionAttempt},
+    graph::NodeId,
+    reducers::reduce_context::{ReduceContext, ReduceSettings},
 };
 
 pub struct AliasTargetPostprocessor<'a, 'b> {

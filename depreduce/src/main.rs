@@ -1,9 +1,8 @@
 use std::{
     collections::HashSet,
-    io::{BufRead, BufReader, Read},
+    io::{BufRead, BufReader},
     path::Path,
     process::{Command, exit},
-    time::SystemTime,
 };
 
 use clap::Parser;

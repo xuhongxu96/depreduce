@@ -18,6 +18,5 @@ pub trait DepEditor {
 
 mod bazel_dep_editor;
 
-use std::collections::HashSet;
 
 pub use bazel_dep_editor::BazelDepEditor;

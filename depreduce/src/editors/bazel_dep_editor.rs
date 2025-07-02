@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::path::{self, Path};
+use std::path::Path;
 
 use rustpython_parser::Parse;
 use rustpython_parser::ast::Ranged;
