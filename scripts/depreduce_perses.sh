@@ -1,1 +1,0 @@
-nohup ./target/release/depreduce -w /data/h445xu/repo/perses-private -c scripts/build_perses.sh --deps_only > 1.log 2>&1 &
