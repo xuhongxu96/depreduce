@@ -256,13 +256,13 @@ impl TopSortReducer {
                 if !ctx.settings.disable_dependency_lifting
                     && self.try_lift_deps(ctx, node_id, dependent_node_id)
                 {
-                    ctx.remove_dependent(dependent_node_id, node_id);
+                    ctx.remove_dependent(node_id, dependent_node_id);
                     ctx.commit_changes();
                     true
                 } else if !ctx.settings.disable_dependency_flattening
                     && self.try_flatten_deps(ctx, node_id, dependent_node_id)
                 {
-                    ctx.remove_dependent(dependent_node_id, node_id);
+                    ctx.remove_dependent(node_id, dependent_node_id);
                     ctx.commit_changes();
                     true
                 } else {

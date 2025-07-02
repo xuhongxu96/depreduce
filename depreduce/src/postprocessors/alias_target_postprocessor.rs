@@ -51,15 +51,16 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
                         }
                         Operation::Remove(rm) => {
                             if let Some(prev_id) = prev_node_id {
-                                assert_eq!(prev_id, rm.dependent_node_id);
-                            }
-                            removed_deps.push(rm.node_id);
-                            if !added_deps.is_empty() {
-                                candidates.push(Candidate {
-                                    node_id: rm.dependent_node_id,
-                                    added_deps: added_deps.clone(),
-                                    removed_deps: removed_deps.clone(),
-                                });
+                                if prev_id == rm.dependent_node_id {
+                                    if !added_deps.is_empty() {
+                                        removed_deps.push(rm.node_id);
+                                        candidates.push(Candidate {
+                                            node_id: rm.dependent_node_id,
+                                            added_deps: added_deps.clone(),
+                                            removed_deps: removed_deps.clone(),
+                                        });
+                                    }
+                                }
                             }
                             added_deps.clear();
                             removed_deps.clear();
