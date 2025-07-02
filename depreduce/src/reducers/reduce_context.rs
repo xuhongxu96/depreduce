@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::io::{BufRead, BufReader, Read};
 use std::process::{Command, Stdio};
 
@@ -7,19 +7,20 @@ use utils::indent_all_lines;
 
 use crate::editors::{DepEditor, FileEdit};
 use crate::graph::{DependencyGraph, NodeId, NodeProps, NodeType, TargetType};
-use crate::reducers::candidate_generators::{
-    ReductionCandidateGenerator, ReductionCandidateGeneratorFactory,
-};
 
 pub const INDENT_SIZE_FOR_STDOUT: usize = 8;
 
 pub struct ReduceSettings<'a> {
     pub editor: &'a dyn DepEditor,
-    pub reduction_candidate_generator_factory: &'a dyn ReductionCandidateGeneratorFactory,
     pub graph: &'a DependencyGraph,
     pub build_command: String,
     pub cwd: String,
     pub save_build_log: bool,
+
+    // settings
+    pub disable_dependency_flattening: bool,
+    pub disable_dependency_lifting: bool,
+    pub disable_topological_sorting: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -75,7 +76,7 @@ pub enum Operation {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GeneratedCandidates {
     pub node_id: NodeId,
-    pub dependents: Vec<NodeId>,
+    pub dependent: NodeId,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -93,9 +94,15 @@ pub struct ReduceContext<'a> {
 
     history: HashMap<String, String>,
     in_degrees: Vec<i32>,
+
     added_node2in_nodes: Vec<HashSet<NodeId>>,
     removed_node2in_nodes: Vec<HashSet<NodeId>>,
+
+    current_node_id: Option<NodeId>,
+    dependent_candidates: BinaryHeap<(usize, NodeId)>,
     attempts: Vec<ReductionAttempt>,
+
+    node2topsort_index: Vec<usize>,
 }
 
 fn calculate_in_degrees(graph: &DependencyGraph) -> Vec<i32> {
@@ -118,13 +125,28 @@ fn calculate_in_degrees(graph: &DependencyGraph) -> Vec<i32> {
 
 impl<'a> ReduceContext<'a> {
     pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
+        assert!(
+            !settings.disable_topological_sorting
+                || (settings.disable_dependency_flattening && settings.disable_dependency_lifting),
+            "disable_topological_sorting can only be set when disable_dependency_flattening and disable_dependency_lifting are both set"
+        );
+
         Self {
             settings,
             history: HashMap::new(),
             in_degrees: calculate_in_degrees(settings.graph),
             added_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
             removed_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
+            current_node_id: None,
+            dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
+            node2topsort_index: vec![0; settings.graph.nodes.len()],
+        }
+    }
+
+    pub fn init_node2topsort_index(&mut self, sorted_nodes: &[NodeId]) {
+        for (index, &node_id) in sorted_nodes.iter().enumerate() {
+            self.node2topsort_index[node_id] = index;
         }
     }
 
@@ -143,6 +165,18 @@ impl<'a> ReduceContext<'a> {
             self.settings.graph.nodes[node_id].label,
             self.settings.graph.nodes[dependent_node_id].label
         );
+
+        if self.current_node_id.map_or(false, |id| id == node_id) {
+            self.log(&format!(
+                "  Adding {} as a dependent candidate of {}\n",
+                self.settings.graph.nodes[dependent_node_id].label,
+                self.settings.graph.nodes[node_id].label
+            ));
+            self.dependent_candidates.push((
+                self.node2topsort_index[dependent_node_id],
+                dependent_node_id,
+            ));
+        }
 
         self.added_node2in_nodes[node_id].insert(dependent_node_id);
         self.removed_node2in_nodes[node_id].remove(&dependent_node_id);
@@ -232,13 +266,14 @@ impl<'a> ReduceContext<'a> {
                 .unwrap_or_else(|err| panic!("Failed to restore file {}: {}", path, err));
             log.push_str(&format!("    {}\n", path));
         }
+
+        let mut paths: Vec<String> = self.history.keys().cloned().collect();
+        paths.sort();
         self.attempts
             .last_mut()
             .unwrap()
             .ops
-            .push(Operation::Restore(RestoreOperation {
-                paths: self.history.keys().cloned().collect(),
-            }));
+            .push(Operation::Restore(RestoreOperation { paths }));
         self.log(&log);
         self.history.clear();
     }
@@ -308,62 +343,86 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn commit_changes(&mut self) {
+        let mut paths: Vec<String> = self.history.keys().cloned().collect();
+        paths.sort();
         self.attempts
             .last_mut()
             .unwrap()
             .ops
-            .push(Operation::Commit(CommitOperation {
-                paths: self.history.keys().cloned().collect(),
-            }));
+            .push(Operation::Commit(CommitOperation { paths }));
         self.history.clear();
     }
 
     pub fn start_attempt(
         &mut self,
         node_id: NodeId,
-        dependents_vec: Vec<NodeId>,
+        dependent_node_id: NodeId,
         remarks: Option<String>,
     ) {
         self.attempts.push(ReductionAttempt {
             candidates: GeneratedCandidates {
                 node_id,
-                dependents: dependents_vec,
+                dependent: dependent_node_id,
             },
             ops: Vec::new(),
             remarks,
         });
     }
 
+    pub fn next_attempt(&mut self, remarks: Option<String>) -> Option<NodeId> {
+        if self.dependent_candidates.is_empty() {
+            return None;
+        }
+
+        let dependent = self.dependent_candidates.pop().unwrap();
+
+        self.attempts.push(ReductionAttempt {
+            candidates: GeneratedCandidates {
+                node_id: self.current_node_id.unwrap(),
+                dependent: dependent.1,
+            },
+            ops: Vec::new(),
+            remarks,
+        });
+
+        Some(dependent.1)
+    }
+
     pub fn get_current_attempt(&self) -> Option<&ReductionAttempt> {
         self.attempts.last()
     }
 
-    pub fn get_current_candidates(&self) -> &Vec<NodeId> {
-        &self.get_current_attempt().unwrap().candidates.dependents
-    }
-
-    pub fn generate_reduction_candidates(
-        &mut self,
-        node_id: NodeId,
-    ) -> Box<dyn ReductionCandidateGenerator> {
-        let mut dependents_vec = Vec::new();
+    pub fn generate_reduction_candidates(&mut self, node_id: NodeId) {
+        self.dependent_candidates.clear();
+        self.current_node_id = Some(node_id);
 
         if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
-            dependents_vec = dependents
-                .iter()
-                .filter(|(dependent_node_id, _)| {
-                    !self.removed_node2in_nodes[node_id].contains(dependent_node_id)
-                })
-                .map(|(dependent_node_id, _)| *dependent_node_id)
-                .collect();
+            self.dependent_candidates.extend(
+                dependents
+                    .iter()
+                    .filter(|(dependent_node_id, _)| {
+                        !self.removed_node2in_nodes[node_id].contains(dependent_node_id)
+                    })
+                    .map(|(dependent_node_id, _)| {
+                        (
+                            self.node2topsort_index[*dependent_node_id],
+                            *dependent_node_id,
+                        )
+                    }),
+            )
         }
 
-        dependents_vec.extend(self.added_node2in_nodes[node_id].iter());
-        dependents_vec.sort();
-
-        self.settings
-            .reduction_candidate_generator_factory
-            .create(dependents_vec)
+        self.dependent_candidates
+            .extend(
+                self.added_node2in_nodes[node_id]
+                    .iter()
+                    .map(|&dependent_node_id| {
+                        (
+                            self.node2topsort_index[dependent_node_id],
+                            dependent_node_id,
+                        )
+                    }),
+            );
     }
 
     pub fn log(&mut self, message: &str) {

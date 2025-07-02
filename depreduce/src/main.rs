@@ -15,7 +15,6 @@ use depreduce::{
     },
     postprocessors::AliasTargetPostprocessor,
     reducers::{
-        candidate_generators::NaiveReductionCandidateGeneratorFactory,
         reduce_context::{ReduceSettings, ReductionAttempt},
         top_sort_reducer::TopSortReducer,
     },
@@ -41,17 +40,39 @@ struct Args {
 
     #[arg(short, long)]
     deps_only: bool,
+
+    #[arg(
+        long,
+        help = "Disable dependency flattening: prevents the reducer from adding dependencies of the node being optimized to the dependent node being reduced as dependencies"
+    )]
+    disable_dependency_flattening: bool,
+
+    #[arg(
+        long,
+        help = "Disable dependency lifting: prevents the reducer from adding the node being optimized to the dependents of the dependent node being reduced as a dependency"
+    )]
+    disable_dependency_lifting: bool,
+
+    #[arg(
+        long,
+        help = "Only can be set when disable_dependency_flattening and disable_dependency_lifting are both set"
+    )]
+    disable_topological_sorting: bool,
 }
 
 fn run_reducer_test(
     xml: &str,
     workspace_root: String,
     build_script: String,
-    deps_only: bool,
+    args: &Args,
 ) -> (DependencyGraph, Vec<ReductionAttempt>) {
+    println!("Workspace root: {}", workspace_root);
+    println!("Build script: {}", build_script);
+    println!("Args: {:#?}", args);
+
     let query: Query = parse_bazel_xml(xml).unwrap();
     let graph = convert_query_to_dep_graph(&query).unwrap();
-    let editor = if deps_only {
+    let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
             &query,
             workspace_root.to_string(),
@@ -65,11 +86,14 @@ fn run_reducer_test(
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
         editor: &editor,
-        reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
         graph: &graph,
         build_command: build_script,
         cwd: workspace_root,
         save_build_log: true,
+
+        disable_dependency_flattening: args.disable_dependency_flattening,
+        disable_dependency_lifting: args.disable_dependency_lifting,
+        disable_topological_sorting: args.disable_topological_sorting,
     };
     let mut ctx = reducer.reduce(&settings).unwrap();
 
@@ -141,7 +165,7 @@ fn main() {
             .unwrap()
             .to_string_lossy()
             .to_string(),
-        args.deps_only,
+        &args,
     );
 
     std::fs::create_dir_all(&args.output).expect("Failed to create output directory");

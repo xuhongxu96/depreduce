@@ -80,8 +80,11 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
         let candidates = self.get_candidates();
 
         'candidate: for candidate in &candidates {
-            self.ctx
-                .start_attempt(candidate.node_id, vec![], Some("Recover Alias".to_string()));
+            self.ctx.start_attempt(
+                candidate.node_id,
+                candidate.node_id,
+                Some("Recover Alias".to_string()),
+            );
 
             let node_label = graph.nodes[candidate.node_id].label.clone();
             for dep_node_id in &candidate.added_deps {
@@ -130,10 +133,7 @@ mod tests {
     use crate::{
         editors::BazelDepEditor,
         graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
-        reducers::{
-            candidate_generators::NaiveReductionCandidateGeneratorFactory,
-            top_sort_reducer::TopSortReducer,
-        },
+        reducers::top_sort_reducer::TopSortReducer,
     };
 
     use super::*;
@@ -153,7 +153,6 @@ mod tests {
         let reducer = TopSortReducer {};
         let settings = ReduceSettings {
             editor: &editor,
-            reduction_candidate_generator_factory: &NaiveReductionCandidateGeneratorFactory,
             graph: &graph,
             build_command: get_test_data_path!(build_script)
                 .to_string_lossy()
@@ -162,6 +161,9 @@ mod tests {
                 .to_string_lossy()
                 .to_string(),
             save_build_log: false,
+            disable_dependency_flattening: false,
+            disable_dependency_lifting: false,
+            disable_topological_sorting: false,
         };
         let mut ctx = reducer.reduce(&settings).unwrap();
 

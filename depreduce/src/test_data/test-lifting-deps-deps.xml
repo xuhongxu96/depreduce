@@ -1,0 +1,124 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<query version="2">
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/liba/a.cpp:1:1" name="//liba:a.cpp">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/liba/a.h:1:1" name="//liba:a.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/liba/BUILD:3:11" name="//liba:liba">
+        <string name="name" value="liba"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="liba"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="liba/BUILD:3:11"/>
+        <list name="srcs">
+            <label value="//liba:a.cpp"/>
+        </list>
+        <list name="includes">
+            <string value="."/>
+        </list>
+        <list name="hdrs">
+            <label value="//liba:a.h"/>
+        </list>
+        <rule-input name="//liba:a.cpp"/>
+        <rule-input name="//liba:a.h"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libb/b.cpp:1:1" name="//libb:b.cpp">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libb/b.h:1:1" name="//libb:b.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libb/BUILD:3:11" name="//libb:libb">
+        <string name="name" value="libb"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="libb"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="libb/BUILD:3:11"/>
+        <list name="srcs">
+            <label value="//libb:b.cpp"/>
+        </list>
+        <list name="includes">
+            <string value="."/>
+        </list>
+        <list name="hdrs">
+            <label value="//libb:b.h"/>
+        </list>
+        <list name="deps">
+            <label value="//liba:liba"/>
+        </list>
+        <rule-input name="//liba:liba"/>
+        <rule-input name="//libb:b.cpp"/>
+        <rule-input name="//libb:b.h"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libc/c.cpp:1:1" name="//libc:c.cpp">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libc/c.h:1:1" name="//libc:c.h">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/libc/BUILD:3:11" name="//libc:libc">
+        <string name="name" value="libc"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <string name="generator_name" value="libc"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="libc/BUILD:3:11"/>
+        <list name="srcs">
+            <label value="//libc:c.cpp"/>
+        </list>
+        <list name="includes">
+            <string value="."/>
+        </list>
+        <list name="hdrs">
+            <label value="//libc:c.h"/>
+        </list>
+        <list name="deps">
+            <label value="//libb:libb"/>
+        </list>
+        <rule-input name="//libb:libb"/>
+        <rule-input name="//libc:c.cpp"/>
+        <rule-input name="//libc:c.h"/>
+    </rule>
+    <rule class="cc_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/main/BUILD:3:10" name="//main:main">
+        <string name="name" value="main"/>
+        <string name="generator_name" value="main"/>
+        <string name="generator_function" value="cc_binary"/>
+        <string name="generator_location" value="main/BUILD:3:10"/>
+        <list name="srcs">
+            <label value="//main:main.cpp"/>
+        </list>
+        <list name="deps">
+            <label value="//libc:libc"/>
+            <label value="@rules_cc//:link_extra_lib"/>
+        </list>
+        <rule-input name="//libc:libc"/>
+        <rule-input name="//main:main.cpp"/>
+        <rule-input name="@rules_cc//:link_extra_lib"/>
+        <rule-output name="//main:main.stripped"/>
+        <rule-output name="//main:main.dwp"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/test-lifting-deps/main/main.cpp:1:1" name="//main:main.cpp">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="cc_library" location="/home/hongxu/.cache/bazel/_bazel_hongxu/2178b9ff9a785388d80f41d76ff08aac/external/rules_cc+/BUILD:20:11" name="@rules_cc//:link_extra_lib">
+        <string name="name" value="link_extra_lib"/>
+        <string name="generator_name" value="link_extra_lib"/>
+        <string name="generator_function" value="cc_library"/>
+        <string name="generator_location" value="/home/hongxu/.cache/bazel/_bazel_hongxu/2178b9ff9a785388d80f41d76ff08aac/external/rules_cc+/BUILD:20:11"/>
+        <list name="deps">
+            <label value="@rules_cc//:link_extra_libs"/>
+        </list>
+        <rule-input name="@rules_cc//:link_extra_libs"/>
+    </rule>
+    <rule class="label_flag" location="/home/hongxu/.cache/bazel/_bazel_hongxu/2178b9ff9a785388d80f41d76ff08aac/external/rules_cc+/BUILD:13:11" name="@rules_cc//:link_extra_libs">
+        <string name="name" value="link_extra_libs"/>
+        <label name="build_setting_default" value="@rules_cc//:empty_lib"/>
+    </rule>
+</query>
