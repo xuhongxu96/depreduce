@@ -1,0 +1,1 @@
+nohup ./target/release/depreduce -w /data/h445xu/repo/perses-3 -c scripts/build_perses.sh --disable-dependency-flattening --deps-only > perses-3-stdout.log 2>perses-3-stderr.log &
