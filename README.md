@@ -222,20 +222,25 @@ That is, every actual dependency of a node must be reachable via its declared tr
 
 ### Rebuild Cost
 
-Let $R_i$ denote the number of nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
+Let $R_i$ denote the nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
 
 $$
 \begin{aligned}
-R_i &= |\text{dependents}_{\text{trans}}(n_i)| \\
-    &= \left| \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \right|
+R_i &= \text{dependents}_{\text{trans}}(n_i) \setminus n_i \\
+    &= \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \setminus n_j \\
+    &= \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right)
 \end{aligned}
 $$
 
-Our global optimization goal is:
+As you can see, the value of $R_i$ only depends on the dependents of $n_i$.
+
+Our global optimization goal is to minimize the sum of the rebuild cost for each node:
 
 $$
-\min R_{\text{sum}} = \min \sum_{i=1}^N R_i
+\min \sum_{i=1}^N |R_i|
 $$
+
+If we can minimize each $|R_i|$, the sum will reach its minimum.
 
 ## Optimization Strategy via Topological Order
 
@@ -259,36 +264,33 @@ We process nodes in increasing topological order to minimize $R_i$ incrementally
 For instance:
 
 $$
-\text{dependents}(n_1) = \emptyset \Longrightarrow R_1 = 0 
+\text{dependents}(n_1) = \emptyset \Longrightarrow R_1 = \emptyset
 $$
+
+In other words, nothing can be done to optimize $R_1$ as it is already an empty set.
 
 For $n_i$ in general:
 
 $$
-\begin{aligned}
-R_i &= \left| \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \right| \\
-&\leq |\text{dependents}(n_i)| + \sum_{n_j \in \text{dependents}(n_i)} R_j \\
-&= \sum_{n_j \in \text{dependents}(n_i)} (1 + R_j)
-\end{aligned}
+R_i = \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right) 
 $$
 
-Since all $R_j$ with $j < i$ are already minimized, we can now focus on reducing this upper bound for $R_i$.
+Because we optimize $R_i$ in topological order, all $R_j$ with $j < i$ must have already been reduced,
+which means all $n_j \in \text{dependents}(n_i)  \subseteq \{ n_j \mid j < i \}$ have already
+been reduced and determined.
+
+We can now treat all $R_j$ s as constants and focus on reducing $R_i$.
 
 ### How to Minimize $R_i$?
 
-It's hard to optimize the original $R_i$. Let us assume there is no overlap of dependents and 
-minimize the upper bound of it, i.e. $\bar R_i$.
-
 $$
-\min \bar R_i = \min \sum_{n_j \in \text{dependents}(n_i) \subseteq \left\{ n_j | j < i \right\}} (1 + \bar R_j)
+\min |R_i| = \min \left| \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right) \right|
 $$
 
-To minimize it, we need to remove the dependents of $n_i$ as more as possible.
-And by removing $n_j \in \text{dependents}(n_i)$, $\bar R_i$ will be decreased by $1 + \bar R_j$.
+Because all $R_j$ s are constants, the only thing we can do with this formula is to remove
+dependents of $n_i$.
 
-### Strategy for Removing a Dependent
-
-Process each $n_j \in \text{dependents}(n_i)$ in reverse topological order
+We will process each $n_j \in \text{dependents}(n_i)$ in reverse topological order.
 
 1. Remove $n_j \rightarrow n_i$ and attempt to build.
 1. If it fails, add $n_i$ as a dependency to all $\text{dependents}(n_j)$ and retry.
@@ -307,7 +309,7 @@ graph LR;
 ```
 
 $$
-R_k = 0, R_j = 1, R_i = 2 \Longrightarrow R_{sum} = 3
+|R_k| = 0, |R_j| = 1, |R_i| = 2 \Longrightarrow \sum |R| = 3
 $$
 
 Our goal is to optimize it as below:
@@ -319,7 +321,7 @@ graph LR;
 ```
 
 $$
-R_k = 0, R_i = 1, R_j = 1 \Longrightarrow R_{sum} = 2
+|R_k| = 0, |R_i| = 1, |R_j| = 1 \Longrightarrow \sum |R| = 2
 $$
 
 This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
