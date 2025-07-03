@@ -282,6 +282,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "depstat"
+version = "0.1.0"
+dependencies = [
+ "depreduce",
+ "utils",
+]
+
+[[package]]
 name = "derive_more"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

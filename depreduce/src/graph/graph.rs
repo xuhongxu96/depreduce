@@ -166,6 +166,14 @@ impl DependencyGraph {
             .and_then(|edges| edges.get(&to).cloned())
     }
 
+    pub fn get_in_edges(&self, node_id: NodeId) -> Option<&HashMap<NodeId, EdgeId>> {
+        self.node2in_edges.get(&node_id)
+    }
+
+    pub fn get_out_edges(&self, node_id: NodeId) -> Option<&HashMap<NodeId, EdgeId>> {
+        self.node2out_edges.get(&node_id)
+    }
+
     pub fn to_dot(&self) -> String {
         let mut dot = String::new();
         writeln!(dot, "digraph DependencyGraph {{").unwrap();
