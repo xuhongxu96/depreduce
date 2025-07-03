@@ -1,4 +1,7 @@
-strace.log filter=lfs diff=lfs merge=lfs -text
+examples/*/strace.log filter=lfs diff=lfs merge=lfs -text
+strace_parser/src/test_data/**/strace*.out filter=lfs diff=lfs merge=lfs -text
+depreduce/src/test_data/**/perses*.out filter=lfs diff=lfs merge=lfs -text
+depreduce/src/test_data/**/perses*.jsonl filter=lfs diff=lfs merge=lfs -text
 depreduce/src/test_data/perses.xml filter=lfs diff=lfs merge=lfs -text
-depreduce/src/test_data/dep_graph/bazel_xml_parser/perses.out filter=lfs diff=lfs merge=lfs -text
+
 * !text !filter !merge !diff
