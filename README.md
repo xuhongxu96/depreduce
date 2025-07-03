@@ -295,7 +295,7 @@ Process each $n_j \in \text{dependents}(n_i)$ in reverse topological order
 1. If still failing, replace $n_i$ with $\text{deps}(n_i)$ in $n_j$'s dependency list and try again.
 1. If all fail, retain the original edge.
 
-#### Step 2: Lifting Dependencies
+#### Step 2: Dependency Lifting
 
 Suppose $n_k$ depends on both $n_j$ and $n_i$, but $n_j$ depends on nothing. 
 And the build dependency is declared as below:
