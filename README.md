@@ -311,7 +311,7 @@ graph LR;
 
 Let $`R'_*`$ be the updated $`R_*`$ after optimization.
 
-After removal, $R_i = R_i' \cup (R_j \cup \{n_j\}) \Rightarrow |R_i| \geq |R_i'|$.
+After removal, $R_i = R_i' \cup \{n_j\} \cup R_j \Rightarrow |R_i| \geq |R_i'|$.
 
 The following example shows when the formula above takes the equality.
 
@@ -322,7 +322,7 @@ graph LR;
     n_a -..-> n_c;
 ```
 
-By removing the edge $a \rightarrow c$, $R_c' = \{a, b\} = R_c$.
+By removing the edge $n_a \rightarrow n_c$, $R_c' = \{a, b\} = R_c$.
 
 
 #### Step 2: Dependency Lifting
