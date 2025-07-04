@@ -220,9 +220,9 @@ A build is considered correct if:
 
 That is, every actual dependency of a node must be reachable via its declared transitive dependencies.
 
-### Rebuild Cost
+### Rebuild Set and Rebuild Cost
 
-Let $R_i$ denote the nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
+Let the rebuild set of $n_i$ represented by $R_i$ denote the nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
 
 ```math
 \begin{aligned}
@@ -232,7 +232,7 @@ R_i &= \text{dependents}_{\text{trans}}(n_i) \setminus n_i \\
 \end{aligned}
 ```
 
-As you can see, the value of $R_i$ only depends on the dependents of $n_i$.
+The rebuild cost of $n_i$ is $|R_i|$.
 
 Our global optimization goal is to minimize the sum of the rebuild cost for each node:
 
@@ -281,13 +281,16 @@ been reduced and determined.
 
 We can now treat all $R_j$ s as constants and focus on reducing $R_i$.
 
-### How to Minimize $R_i$?
+### How to Minimize Each $R_i$?
+
+We can minimize each $R_i$ in topological order to minimize the overall rebuild cost. 
+Now, let's look at how to minimize each $R_i$.
 
 ```math
 \min |R_i| = \min \left| \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right) \right|
 ```
 
-Because all $R_j$ s are constants, the only thing we can do with this formula is to remove
+Because all $R_j$ s can be viewed as constants, the only thing we can do with this formula is to remove
 dependents of $n_i$.
 
 We will process each $n_j \in \text{dependents}(n_i)$ in reverse topological order.
@@ -297,10 +300,36 @@ We will process each $n_j \in \text{dependents}(n_i)$ in reverse topological ord
 1. If still failing, replace $n_i$ with $\text{deps}(n_i)$ in $n_j$'s dependency list and try again.
 1. If all fail, retain the original edge.
 
+#### Step 1: Direct Edge Removal
+
+Step 1 works as a short path to avoid the complicated operations in the following steps.
+
+```mermaid
+graph LR;
+    n_j --> n_i;
+```
+
+Let $`R'_*`$ be the updated $`R_*`$ after optimization.
+
+After removal, $R_i = R_i' \cup (R_j \cup \{n_j\}) \Rightarrow |R_i| \geq |R_i'|$.
+
+The following example shows when the formula above takes the equality.
+
+```mermaid
+graph LR;
+    n_a --> n_b;
+    n_b --> n_c;
+    n_a -..-> n_c;
+```
+
+By removing the edge $a \rightarrow c$, $R_c' = \{a, b\} = R_c$.
+
+
 #### Step 2: Dependency Lifting
 
-Suppose $n_k$ depends on both $n_j$ and $n_i$, but $n_j$ depends on nothing. 
-And the build dependency is declared as below:
+Step 2 reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
+
+Suppose the build dependency is declared as below and we are currently considering to remove the edge $n_j \rightarrow n_i$:
 
 ```mermaid
 graph LR;
@@ -308,11 +337,7 @@ graph LR;
     n_j --> n_i;
 ```
 
-```math
-|R_k| = 0, |R_j| = 1, |R_i| = 2 \Longrightarrow \sum |R| = 3
-```
-
-Our goal is to optimize it as below:
+If $n_j$ actually does not depend on $n_i$, our optimization goal will be:
 
 ```mermaid
 graph LR;
@@ -320,22 +345,58 @@ graph LR;
     n_k --> n_j;
 ```
 
+However, step 1 will fail because $n_k$ may still depend on $n_i$ and we cannot directly remove
+the edge $n_j \rightarrow n_i$.
+
+To achieve this, we need to lift the dependency $n_i$ from $n_j$ to all dependents of $n_j$, which includes $n_k$.
+In other words, we will add edges $n_k \rightarrow n_i$ for every $n_k \in \text{dependents}(n_j)$, and 
+then remove the edge $n_j \rightarrow n_i$.
+
+After optimization, only $R_i$ will be affected.
+
 ```math
-|R_k| = 0, |R_i| = 1, |R_j| = 1 \Longrightarrow \sum |R| = 2
+\begin{align*}
+R_k &= R_k' \quad \forall n_k \in \text{dependents}(n_j) \qquad & \text{(no change)} \\
+R_j &= R_j' & \text{(no change)} \\
+R_i &= R_i' \cup \{n_j\} \Rightarrow |R_i| \geq |R_i'|
+\end{align*}
 ```
 
-This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
+<details>
+<summary>Detailed Proof</summary>
 
-Since $n_k$ appears after $n_j$ in the reverse topological order, the edge $n_k \rightarrow n_i$ will also be examined in a later step. This allows the dependency to be recursively lifted to the nodes that truly require it.
+```math
+\begin{align*}
+&\begin{cases}
+R_i' &= \bigcup_{n_k \in \left[\text{dependents}(n_i) \setminus n_j \cup \text{dependents}(n_j)\right]} (R_k \cup \{n_k\}) \\
+     &= \bigcup_{n_k \in \text{dependents}(n_i) \setminus n_j} (R_k \cup \{n_k\}) \; \cup \; \left(\bigcup_{n_k \in \text{dependents}(n_j)} (R_k \cup \{n_k\})\right) \\
+
+R_i &= \bigcup_{n_k \in \text{dependents}(n_i)}(R_k \cup \{n_k\}) \\
+    &= \bigcup_{n_k \in \text{dependents}(n_i) \setminus n_j}(R_k \cup \{n_k\}) \; \cup \; (R_j \cup \{n_j\}) \\
+    &= \bigcup_{n_k \in \text{dependents}(n_i) \setminus n_j}(R_k \cup \{n_k\}) \; \cup \; \left(\bigcup_{n_k \in \text{dependents}(n_j)}(R_k \cup \{n_k\})\right) \cup \{n_j\} \\
+\end{cases} \\
+\Rightarrow & R_i = R_i' \cup \{n_j\}
+\end{align*}
+```
+</details>
+
+##### Further Optimization for Added Edges
+
+We mentioned that dependents of $n_i$ are considered for removal in reversed topological order.
+Since $n_k \in \text{dependents}(n_j)$, $n_k$ appears after $n_j$ in the reverse topological order.
+Thus, the added edges $n_k \rightarrow n_i$ will be tried to remove when we consider the following $n_j$ s in the queue. 
+
+The queue should be a priority queue sorted by reverse topological order of the nodes, and every time we add a new edge, we need to insert the new dependents into the queue. 
+This allows the dependency to be recursively lifted to the nodes that truly require it in only one pass. 
+
+
 
 #### Step 3: Dependency Flattening
 
-You may wonder whether the step 2 really reduce the sum of $`\bar R`$,
-as it adds some new dependencies and seems to increase the $`\bar R_k`$ at the same time where $n_k \in deps(n_i)$.
-In fact, $\bar R_k$ won't be changed. Let's do some calculations.
+Step 3 copies all dependencies of $n_i$ to $n_j$, which is like expanding the dependencies of $n_i$ for $n_j$
+and make the dependencies of $n_j$ more flat.
 
-Suppose $n_j$ depends on all $deps(n_i)$ transitively thru $n_i \in deps(n_j)$, but 
-$n_j$ does not actually depend on $n_i$.
+Suppose we have a declared dependency graph as below.
 
 ```mermaid
 graph LR;
@@ -346,7 +407,11 @@ graph LR;
     2[...] --> B;
 ```
 
-In such case, we replace the $n_i$ with all its dependencies as the dependencies of $n_j$.
+If $n_j$ depends on all $\text{deps}(n_i)$ but not actually depend on $n_i$ itself,
+we need to add all $\text{deps}(n_i)$ as dependencies of $n_j$ before we can
+remove $n_j \rightarrow n_i$.
+
+After optimization, the dependency graph will become:
 
 ```mermaid
 graph LR;
@@ -358,37 +423,34 @@ graph LR;
     2[...] --> B;
 ```
 
-Let's see the change of $\bar R$ for this.  Let $`\bar R_*'`$ be the updated value of $`\bar R_*`$.
-
-For $n_i$ that is currently being optimized, $\bar R_i' = \bar R_i - (1 + \bar R_j)$.
-
-For $n_k \in deps(n_i)$, let $D_k$ be $dependents(n_k)$ before optimization and $D_k'$ be $dependents(n_k)$ after optimization.
-
-We have $D_k' = D_k \cup \{n_j\}$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $\bar R_t$, i.e., $\bar R_t' = \bar R_t$.
+Let's see the change of rebuild cost.
 
 ```math
-\begin{split}
-\bar R_k & = \sum_{\forall n_t \in D_k} (1 + \bar R_t) \\
-    & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + \bar R_t) + (1 + \bar R_i) \\
-\\
-\bar R_k' & = \sum_{\forall n_t \in D_k' \setminus n_i} (1 + \bar R_t') + (1 + \bar R_i') \\
-     & = \sum_{\forall n_t \in D_k \cup \{n_j\} \setminus n_i} (1 + \bar R_t') + (1 + \bar R_i') \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t') + (1 + \bar R_j) + (1 + \bar R_i') \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t) + (1 + \bar R_j) + (1 + \bar R_i - (1 + \bar R_j)) \\
-     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t) + (1 + \bar R_i) \\
-     & = \bar R_k
-\end{split}
+\begin{align*}
+R_i &= R_i' \cup \{n_j\} \\
+R_A &= R_A' \\
+R_B &= R_B' \\
+\end{align*}
 ```
 
-So, $\bar R_k$ actually does not change and $\bar R_i$ decreased by $1 + \bar R_j$. 
-The overall sum of $\bar R$ will be definitely reduced.
+Only $R_i$ will be changed and $|R_i| \geq |R_i'|$.
 
-Intuitively, we just avoid rebuilding $n_j$ and all its dependents including recursive dependents (which are $1 + \bar R_j$ nodes in total) after changing $n_i$, because we disconnect
-$n_i$ with $n_j$.
+##### Further Optimization for Added Edges
 
-One more thing, the added dependencies to $n_j$ will be optimized
-in later steps, since they are dependencies of $n_i$ 
-and appear later than $n_i$ in the topological order.
+The dependencies added to $n_j$ are also dependencies of $n_i$, which appear
+after $n_i$ in topological order. Hence, when we minimize the rebuild cost of later nodes
+in topological order, we still have the opportunity to remove these added edges in the same pass.
+
+#### Summary
+
+We proved that all 3 steps are able to reduce the nodes in the rebuild set $R$, or at least keep the same nodes in some rare cases. 
+
+In addition, even though many edges may be added in step 2 and step 3, we also proved that
+there are opportunities to remove these newly-added edges within the same optimization pass.
+
+In terms of efficiency, because we minimize the rebuild cost in topological order, when we
+try to remove edges for a node and trigger a rebuild, we have already minimized all its
+dependents, which means the incremental rebuild can be done as fast as we can expect.
 
 ## Implementation
 
