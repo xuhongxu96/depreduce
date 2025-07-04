@@ -322,7 +322,7 @@ graph LR;
     n_a -..-> n_c;
 ```
 
-By removing the edge $n_a \rightarrow n_c$, $R_c' = \{a, b\} = R_c$.
+By removing the edge $n_a \rightarrow n_c$, $R_c' = \{n_a, n_b\} = R_c$.
 
 
 #### Step 2: Dependency Lifting
