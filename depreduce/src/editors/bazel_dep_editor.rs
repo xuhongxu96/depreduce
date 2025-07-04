@@ -436,6 +436,15 @@ mod tests {
 
     use super::*;
 
+    fn get_test_workspace_root() -> String {
+        get_test_data_path!("../../../examples/simple-cxx-project")
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+    }
+
     #[fixture]
     #[once]
     fn fake_query() -> Query {
@@ -446,7 +455,11 @@ mod tests {
     #[fixture]
     #[once]
     fn cxx_query() -> Query {
-        let xml = read_test_data!("cxx-deps.xml");
+        let mut xml = read_test_data!("cxx-deps.xml");
+        xml = xml.replace(
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
+            &get_test_workspace_root(),
+        );
         parse_bazel_xml(&xml).unwrap()
     }
 
@@ -528,15 +541,12 @@ mod tests {
 
     #[rstest]
     fn test_extract_all_labels(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(
-            cxx_query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
-        );
+        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
 
-        let path = "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD";
+        let path = format!("{}/main/BUILD", get_test_workspace_root());
         let labels = editor.extract_all_labels(
-            path,
-            &std::fs::read_to_string(path).unwrap(),
+            &path,
+            &std::fs::read_to_string(&path).unwrap(),
             3,
             &editor.keywords_for_deps_and_srcs,
         );
@@ -583,14 +593,11 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(
-            cxx_query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
-        );
+        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
         let edit = editor.remove("//main:main", "//liba:liba", false).unwrap();
         assert_eq!(
             edit.path,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+            format!("{}/main/BUILD", get_test_workspace_root())
         );
         assert_eq!(
             edit.content,
@@ -603,16 +610,13 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove_cpp(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(
-            cxx_query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
-        );
+        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
         let edit = editor
             .remove("//main:main", "//main:main.cpp", false)
             .unwrap();
         assert_eq!(
             edit.path,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+            format!("{}/main/BUILD", get_test_workspace_root())
         );
         assert_eq!(
             edit.content,
@@ -625,14 +629,11 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_add(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(
-            cxx_query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
-        );
+        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
         let edit = editor.add("//main:main", "//libc:libc").unwrap();
         assert_eq!(
             edit.path,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project/main/BUILD"
+            format!("{}/main/BUILD", get_test_workspace_root())
         );
         assert_eq!(
             edit.content,

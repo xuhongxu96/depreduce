@@ -384,8 +384,7 @@ pub fn analyze(irs: impl IntoIterator<Item = TraceIR>, cwd: &str) -> State {
     irs.sort_by(|a, b| a.syscall.line_no.cmp(&b.syscall.line_no));
 
     let cwd = std::path::Path::new(cwd)
-        .canonicalize()
-        .unwrap()
+        .normalize()
         .to_string_lossy()
         .to_string();
 

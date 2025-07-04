@@ -1,4 +1,8 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
+use std::{
+    io::{BufRead, BufReader},
+    process::Command,
+};
 
 use serde::{Serialize, Serializer};
 
@@ -136,4 +140,36 @@ pub fn remove_lines_with_indent(text: &str, indent_size: usize) -> String {
         .filter(|line| !line.starts_with(&indent))
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+pub fn get_bazel_query(workspace: &str) -> String {
+    let mut p = Command::new("bazel")
+        .arg("query")
+        .arg("deps(//...)")
+        .arg("--notool_deps")
+        .arg("--noimplicit_deps")
+        .arg("--output")
+        .arg("xml")
+        .current_dir(workspace)
+        .stdout(std::process::Stdio::piped())
+        .spawn()
+        .expect("Failed to run bazel query");
+
+    let mut xml_str = String::new();
+    let stdout = p.stdout.as_mut().unwrap();
+    let stdout_reader = BufReader::new(stdout);
+    let stdout_lines = stdout_reader.lines();
+
+    for (i, line) in stdout_lines.enumerate() {
+        let line = line.expect("Failed to read line from bazel query output");
+
+        xml_str.push_str(&line);
+        if i % 1000 == 0 {
+            eprintln!("Read {} lines from bazel query output...", i);
+        }
+    }
+
+    p.wait().expect("Bazel query did not finish successfully");
+
+    xml_str
 }

@@ -1,4 +1,3 @@
-
 use crate::reducers::reduce_context::Operation;
 use crate::{
     graph::NodeId,
@@ -121,68 +120,13 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
                 }
             }
         }
-
-        println!("{:#?}", candidates);
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use utils::*;
-
-    use crate::{
-        editors::BazelDepEditor,
-        graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
-        reducers::top_sort_reducer::TopSortReducer,
-    };
-
     use super::*;
-
-    fn run_reducer_test(
-        xml_file: &str,
-        workspace_root: &str,
-        project_dir: &str,
-        build_script: &str,
-        expected_out: &str,
-    ) {
-        let xml = read_test_data!(xml_file);
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query).unwrap();
-        let editor = BazelDepEditor::new(&query, workspace_root.to_string());
-
-        let reducer = TopSortReducer {};
-        let settings = ReduceSettings {
-            editor: &editor,
-            graph: &graph,
-            build_command: get_test_data_path!(build_script)
-                .to_string_lossy()
-                .to_string(),
-            cwd: get_test_data_path!(project_dir)
-                .to_string_lossy()
-                .to_string(),
-            save_build_log: false,
-            disable_dependency_flattening: false,
-            disable_dependency_lifting: false,
-            disable_topological_sorting: false,
-        };
-        let mut ctx = reducer.reduce(&settings).unwrap();
-
-        let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
-        postprocessor.process();
-
-        let attempts = ctx.get_attempts();
-        let res = to_json_lines(attempts);
-        assert_eq!(
-            res,
-            read_or_create_test_data!(format!("{}{}", expected_out, ".ops.jsonl"), res)
-        );
-
-        let graph_json = serde_json::to_string(&graph).expect("Failed to serialize graph to JSON");
-        assert_eq!(
-            graph_json,
-            read_or_create_test_data!(format!("{}{}", expected_out, ".graph.json"), graph_json)
-        );
-    }
+    use crate::reducers::top_sort_reducer::tests::run_reducer_test;
 
     #[test]
     fn test_alias() {
@@ -192,6 +136,10 @@ mod tests {
             "../../../examples/test-alias-recovery",
             "build.sh",
             "postprocessors/test-alias-recovery",
+            |ctx| {
+                let mut postprocessor = AliasTargetPostprocessor::new(ctx);
+                postprocessor.process();
+            },
         );
     }
 }

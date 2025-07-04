@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-
 use crate::editors::DepEditor;
 use crate::graph::NodeId;
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
@@ -330,7 +329,7 @@ impl TopSortReducer {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use utils::*;
 
     use crate::{
@@ -340,17 +339,23 @@ mod tests {
 
     use super::*;
 
-    fn run_reducer_test(
+    pub fn run_reducer_test(
         xml_file: &str,
-        workspace_root: &str,
+        original_workspace_root: &str,
         project_dir: &str,
         build_script: &str,
         expected_out: &str,
+        additional_actions: impl Fn(&mut ReduceContext) -> (),
     ) {
+        let project_dir = get_test_data_path!(project_dir)
+            .to_string_lossy()
+            .to_string();
+
         let xml = read_test_data!(xml_file);
+        let xml = xml.replace(original_workspace_root, &project_dir);
         let query: Query = parse_bazel_xml(&xml).unwrap();
         let graph = convert_query_to_dep_graph(&query).unwrap();
-        let editor = BazelDepEditor::new(&query, workspace_root.to_string());
+        let editor = BazelDepEditor::new(&query, project_dir.clone());
 
         let reducer = TopSortReducer {};
         let settings = ReduceSettings {
@@ -359,17 +364,19 @@ mod tests {
             build_command: get_test_data_path!(build_script)
                 .to_string_lossy()
                 .to_string(),
-            cwd: get_test_data_path!(project_dir)
-                .to_string_lossy()
-                .to_string(),
+            cwd: project_dir.clone(),
             save_build_log: false,
             disable_dependency_flattening: false,
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
         };
-        let ctx = reducer.reduce(&settings).unwrap();
+        let mut ctx = reducer.reduce(&settings).unwrap();
+
+        additional_actions(&mut ctx);
+
         let attempts = ctx.get_attempts();
         let res = to_json_lines(attempts);
+        let res = res.replace(&project_dir, "<workspace>");
         assert_eq!(
             res,
             read_or_create_test_data!(format!("{}{}", expected_out, ".ops.jsonl"), res)
@@ -390,6 +397,7 @@ mod tests {
             "../../../examples/simple-cxx-project",
             "build.sh",
             "reducers/cxx",
+            |_| {},
         );
     }
 
@@ -401,6 +409,7 @@ mod tests {
             "../../../examples/simple-java-project",
             "build.sh",
             "reducers/java",
+            |_| {},
         );
     }
 
@@ -412,6 +421,7 @@ mod tests {
             "../../../examples/simple-kotlin-project",
             "build.sh",
             "reducers/kt",
+            |_| {},
         );
     }
 
@@ -426,6 +436,7 @@ mod tests {
             "../../../examples/kotlin-transitive",
             "build.sh",
             "reducers/kt-transitive",
+            |_| {},
         );
     }
 
@@ -437,6 +448,7 @@ mod tests {
             "../../../examples/test-lifting-deps",
             "build.sh",
             "reducers/test-lifting-deps",
+            |_| {},
         );
     }
 }

@@ -19,7 +19,7 @@ use depreduce::{
         top_sort_reducer::TopSortReducer,
     },
 };
-use utils::to_json_lines;
+use utils::{get_bazel_query, to_json_lines};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -132,33 +132,7 @@ fn main() {
         exit(1);
     }
 
-    let mut p = Command::new("bazel")
-        .arg("query")
-        .arg("deps(//...)")
-        .arg("--notool_deps")
-        .arg("--noimplicit_deps")
-        .arg("--output")
-        .arg("xml")
-        .current_dir(&args.workspace)
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .expect("Failed to run bazel query");
-
-    let mut xml_str = String::new();
-    let stdout = p.stdout.as_mut().unwrap();
-    let stdout_reader = BufReader::new(stdout);
-    let stdout_lines = stdout_reader.lines();
-
-    for (i, line) in stdout_lines.enumerate() {
-        let line = line.expect("Failed to read line from bazel query output");
-
-        xml_str.push_str(&line);
-        if i % 1000 == 0 {
-            eprintln!("Read {} lines from bazel query output...", i);
-        }
-    }
-
-    p.wait().expect("Bazel query did not finish successfully");
+    let xml_str = get_bazel_query(&args.workspace);
 
     let (graph, attempts) = run_reducer_test(
         &xml_str,
