@@ -90,7 +90,7 @@ The result is a JSONL file like below.
 ```
 
 
-### Dynamic Dependency Analaysis via [`strace_parser`]
+### Dynamic Dependency Analysis via [`strace_parser`]
 
 [`strace_parser`] is basically the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
 
@@ -180,23 +180,23 @@ Let:
 
 #### Transitive Dependencies
 
-$$
+```math
 \text{deps}_{\text{trans}}(n_i) = \text{deps}(n_i) \cup \bigcup_{n_j \in \text{deps}(n_i)} \text{deps}_{\text{trans}}(n_j)
-$$
+```
 
 ### Dependents
 
 Let $\text{dependents}(n_i)$ denote the set of all nodes that depend on $n_i$, i.e.,
 
-$$
+```math
 n_j \in \text{dependents}(n_i) \iff n_i \in \text{deps}(n_j)
-$$
+```
 
 #### Transitive Dependents
 
-$$
+```math
 \text{dependents}_{\text{trans}}(n_i) = \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j)
-$$
+```
 
 ### Edges
 
@@ -214,9 +214,9 @@ If $n_j \in \text{deps}(n_i)$, we say there is a directed edge $e_{i,j}$ from $n
 
 A build is considered correct if:
 
-$$
+```math
 \forall i, \quad \text{deps}_{\text{real}}(n_i) \subseteq \text{deps}_{\text{trans}}(n_i)
-$$
+```
 
 That is, every actual dependency of a node must be reachable via its declared transitive dependencies.
 
@@ -224,21 +224,21 @@ That is, every actual dependency of a node must be reachable via its declared tr
 
 Let $R_i$ denote the nodes (excluding $n_i$ itself) that must be rebuilt when $n_i$ changes:
 
-$$
+```math
 \begin{aligned}
 R_i &= \text{dependents}_{\text{trans}}(n_i) \setminus n_i \\
     &= \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \setminus n_j \\
     &= \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right)
 \end{aligned}
-$$
+```
 
 As you can see, the value of $R_i$ only depends on the dependents of $n_i$.
 
 Our global optimization goal is to minimize the sum of the rebuild cost for each node:
 
-$$
+```math
 \min \sum_{i=1}^N |R_i|
-$$
+```
 
 If we can minimize each $|R_i|$, the sum will reach its minimum.
 
@@ -246,34 +246,34 @@ If we can minimize each $|R_i|$, the sum will reach its minimum.
 
 Let $n_1, n_2, \dots, n_N$ be a topological ordering of the nodes such that:
 
-$$
+```math
 n_j \in \text{deps}(n_i) \Rightarrow j > i \quad \text{and} \quad n_j \in \text{dependents}(n_i) \Rightarrow j < i
-$$
+```
 
 This implies:
 
-$$
+```math
 \begin{aligned}
 \text{dependents}(n_i) &\subseteq \{ n_j \mid j < i \} \\
 \text{deps}(n_i) &\subseteq \{ n_j \mid j > i \}
 \end{aligned}
-$$
+```
 
 We process nodes in increasing topological order to minimize $R_i$ incrementally.
 
 For instance:
 
-$$
+```math
 \text{dependents}(n_1) = \emptyset \Longrightarrow R_1 = \emptyset
-$$
+```
 
 In other words, nothing can be done to optimize $R_1$ as it is already an empty set.
 
 For $n_i$ in general:
 
-$$
+```math
 R_i = \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right) 
-$$
+```
 
 Because we optimize $R_i$ in topological order, all $R_j$ with $j < i$ must have already been reduced,
 which means all $n_j \in \text{dependents}(n_i)  \subseteq \{ n_j \mid j < i \}$ have already
@@ -283,9 +283,9 @@ We can now treat all $R_j$ s as constants and focus on reducing $R_i$.
 
 ### How to Minimize $R_i$?
 
-$$
+```math
 \min |R_i| = \min \left| \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right) \right|
-$$
+```
 
 Because all $R_j$ s are constants, the only thing we can do with this formula is to remove
 dependents of $n_i$.
@@ -308,9 +308,9 @@ graph LR;
     n_j --> n_i;
 ```
 
-$$
+```math
 |R_k| = 0, |R_j| = 1, |R_i| = 2 \Longrightarrow \sum |R| = 3
-$$
+```
 
 Our goal is to optimize it as below:
 
@@ -320,9 +320,9 @@ graph LR;
     n_k --> n_j;
 ```
 
-$$
+```math
 |R_k| = 0, |R_i| = 1, |R_j| = 1 \Longrightarrow \sum |R| = 2
-$$
+```
 
 This reduces rebuilds by associating dependencies more directly with the nodes that actually use them, eliminating redundant intermediaries.
 
@@ -330,8 +330,8 @@ Since $n_k$ appears after $n_j$ in the reverse topological order, the edge $n_k 
 
 #### Step 3: Dependency Flattening
 
-You may wonder whether the step 2 really reduce the sum of $\bar R$,
-as it adds some new dependencies and seems to increase the $\bar R_k$ at the same time where $n_k \in deps(n_i)$.
+You may wonder whether the step 2 really reduce the sum of $`\bar R`$,
+as it adds some new dependencies and seems to increase the $`\bar R_k`$ at the same time where $n_k \in deps(n_i)$.
 In fact, $\bar R_k$ won't be changed. Let's do some calculations.
 
 Suppose $n_j$ depends on all $deps(n_i)$ transitively thru $n_i \in deps(n_j)$, but 
@@ -358,7 +358,7 @@ graph LR;
     2[...] --> B;
 ```
 
-Let's see the change of $\bar R$ for this.  Let $\bar R_*'$ be the updated value of $\bar R_*$.
+Let's see the change of $\bar R$ for this.  Let $`\bar R_*'`$ be the updated value of $`\bar R_*`$.
 
 For $n_i$ that is currently being optimized, $\bar R_i' = \bar R_i - (1 + \bar R_j)$.
 
@@ -366,7 +366,7 @@ For $n_k \in deps(n_i)$, let $D_k$ be $dependents(n_k)$ before optimization and 
 
 We have $D_k' = D_k \cup \{n_j\}$. And for $\forall n_t \in D_k \setminus n_i$, there is no change to $\bar R_t$, i.e., $\bar R_t' = \bar R_t$.
 
-$$
+```math
 \begin{split}
 \bar R_k & = \sum_{\forall n_t \in D_k} (1 + \bar R_t) \\
     & = \sum_{\forall n_t \in D_k \setminus n_i} (1 + \bar R_t) + (1 + \bar R_i) \\
@@ -378,7 +378,7 @@ $$
      & = \sum_{\forall n_t \in D_k \setminus n_i} (1 +\bar R_t) + (1 + \bar R_i) \\
      & = \bar R_k
 \end{split}
-$$
+```
 
 So, $\bar R_k$ actually does not change and $\bar R_i$ decreased by $1 + \bar R_j$. 
 The overall sum of $\bar R$ will be definitely reduced.
