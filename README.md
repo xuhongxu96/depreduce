@@ -427,7 +427,7 @@ Let's see the change of rebuild cost.
 
 ```math
 \begin{align*}
-R_i &= R_i' \cup \{n_j\} \\
+R_i &= R_i' \cup \{n_j\} \cup R_j \\
 R_A &= R_A' \\
 R_B &= R_B' \\
 \end{align*}
