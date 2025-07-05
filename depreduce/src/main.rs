@@ -47,6 +47,9 @@ struct Args {
     )]
     disable_dependency_flattening: bool,
 
+    #[arg(long)]
+    disable_dependency_flattening_for_alias_targets: bool,
+
     #[arg(
         long,
         help = "Disable dependency lifting: prevents the reducer from adding the node being optimized to the dependents of the dependent node being reduced as a dependency"
@@ -76,7 +79,7 @@ fn run_reducer_test(
     println!("Args: {:#?}", args);
 
     let query: Query = parse_bazel_xml(xml).unwrap();
-    let graph = convert_query_to_dep_graph(&query).unwrap();
+    let graph = convert_query_to_dep_graph(&query, args.deps_only).unwrap();
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
             &query,
@@ -97,6 +100,8 @@ fn run_reducer_test(
         save_build_log: true,
 
         disable_dependency_flattening: args.disable_dependency_flattening,
+        disable_dependency_flattening_for_alias_targets: args
+            .disable_dependency_flattening_for_alias_targets,
         disable_dependency_lifting: args.disable_dependency_lifting,
         disable_topological_sorting: args.disable_topological_sorting,
     };

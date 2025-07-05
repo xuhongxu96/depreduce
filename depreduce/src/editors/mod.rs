@@ -1,8 +1,15 @@
+use serde::{Deserialize, Serialize};
+
 type CheckpointId = usize;
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FileEdit {
     pub path: String,
+
+    #[serde(skip)]
     pub content: String,
+
+    pub desp: String,
 }
 
 pub trait DepEditor {
@@ -17,6 +24,5 @@ pub trait DepEditor {
 }
 
 mod bazel_dep_editor;
-
 
 pub use bazel_dep_editor::BazelDepEditor;

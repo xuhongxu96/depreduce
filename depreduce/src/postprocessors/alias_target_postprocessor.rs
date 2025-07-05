@@ -1,4 +1,4 @@
-use crate::reducers::reduce_context::Operation;
+use crate::reducers::reduce_context::{AddOperation, Operation};
 use crate::{
     graph::NodeId,
     reducers::reduce_context::{ReduceContext, ReduceSettings},
@@ -24,8 +24,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
         let graph = self.ctx.settings.graph;
         let mut candidates: Vec<Candidate> = Vec::new();
 
-        let mut prev_node_id: Option<NodeId> = None;
-        let mut added_deps: Vec<NodeId> = Vec::new();
+        let mut added_deps: Vec<&AddOperation> = Vec::new();
         let mut removed_deps: Vec<NodeId> = Vec::new();
 
         for attempt in self.ctx.get_attempts() {
@@ -36,33 +35,28 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
             {
                 added_deps.clear();
                 removed_deps.clear();
-                prev_node_id = None;
 
                 for op in &attempt.ops {
                     match op {
                         Operation::Add(add) => {
-                            if let Some(prev_id) = prev_node_id {
-                                assert_eq!(prev_id, add.dependent_node_id);
-                            }
-                            added_deps.push(add.node_id);
-                            prev_node_id = Some(add.dependent_node_id);
+                            added_deps.push(add);
                         }
                         Operation::Remove(rm) => {
-                            if let Some(prev_id) = prev_node_id {
-                                if prev_id == rm.dependent_node_id {
-                                    if !added_deps.is_empty() {
-                                        removed_deps.push(rm.node_id);
-                                        candidates.push(Candidate {
-                                            node_id: rm.dependent_node_id,
-                                            added_deps: added_deps.clone(),
-                                            removed_deps: removed_deps.clone(),
-                                        });
-                                    }
-                                }
+                            let filtered_added_deps: Vec<_> = added_deps
+                                .iter()
+                                .filter(|a| a.dependent_node_id == rm.dependent_node_id)
+                                .map(|a| a.node_id)
+                                .collect();
+                            if !filtered_added_deps.is_empty() {
+                                removed_deps.push(rm.node_id);
+                                candidates.push(Candidate {
+                                    node_id: rm.dependent_node_id,
+                                    added_deps: filtered_added_deps,
+                                    removed_deps: removed_deps.clone(),
+                                });
                             }
                             added_deps.clear();
                             removed_deps.clear();
-                            prev_node_id = None;
                         }
                         _ => {}
                     }
@@ -70,6 +64,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
             }
         }
 
+        candidates.reverse();
         candidates
     }
 
@@ -90,7 +85,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
                 let dep_label = graph.nodes[*dep_node_id].label.clone();
                 if let Ok(edit) = editor.remove(&node_label, &dep_label, true) {
                     self.ctx.backup(&edit);
-                    self.ctx.apply(&edit);
+                    self.ctx.apply(edit);
                 } else {
                     self.ctx.restore_backup();
                     continue 'candidate;
@@ -101,7 +96,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
                 let dep_label = graph.nodes[*dep_node_id].label.clone();
                 if let Ok(edit) = editor.add(&node_label, &dep_label) {
                     self.ctx.backup(&edit);
-                    self.ctx.apply(&edit);
+                    self.ctx.apply(edit);
                 } else {
                     self.ctx.restore_backup();
                     continue 'candidate;

@@ -19,6 +19,7 @@ pub struct ReduceSettings<'a> {
 
     // settings
     pub disable_dependency_flattening: bool,
+    pub disable_dependency_flattening_for_alias_targets: bool,
     pub disable_dependency_lifting: bool,
     pub disable_topological_sorting: bool,
 }
@@ -49,7 +50,7 @@ pub struct BackupOperation {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ApplyOperation {
-    pub path: String,
+    pub edit: FileEdit,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -125,12 +126,6 @@ fn calculate_in_degrees(graph: &DependencyGraph) -> Vec<i32> {
 
 impl<'a> ReduceContext<'a> {
     pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
-        assert!(
-            !settings.disable_topological_sorting
-                || (settings.disable_dependency_flattening && settings.disable_dependency_lifting),
-            "disable_topological_sorting can only be set when disable_dependency_flattening and disable_dependency_lifting are both set"
-        );
-
         Self {
             settings,
             history: HashMap::new(),
@@ -246,16 +241,14 @@ impl<'a> ReduceContext<'a> {
         }
     }
 
-    pub fn apply(&mut self, edit: &FileEdit) {
+    pub fn apply(&mut self, edit: FileEdit) {
         std::fs::write(&edit.path, &edit.content)
             .unwrap_or_else(|err| panic!("Failed to write file {}: {}", edit.path, err));
         self.attempts
             .last_mut()
             .unwrap()
             .ops
-            .push(Operation::Apply(ApplyOperation {
-                path: edit.path.clone(),
-            }));
+            .push(Operation::Apply(ApplyOperation { edit }));
     }
 
     pub fn restore_backup(&mut self) {
@@ -447,7 +440,7 @@ mod tests {
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query).unwrap();
+        let graph = convert_query_to_dep_graph(&query, false).unwrap();
 
         let in_degrees = calculate_in_degrees(&graph)
             .iter()

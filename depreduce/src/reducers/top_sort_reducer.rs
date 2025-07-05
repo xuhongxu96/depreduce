@@ -68,7 +68,7 @@ impl TopSortReducer {
                     Ok(edit) => {
                         lifted_edges.push((dependent_of_dependent, node_id));
                         ctx.backup(&edit);
-                        ctx.apply(&edit);
+                        ctx.apply(edit);
                         ctx.log(&format!(
                             "    Lifted {} -> {}\n",
                             dependent_of_dependent_label, label
@@ -124,6 +124,13 @@ impl TopSortReducer {
             "  Trying to flatten dependencies for node {}\n",
             label
         ));
+
+        if ctx.settings.disable_dependency_flattening_for_alias_targets
+            && ctx.settings.graph.nodes[node_id].props.t.is_alias_target()
+        {
+            ctx.log("  Skipping flattening for alias target because disable_dependency_flattening_for_alias_targets was set\n");
+            return false;
+        }
 
         let mut transitive_deps: HashSet<(NodeId, String)> = HashSet::new();
         if let Some(tgt2edge) = ctx.settings.graph.node2out_edges.get(&node_id) {
@@ -187,7 +194,7 @@ impl TopSortReducer {
             {
                 Ok(edit) => {
                     ctx.backup(&edit);
-                    ctx.apply(&edit);
+                    ctx.apply(edit);
                     ctx.log(&format!(
                         "  Added {} -> {}\n",
                         dependent_label, transitive_dep_label
@@ -257,7 +264,7 @@ impl TopSortReducer {
             Ok(edit) => {
                 removed = true;
                 ctx.backup(&edit);
-                ctx.apply(&edit);
+                ctx.apply(edit);
                 ctx.log(&format!("    Removed {} -> {}\n", dependent_label, label));
             }
             Err(e) => {
@@ -304,6 +311,11 @@ impl TopSortReducer {
 
     pub fn reduce<'a>(&self, settings: &'a ReduceSettings) -> Result<ReduceContext<'a>, String> {
         let &ReduceSettings { graph, .. } = settings;
+        assert!(
+            !settings.disable_topological_sorting
+                || (settings.disable_dependency_flattening && settings.disable_dependency_lifting),
+            "disable_topological_sorting can only be set when disable_dependency_flattening and disable_dependency_lifting are both set"
+        );
 
         let mut ctx = ReduceContext::new(settings);
 
@@ -370,7 +382,7 @@ pub(crate) mod tests {
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
         let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query).unwrap();
+        let graph = convert_query_to_dep_graph(&query, false).unwrap();
         let editor = BazelDepEditor::new(&query, project_dir.clone());
 
         let reducer = TopSortReducer {};
@@ -383,6 +395,7 @@ pub(crate) mod tests {
             cwd: project_dir.clone(),
             save_build_log: false,
             disable_dependency_flattening: false,
+            disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
         };

@@ -365,6 +365,7 @@ impl DepEditor for BazelDepEditor {
                             .unwrap_or(dep_label),
                         &build[pos..]
                     ),
+                    desp: format!("Add dependency '{}' to label '{}'", dep_label, label),
                 })
             } else {
                 Err(format!("Label '{}' does not have 'deps' field", label))
@@ -417,6 +418,7 @@ impl DepEditor for BazelDepEditor {
                 Ok(FileEdit {
                     path,
                     content: build,
+                    desp: format!("Remove dependency '{}' from label '{}'", dep_label, label),
                 })
             } else {
                 Err(format!("Dependency Label '{}' not found", dep_label))
