@@ -37,6 +37,10 @@ impl TopSortReducer {
                     .label
                     .clone();
 
+                let mut already_added = ctx
+                    .get_added_dependents(node_id)
+                    .contains(&dependent_of_dependent);
+
                 if let Some(edges) = ctx
                     .settings
                     .graph
@@ -44,12 +48,16 @@ impl TopSortReducer {
                     .get(&dependent_of_dependent)
                 {
                     if edges.contains_key(&node_id) {
-                        ctx.log(&format!(
-                            "  Skipping {} -> {} (already exists)\n",
-                            dependent_of_dependent_label, label
-                        ));
-                        continue;
+                        already_added = true;
                     }
+                }
+
+                if already_added {
+                    ctx.log(&format!(
+                        "  Skipping {} -> {} (already exists)\n",
+                        dependent_of_dependent_label, label
+                    ));
+                    continue;
                 }
 
                 match ctx
@@ -143,14 +151,22 @@ impl TopSortReducer {
 
         let dependent_label = ctx.settings.graph.nodes[dependent_node_id].label.clone();
         for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
+            let mut already_added = ctx
+                .get_added_dependents(*transitive_dep_id)
+                .contains(&dependent_node_id);
+
             if let Some(edges) = ctx.settings.graph.node2out_edges.get(&dependent_node_id) {
                 if edges.contains_key(transitive_dep_id) {
-                    ctx.log(&format!(
-                        "  Skipping {} -> {} (already exists)\n",
-                        dependent_label, transitive_dep_label
-                    ));
-                    continue;
+                    already_added = true;
                 }
+            }
+
+            if already_added {
+                ctx.log(&format!(
+                    "  Skipping {} -> {} (already exists)\n",
+                    dependent_label, transitive_dep_label
+                ));
+                continue;
             }
 
             match ctx.settings.graph.nodes[*transitive_dep_id].props.t {

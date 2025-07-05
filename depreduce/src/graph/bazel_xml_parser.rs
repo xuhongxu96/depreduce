@@ -102,6 +102,9 @@ pub enum VariantProp {
 
     #[serde(rename = "rule-output")]
     RuleOutput(RuleIO),
+
+    #[serde(rename = "rule-default-setting")]
+    RuleDefaultSetting(RuleIO),
 }
 
 #[derive(Debug, Deserialize)]
