@@ -212,6 +212,10 @@ impl TopSortReducer {
             );
         }
 
+        if !ctx.check_remove_dependent(node_id, dependent_node_id) {
+            return false;
+        }
+
         match ctx.settings.editor.remove(
             &dependent_label,
             &label,
@@ -300,14 +304,6 @@ impl TopSortReducer {
                 i + 1,
                 sorted_nodes.len()
             ));
-
-            if settings.skip_node_ids.contains(&node_id) {
-                ctx.log(&format!(
-                    "  Skipping node {}\n",
-                    graph.nodes.get(node_id).unwrap().label
-                ));
-                continue;
-            }
 
             ctx.generate_reduction_candidates(node_id);
 

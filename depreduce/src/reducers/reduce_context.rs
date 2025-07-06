@@ -155,6 +155,22 @@ impl<'a> ReduceContext<'a> {
         &self.added_node2in_nodes[node_id]
     }
 
+    pub fn check_remove_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) -> bool {
+        let label = || self.settings.graph.nodes[node_id].label.clone();
+        let dependent_label = || self.settings.graph.nodes[dependent_node_id].label.clone();
+
+        if self.settings.skip_node_ids.contains(&dependent_node_id) {
+            self.log(&format!(
+                "  Skipping removing {} -> {} (skipped by rules in settings)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        true
+    }
+
     pub fn check_add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) -> bool {
         let mut already_added = self
             .get_added_dependents(node_id)
@@ -171,7 +187,7 @@ impl<'a> ReduceContext<'a> {
 
         if already_added {
             self.log(&format!(
-                "  Skipping {} -> {} (already exists)\n",
+                "  Skipping adding {} -> {} (already exists)\n",
                 dependent_label(),
                 label()
             ));
@@ -180,7 +196,7 @@ impl<'a> ReduceContext<'a> {
 
         if self.settings.skip_node_ids.contains(&dependent_node_id) {
             self.log(&format!(
-                "  Skipping {} -> {} (skipped by rules in settings)\n",
+                "  Skipping adding {} -> {} (skipped by rules in settings)\n",
                 dependent_label(),
                 label()
             ));
@@ -191,7 +207,7 @@ impl<'a> ReduceContext<'a> {
             crate::graph::NodeType::Target(_) => {}
             _ => {
                 self.log(&format!(
-                    "  Skipping {} -> {} (non-target)\n",
+                    "  Skipping adding {} -> {} (non-target)\n",
                     dependent_label(),
                     label()
                 ));
