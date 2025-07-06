@@ -22,6 +22,8 @@ pub struct ReduceSettings<'a> {
     pub disable_dependency_flattening_for_alias_targets: bool,
     pub disable_dependency_lifting: bool,
     pub disable_topological_sorting: bool,
+
+    pub skip_node_ids: HashSet<NodeId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -151,6 +153,53 @@ impl<'a> ReduceContext<'a> {
 
     pub fn get_added_dependents(&self, node_id: NodeId) -> &HashSet<NodeId> {
         &self.added_node2in_nodes[node_id]
+    }
+
+    pub fn check_add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) -> bool {
+        let mut already_added = self
+            .get_added_dependents(node_id)
+            .contains(&dependent_node_id);
+
+        if let Some(edges) = self.settings.graph.node2out_edges.get(&dependent_node_id) {
+            if edges.contains_key(&node_id) {
+                already_added = true;
+            }
+        }
+
+        let label = || self.settings.graph.nodes[node_id].label.clone();
+        let dependent_label = || self.settings.graph.nodes[dependent_node_id].label.clone();
+
+        if already_added {
+            self.log(&format!(
+                "  Skipping {} -> {} (already exists)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        if self.settings.skip_node_ids.contains(&dependent_node_id) {
+            self.log(&format!(
+                "  Skipping {} -> {} (skipped by rules in settings)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        match self.settings.graph.nodes[node_id].props.t {
+            crate::graph::NodeType::Target(_) => {}
+            _ => {
+                self.log(&format!(
+                    "  Skipping {} -> {} (non-target)\n",
+                    dependent_label(),
+                    label()
+                ));
+                return false;
+            }
+        }
+
+        true
     }
 
     pub fn add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
@@ -431,7 +480,7 @@ impl<'a> ReduceContext<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::graph::bazel_xml_parser::{convert_query_to_dep_graph, parse_bazel_xml};
+    use crate::graph::bazel_xml_parser::parse_bazel_xml;
 
     use super::*;
     use utils::*;
@@ -440,7 +489,7 @@ mod tests {
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query, false).unwrap();
+        let graph = query.to_dep_graph(false).unwrap();
 
         let in_degrees = calculate_in_degrees(&graph)
             .iter()

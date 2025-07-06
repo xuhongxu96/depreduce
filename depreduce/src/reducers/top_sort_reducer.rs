@@ -37,26 +37,7 @@ impl TopSortReducer {
                     .label
                     .clone();
 
-                let mut already_added = ctx
-                    .get_added_dependents(node_id)
-                    .contains(&dependent_of_dependent);
-
-                if let Some(edges) = ctx
-                    .settings
-                    .graph
-                    .node2out_edges
-                    .get(&dependent_of_dependent)
-                {
-                    if edges.contains_key(&node_id) {
-                        already_added = true;
-                    }
-                }
-
-                if already_added {
-                    ctx.log(&format!(
-                        "  Skipping {} -> {} (already exists)\n",
-                        dependent_of_dependent_label, label
-                    ));
+                if !ctx.check_add_dependent(node_id, dependent_of_dependent) {
                     continue;
                 }
 
@@ -158,33 +139,8 @@ impl TopSortReducer {
 
         let dependent_label = ctx.settings.graph.nodes[dependent_node_id].label.clone();
         for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
-            let mut already_added = ctx
-                .get_added_dependents(*transitive_dep_id)
-                .contains(&dependent_node_id);
-
-            if let Some(edges) = ctx.settings.graph.node2out_edges.get(&dependent_node_id) {
-                if edges.contains_key(transitive_dep_id) {
-                    already_added = true;
-                }
-            }
-
-            if already_added {
-                ctx.log(&format!(
-                    "  Skipping {} -> {} (already exists)\n",
-                    dependent_label, transitive_dep_label
-                ));
+            if !ctx.check_add_dependent(*transitive_dep_id, dependent_node_id) {
                 continue;
-            }
-
-            match ctx.settings.graph.nodes[*transitive_dep_id].props.t {
-                crate::graph::NodeType::Target(_) => {}
-                _ => {
-                    ctx.log(&format!(
-                        "  Skipping {} -> {} (non-target)\n",
-                        dependent_label, transitive_dep_label
-                    ));
-                    continue;
-                }
             }
 
             match ctx
@@ -345,6 +301,14 @@ impl TopSortReducer {
                 sorted_nodes.len()
             ));
 
+            if settings.skip_node_ids.contains(&node_id) {
+                ctx.log(&format!(
+                    "  Skipping node {}\n",
+                    graph.nodes.get(node_id).unwrap().label
+                ));
+                continue;
+            }
+
             ctx.generate_reduction_candidates(node_id);
 
             while let Some(dependent_node_id) = ctx.next_attempt(None) {
@@ -362,7 +326,7 @@ pub(crate) mod tests {
 
     use crate::{
         editors::BazelDepEditor,
-        graph::bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
+        graph::bazel_xml_parser::{Query, parse_bazel_xml},
     };
 
     use super::*;
@@ -381,8 +345,8 @@ pub(crate) mod tests {
 
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query, false).unwrap();
+        let query = parse_bazel_xml(&xml).unwrap();
+        let graph = query.to_dep_graph(false).unwrap();
         let editor = BazelDepEditor::new(&query, project_dir.clone());
 
         let reducer = TopSortReducer {};
@@ -398,6 +362,7 @@ pub(crate) mod tests {
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
+            skip_node_ids: HashSet::new(),
         };
         let mut ctx = reducer.reduce(&settings).unwrap();
 

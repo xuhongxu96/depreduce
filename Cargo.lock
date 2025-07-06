@@ -274,6 +274,7 @@ dependencies = [
  "chrono",
  "clap",
  "quick-xml",
+ "regex",
  "rstest",
  "rustpython-parser",
  "serde",

@@ -193,132 +193,145 @@ fn is_alias_like_target(rule: &crate::graph::bazel_xml_parser::Rule) -> bool {
     true
 }
 
-pub fn convert_query_to_dep_graph(
-    query: &Query,
-    deps_only: bool,
-) -> Result<DependencyGraph, String> {
-    let mut graph = DependencyGraph::new();
-
-    for value in &query.values {
-        match value {
-            SkyValue::SourceFile(source_file) => {
-                graph.add_node(
-                    source_file.name.clone(),
-                    NodeProps {
-                        t: NodeType::Source,
-                    },
-                )?;
-            }
-            SkyValue::Rule(rule) => {
-                graph.add_node(
-                    rule.name.clone(),
-                    NodeProps {
-                        t: NodeType::Target(crate::graph::graph::TargetType {
-                            is_alias: rule.class == "alias" || is_alias_like_target(rule),
-                        }),
-                    },
-                )?;
-            }
-            SkyValue::GeneratedFile(generated_file) => {
-                graph.add_node(
-                    generated_file.name.clone(),
-                    NodeProps {
-                        t: NodeType::GeneratedFile,
-                    },
-                )?;
-            }
-            SkyValue::PackageGroup(_package_group) => {}
-        }
+impl Query {
+    pub fn to_node_and_rule_class(&self) -> Vec<(String, String)> {
+        self.values
+            .iter()
+            .filter_map(|value| match value {
+                SkyValue::Rule(rule) => Some((rule.name.clone(), rule.class.clone())),
+                _ => None,
+            })
+            .collect()
     }
 
-    for value in &query.values {
-        match value {
-            SkyValue::Rule(rule) => {
-                let node_id = graph.get_node_id(&rule.name).unwrap();
-                if let Some(props) = &rule.props {
-                    for prop in props {
-                        match prop {
-                            VariantProp::List(list) if list.name == "deps" => {
-                                if !deps_only {
-                                    continue;
-                                }
-                                if let Some(items) = &list.items {
-                                    for item in items {
-                                        if let VariantProp::Label(label) = item {
-                                            let dep_name = label.value.as_ref().unwrap();
-                                            let dep_node_id =
-                                                graph.get_node_id(dep_name).unwrap_or_else(|| {
-                                                    graph
-                                                        .add_node(
-                                                            dep_name.clone(),
-                                                            NodeProps {
-                                                                t: NodeType::Unknown,
-                                                            },
-                                                        )
-                                                        .unwrap()
-                                                });
+    pub fn to_dep_graph(&self, deps_only: bool) -> Result<DependencyGraph, String> {
+        let mut graph = DependencyGraph::new();
 
-                                            if graph.get_edge_id(node_id, dep_node_id).is_none() {
-                                                graph.add_edge(
-                                                    node_id,
-                                                    dep_node_id,
-                                                    EdgeProps {},
-                                                )?;
+        for value in &self.values {
+            match value {
+                SkyValue::SourceFile(source_file) => {
+                    graph.add_node(
+                        source_file.name.clone(),
+                        NodeProps {
+                            t: NodeType::Source,
+                        },
+                    )?;
+                }
+                SkyValue::Rule(rule) => {
+                    graph.add_node(
+                        rule.name.clone(),
+                        NodeProps {
+                            t: NodeType::Target(crate::graph::graph::TargetType {
+                                is_alias: rule.class == "alias" || is_alias_like_target(rule),
+                            }),
+                        },
+                    )?;
+                }
+                SkyValue::GeneratedFile(generated_file) => {
+                    graph.add_node(
+                        generated_file.name.clone(),
+                        NodeProps {
+                            t: NodeType::GeneratedFile,
+                        },
+                    )?;
+                }
+                SkyValue::PackageGroup(_package_group) => {}
+            }
+        }
+
+        for value in &self.values {
+            match value {
+                SkyValue::Rule(rule) => {
+                    let node_id = graph.get_node_id(&rule.name).unwrap();
+                    if let Some(props) = &rule.props {
+                        for prop in props {
+                            match prop {
+                                VariantProp::List(list) if list.name == "deps" => {
+                                    if !deps_only {
+                                        continue;
+                                    }
+                                    if let Some(items) = &list.items {
+                                        for item in items {
+                                            if let VariantProp::Label(label) = item {
+                                                let dep_name = label.value.as_ref().unwrap();
+                                                let dep_node_id = graph
+                                                    .get_node_id(dep_name)
+                                                    .unwrap_or_else(|| {
+                                                        graph
+                                                            .add_node(
+                                                                dep_name.clone(),
+                                                                NodeProps {
+                                                                    t: NodeType::Unknown,
+                                                                },
+                                                            )
+                                                            .unwrap()
+                                                    });
+
+                                                if graph.get_edge_id(node_id, dep_node_id).is_none()
+                                                {
+                                                    graph.add_edge(
+                                                        node_id,
+                                                        dep_node_id,
+                                                        EdgeProps {},
+                                                    )?;
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                VariantProp::RuleInput(rule_io) => {
+                                    if deps_only {
+                                        continue;
+                                    }
+
+                                    let tgt =
+                                        graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
+                                            graph
+                                                .add_node(
+                                                    rule_io.name.clone(),
+                                                    NodeProps {
+                                                        t: NodeType::Unknown,
+                                                    },
+                                                )
+                                                .unwrap()
+                                        });
+
+                                    if graph.get_edge_id(node_id, tgt).is_none() {
+                                        graph.add_edge(node_id, tgt, EdgeProps {})?;
+                                    }
+                                }
+                                VariantProp::RuleOutput(rule_io) => {
+                                    if deps_only {
+                                        continue;
+                                    }
+
+                                    let src =
+                                        graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
+                                            graph
+                                                .add_node(
+                                                    rule_io.name.clone(),
+                                                    NodeProps {
+                                                        t: NodeType::Unknown,
+                                                    },
+                                                )
+                                                .unwrap()
+                                        });
+
+                                    if graph.get_edge_id(src, node_id).is_none() {
+                                        graph.add_edge(src, node_id, EdgeProps {})?;
+                                    }
+                                }
+                                _ => {}
                             }
-                            VariantProp::RuleInput(rule_io) => {
-                                if deps_only {
-                                    continue;
-                                }
-
-                                let tgt = graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
-                                    graph
-                                        .add_node(
-                                            rule_io.name.clone(),
-                                            NodeProps {
-                                                t: NodeType::Unknown,
-                                            },
-                                        )
-                                        .unwrap()
-                                });
-
-                                if graph.get_edge_id(node_id, tgt).is_none() {
-                                    graph.add_edge(node_id, tgt, EdgeProps {})?;
-                                }
-                            }
-                            VariantProp::RuleOutput(rule_io) => {
-                                if deps_only {
-                                    continue;
-                                }
-
-                                let src = graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
-                                    graph
-                                        .add_node(
-                                            rule_io.name.clone(),
-                                            NodeProps {
-                                                t: NodeType::Unknown,
-                                            },
-                                        )
-                                        .unwrap()
-                                });
-
-                                if graph.get_edge_id(src, node_id).is_none() {
-                                    graph.add_edge(src, node_id, EdgeProps {})?;
-                                }
-                            }
-                            _ => {}
                         }
                     }
                 }
+                _ => {}
             }
-            _ => {}
         }
-    }
 
-    Ok(graph)
+        Ok(graph)
+    }
 }
 
 #[cfg(test)]
@@ -374,8 +387,8 @@ mod tests {
     #[test]
     fn test_convert_query_to_dep_graph_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query, false).unwrap();
+        let query = parse_bazel_xml(&xml).unwrap();
+        let graph = query.to_dep_graph(false).unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -387,8 +400,8 @@ mod tests {
     #[test]
     fn test_convert_query_to_dep_graph_cxx_deps_only() {
         let xml = read_test_data!("cxx-deps.xml");
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query, true).unwrap();
+        let query = parse_bazel_xml(&xml).unwrap();
+        let graph = query.to_dep_graph(true).unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -400,8 +413,8 @@ mod tests {
     #[test]
     fn test_convert_query_to_dep_graph_perses() {
         let xml = read_test_data!("perses.xml");
-        let query: Query = parse_bazel_xml(&xml).unwrap();
-        let graph = convert_query_to_dep_graph(&query, false).unwrap();
+        let query = parse_bazel_xml(&xml).unwrap();
+        let graph = query.to_dep_graph(false).unwrap();
 
         let res = to_json_lines(&graph.to_dependency_map().to_sorted_vec());
         assert_eq!(

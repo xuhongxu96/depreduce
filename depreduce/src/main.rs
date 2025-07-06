@@ -1,18 +1,10 @@
-use std::{
-    collections::HashSet,
-    io::{BufRead, BufReader},
-    path::Path,
-    process::{Command, exit},
-};
+use std::{collections::HashSet, path::Path, process::exit};
 
 use clap::Parser;
 
 use depreduce::{
     editors::BazelDepEditor,
-    graph::{
-        DependencyGraph,
-        bazel_xml_parser::{Query, convert_query_to_dep_graph, parse_bazel_xml},
-    },
+    graph::{DependencyGraph, bazel_xml_parser::parse_bazel_xml},
     postprocessors::AliasTargetPostprocessor,
     reducers::{
         reduce_context::{ReduceSettings, ReductionAttempt},
@@ -41,6 +33,12 @@ struct Args {
     #[arg(short, long)]
     deps_only: bool,
 
+    #[arg(long, default_value = "allowrules.txt")]
+    allow_rules: String,
+
+    #[arg(long, default_value = "blockrules.txt")]
+    block_rules: String,
+
     #[arg(
         long,
         help = "Disable dependency flattening: prevents the reducer from adding dependencies of the node being optimized to the dependent node being reduced as dependencies"
@@ -48,7 +46,7 @@ struct Args {
     disable_dependency_flattening: bool,
 
     #[arg(long)]
-    disable_dependency_flattening_for_alias_targets: bool,
+    enable_dependency_flattening_for_alias_targets: bool,
 
     #[arg(
         long,
@@ -78,8 +76,83 @@ fn run_reducer_test(
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
 
-    let query: Query = parse_bazel_xml(xml).unwrap();
-    let graph = convert_query_to_dep_graph(&query, args.deps_only).unwrap();
+    let query = parse_bazel_xml(xml).unwrap();
+    let graph = query.to_dep_graph(args.deps_only).unwrap();
+    let node_and_rule_class = query.to_node_and_rule_class();
+
+    let mut skip_node_ids = HashSet::new();
+    if !args.allow_rules.is_empty() {
+        let allow_rules: Vec<String> = std::fs::read_to_string(&args.allow_rules)
+            .unwrap_or_default()
+            .lines()
+            .map(|line| line.trim().to_string())
+            .collect();
+
+        let allow_rule_strs: Vec<&str> = allow_rules
+            .iter()
+            .filter(|s| !s.starts_with("regex:"))
+            .map(|s| s.as_str())
+            .collect();
+
+        let allow_rule_regexes: Vec<regex::Regex> = allow_rules
+            .iter()
+            .filter(|s| s.starts_with("regex:"))
+            .map(|s| regex::Regex::new(&s.trim_start_matches("regex:")).unwrap())
+            .collect();
+
+        if !allow_rules.is_empty() {
+            node_and_rule_class.iter().for_each(|(node, class)| {
+                if !allow_rule_strs.contains(&class.as_str())
+                    && !allow_rule_regexes.iter().any(|r| r.is_match(class))
+                {
+                    graph.get_node_id(node).map(|id| {
+                        skip_node_ids.insert((id, class));
+                    });
+                }
+            });
+        }
+    }
+
+    if !args.block_rules.is_empty() {
+        let block_rules: Vec<String> = std::fs::read_to_string(&args.block_rules)
+            .unwrap_or_default()
+            .lines()
+            .map(|line| line.trim().to_string())
+            .collect();
+
+        let block_rule_strs: Vec<&str> = block_rules
+            .iter()
+            .filter(|s| !s.starts_with("regex:"))
+            .map(|s| s.as_str())
+            .collect();
+
+        let block_rule_regexes: Vec<regex::Regex> = block_rules
+            .iter()
+            .filter(|s| s.starts_with("regex:"))
+            .map(|s| regex::Regex::new(&s.trim_start_matches("regex:")).unwrap())
+            .collect();
+
+        if !block_rules.is_empty() {
+            node_and_rule_class.iter().for_each(|(node, class)| {
+                if block_rule_strs.contains(&class.as_str())
+                    || block_rule_regexes.iter().any(|r| r.is_match(class))
+                {
+                    graph.get_node_id(node).map(|id| {
+                        skip_node_ids.insert((id, class));
+                    });
+                }
+            });
+        }
+    }
+
+    println!(
+        "Skipping nodes: {:#?}",
+        skip_node_ids
+            .iter()
+            .map(|(id, class)| { (&graph.nodes[*id].label, class) })
+            .collect::<Vec<_>>()
+    );
+
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
             &query,
@@ -100,10 +173,12 @@ fn run_reducer_test(
         save_build_log: true,
 
         disable_dependency_flattening: args.disable_dependency_flattening,
-        disable_dependency_flattening_for_alias_targets: args
-            .disable_dependency_flattening_for_alias_targets,
+        disable_dependency_flattening_for_alias_targets: !args
+            .enable_dependency_flattening_for_alias_targets,
         disable_dependency_lifting: args.disable_dependency_lifting,
         disable_topological_sorting: args.disable_topological_sorting,
+
+        skip_node_ids: skip_node_ids.iter().map(|(id, _class)| *id).collect(),
     };
     let mut ctx = reducer.reduce(&settings).unwrap();
 

@@ -21,9 +21,15 @@
             },
             "args": [
                 "--workspace",
-                "/data/h445xu/repo/perses-private/",
+                // "/data/h445xu/repo/perses-private/",
+                "/data/h445xu/repo/flogger",
                 "--command",
-                "scripts/build_perses.sh"
+                // "${workspaceFolder}/scripts/build_perses.sh"
+                "${workspaceFolder}/scripts/build.sh",
+                "--deps-only",
+                "--disable-dependency-flattening-for-alias-targets",
+                "--output",
+                "flogger-output"
             ],
             "cwd": "${workspaceFolder}"
         },
