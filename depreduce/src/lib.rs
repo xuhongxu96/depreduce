@@ -3,3 +3,4 @@ pub mod editors;
 pub mod graph;
 pub mod postprocessors;
 pub mod reducers;
+pub mod stats;

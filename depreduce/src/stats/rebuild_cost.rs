@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use depreduce::graph::{DependencyGraph, NodeId};
+use crate::graph::{DependencyGraph, NodeId};
 
-struct RebuildCostCalculator<'a> {
+pub struct RebuildCostCalculator<'a> {
     graph: &'a DependencyGraph,
 
     nodes_to_rebuild_cache: HashMap<NodeId, HashSet<NodeId>>,
@@ -60,7 +60,7 @@ impl<'a> RebuildCostCalculator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use depreduce::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::graph::bazel_xml_parser::parse_bazel_xml;
     use utils::*;
 
     #[test]

@@ -152,11 +152,6 @@ Query {
                                 name: "//liba:a.h",
                             },
                         ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
                     ],
                 ),
             },
@@ -334,11 +329,6 @@ Query {
                                 name: "//libb:b.h",
                             },
                         ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
                     ],
                 ),
             },
@@ -457,21 +447,6 @@ Query {
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:link_extra_lib",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:malloc",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
                                 name: "@rules_cc//:link_extra_lib",
                             },
                         ),
@@ -504,318 +479,8 @@ Query {
         ),
         Rule(
             Rule {
-                class: "alias",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:27:10",
-                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "current_cc_toolchain",
-                                ),
-                            },
-                        ),
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "deprecation",
-                                ),
-                                value: Some(
-                                    "Please use @rules_cc//cc:current_cc_toolchain instead.",
-                                ),
-                            },
-                        ),
-                        Label(
-                            StringProp {
-                                name: Some(
-                                    "actual",
-                                ),
-                                value: Some(
-                                    "@rules_cc//cc:current_cc_toolchain",
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@rules_cc//cc:current_cc_toolchain",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
                 class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:52:11",
-                name: "@bazel_tools//tools/cpp:empty_lib",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "empty_lib",
-                                ),
-                            },
-                        ),
-                        List(
-                            ListProp {
-                                name: "tags",
-                                items: Some(
-                                    [
-                                        String(
-                                            StringProp {
-                                                name: None,
-                                                value: Some(
-                                                    "__DONT_DEPEND_ON_DEF_PARSER__",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:66:11",
-                name: "@bazel_tools//tools/cpp:link_extra_lib",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "link_extra_lib",
-                                ),
-                            },
-                        ),
-                        List(
-                            ListProp {
-                                name: "tags",
-                                items: Some(
-                                    [
-                                        String(
-                                            StringProp {
-                                                name: None,
-                                                value: Some(
-                                                    "__DONT_DEPEND_ON_DEF_PARSER__",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                ),
-                            },
-                        ),
-                        List(
-                            ListProp {
-                                name: "deps",
-                                items: Some(
-                                    [
-                                        Label(
-                                            StringProp {
-                                                name: None,
-                                                value: Some(
-                                                    "@bazel_tools//tools/cpp:link_extra_libs",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:link_extra_libs",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "label_flag",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:59:11",
-                name: "@bazel_tools//tools/cpp:link_extra_libs",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "link_extra_libs",
-                                ),
-                            },
-                        ),
-                        Label(
-                            StringProp {
-                                name: Some(
-                                    "build_setting_default",
-                                ),
-                                value: Some(
-                                    "@bazel_tools//tools/cpp:empty_lib",
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:empty_lib",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:74:11",
-                name: "@bazel_tools//tools/cpp:malloc",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "malloc",
-                                ),
-                            },
-                        ),
-                        List(
-                            ListProp {
-                                name: "tags",
-                                items: Some(
-                                    [
-                                        String(
-                                            StringProp {
-                                                name: None,
-                                                value: Some(
-                                                    "__DONT_DEPEND_ON_DEF_PARSER__",
-                                                ),
-                                            },
-                                        ),
-                                    ],
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "toolchain_type",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/bazel_tools/tools/cpp/BUILD:20:15",
-                name: "@bazel_tools//tools/cpp:toolchain_type",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "toolchain_type",
-                                ),
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
-                name: "@rules_cc//:empty_lib",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "empty_lib",
-                                ),
-                            },
-                        ),
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "generator_name",
-                                ),
-                                value: Some(
-                                    "empty_lib",
-                                ),
-                            },
-                        ),
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "generator_function",
-                                ),
-                                value: Some(
-                                    "cc_library",
-                                ),
-                            },
-                        ),
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "generator_location",
-                                ),
-                                value: Some(
-                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:9:11",
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "cc_library",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                location: "/data/h445xu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
                 name: "@rules_cc//:link_extra_lib",
                 props: Some(
                     [
@@ -855,7 +520,7 @@ Query {
                                     "generator_location",
                                 ),
                                 value: Some(
-                                    "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
+                                    "/data/h445xu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:20:11",
                                 ),
                             },
                         ),
@@ -878,11 +543,6 @@ Query {
                         ),
                         RuleInput(
                             RuleIO {
-                                name: "@bazel_tools//tools/cpp:current_cc_toolchain",
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
                                 name: "@rules_cc//:link_extra_libs",
                             },
                         ),
@@ -893,7 +553,7 @@ Query {
         Rule(
             Rule {
                 class: "label_flag",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:13:11",
+                location: "/data/h445xu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/BUILD:13:11",
                 name: "@rules_cc//:link_extra_libs",
                 props: Some(
                     [
@@ -914,32 +574,6 @@ Query {
                                 ),
                                 value: Some(
                                     "@rules_cc//:empty_lib",
-                                ),
-                            },
-                        ),
-                        RuleInput(
-                            RuleIO {
-                                name: "@rules_cc//:empty_lib",
-                            },
-                        ),
-                    ],
-                ),
-            },
-        ),
-        Rule(
-            Rule {
-                class: "cc_toolchain_alias",
-                location: "/home/hongxu/.cache/bazel/_bazel_hongxu/6df96e832ca223696660a141f132846f/external/rules_cc+/cc/BUILD:103:19",
-                name: "@rules_cc//cc:current_cc_toolchain",
-                props: Some(
-                    [
-                        String(
-                            StringProp {
-                                name: Some(
-                                    "name",
-                                ),
-                                value: Some(
-                                    "current_cc_toolchain",
                                 ),
                             },
                         ),

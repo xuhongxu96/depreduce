@@ -14,6 +14,7 @@ use depreduce::{
         reduce_context::{ReduceSettings, ReductionAttempt},
         top_sort_reducer::TopSortReducer,
     },
+    stats::rebuild_cost::RebuildCostCalculator,
 };
 use utils::{get_bazel_query, to_json_lines};
 
@@ -93,6 +94,8 @@ fn run_reducer_test(
 
     let query = parse_bazel_xml(xml).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
+    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+    println!("Original rebuild cost: {}", original_cost);
 
     let config = ReduceConfig::from_toml(
         &std::fs::read_to_string(&args.config).expect("Failed to read config file"),
@@ -176,6 +179,10 @@ fn run_reducer_test(
     println!("End reduction test at {:?}", chrono::offset::Local::now());
 
     let attempts = ctx.get_attempts().to_vec();
+
+    let new_cost = RebuildCostCalculator::new(&ctx.graph).calculate_rebuild_cost_sum();
+    println!("Rebuild cost: {} -> {}", original_cost, new_cost);
+
     (ctx.graph, attempts)
 }
 
