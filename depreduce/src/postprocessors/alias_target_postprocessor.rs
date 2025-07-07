@@ -135,6 +135,7 @@ mod tests {
                 let mut postprocessor = AliasTargetPostprocessor::new(ctx);
                 postprocessor.process();
             },
+            |_| {},
         );
     }
 }

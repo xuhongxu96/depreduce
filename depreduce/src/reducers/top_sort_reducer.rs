@@ -186,8 +186,6 @@ impl TopSortReducer {
         node_id: NodeId,
         dependent_node_id: NodeId,
     ) -> bool {
-        ctx.log("  Trying a new candidate set\n");
-
         let mut removed = false;
 
         let label = ctx.graph.nodes[node_id].label.clone();
@@ -210,7 +208,7 @@ impl TopSortReducer {
         }
 
         if ctx.settings.disable_optimization_if_transitive_deps_exists
-            && ctx.has_transitive_deps(dependent_node_id, node_id)
+            && ctx.has_transitive_deps(dependent_node_id, node_id, false)
         {
             ctx.log("  Skipping removal because disable_optimization_if_transitive_deps_exists was set and transitive deps exist\n");
             return false;
@@ -337,6 +335,7 @@ pub(crate) mod tests {
         build_script: &str,
         expected_out: &str,
         additional_actions: impl Fn(&mut ReduceContext) -> (),
+        additional_settings: impl Fn(&mut ReduceSettings) -> (),
     ) {
         let project_dir = get_test_data_path!(project_dir)
             .to_string_lossy()
@@ -349,7 +348,7 @@ pub(crate) mod tests {
         let editor = BazelDepEditor::new(&query, project_dir.clone());
 
         let reducer = TopSortReducer {};
-        let settings = ReduceSettings {
+        let mut settings = ReduceSettings {
             editor: &editor,
             build_command: get_test_data_path!(build_script)
                 .to_string_lossy()
@@ -363,6 +362,8 @@ pub(crate) mod tests {
             disable_optimization_if_transitive_deps_exists: false,
             skip_node_ids: HashSet::new(),
         };
+        additional_settings(&mut settings);
+
         let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
         additional_actions(&mut ctx);
@@ -392,6 +393,7 @@ pub(crate) mod tests {
             "build.sh",
             "reducers/cxx",
             |_| {},
+            |_| {},
         );
     }
 
@@ -404,6 +406,7 @@ pub(crate) mod tests {
             "build.sh",
             "reducers/java",
             |_| {},
+            |_| {},
         );
     }
 
@@ -415,6 +418,7 @@ pub(crate) mod tests {
             "../../../examples/simple-kotlin-project",
             "build.sh",
             "reducers/kt",
+            |_| {},
             |_| {},
         );
     }
@@ -431,6 +435,7 @@ pub(crate) mod tests {
             "build.sh",
             "reducers/kt-transitive",
             |_| {},
+            |_| {},
         );
     }
 
@@ -443,6 +448,22 @@ pub(crate) mod tests {
             "build.sh",
             "reducers/test-lifting-deps",
             |_| {},
+            |_| {},
+        );
+    }
+
+    #[test]
+    fn test_keep_direct_deps() {
+        run_reducer_test(
+            "keep-direct-deps-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/keep-direct-deps",
+            "../../../examples/keep-direct-deps",
+            "build.sh",
+            "reducers/keep-direct-deps",
+            |_| {},
+            |settings| {
+                settings.disable_optimization_if_transitive_deps_exists = true;
+            },
         );
     }
 }

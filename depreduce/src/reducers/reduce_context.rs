@@ -98,6 +98,7 @@ pub struct ReduceContext<'a> {
 
     history: HashMap<String, String>,
     transitive_deps: Vec<HashSet<NodeId>>,
+    transitive_without_direct_deps: Vec<HashSet<NodeId>>,
 
     current_node_id: Option<NodeId>,
     dependent_candidates: BinaryHeap<(usize, NodeId)>,
@@ -106,36 +107,44 @@ pub struct ReduceContext<'a> {
     node2topsort_index: Vec<usize>,
 }
 
-fn calculate_transitive_deps(graph: &DependencyGraph) -> Vec<HashSet<NodeId>> {
+fn calculate_transitive_deps(
+    graph: &DependencyGraph,
+) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
     let mut transitive_deps = vec![HashSet::new(); graph.nodes.len()];
+    let mut transitive_without_direct_deps = vec![HashSet::new(); graph.nodes.len()];
 
     let mut topsorted_nodes = graph.topsort();
     topsorted_nodes.reverse();
 
     for node_id in topsorted_nodes {
         let mut deps = HashSet::new();
+        let mut non_direct_deps = HashSet::new();
         if let Some(out_edges) = graph.node2out_edges.get(&node_id) {
             for (&dep_node_id, _) in out_edges {
                 // we do not consider the direct deps as transitive deps
+                deps.insert(dep_node_id);
                 deps.extend(&transitive_deps[dep_node_id]);
+                non_direct_deps.extend(&transitive_deps[dep_node_id]);
             }
         }
         transitive_deps[node_id] = deps;
+        transitive_without_direct_deps[node_id] = non_direct_deps;
     }
 
-    transitive_deps
+    (transitive_deps, transitive_without_direct_deps)
 }
 
 impl<'a> ReduceContext<'a> {
     pub fn new(graph: DependencyGraph, settings: &'a ReduceSettings<'a>) -> Self {
         let graph_node_len = graph.nodes.len();
-        let transitive_deps = calculate_transitive_deps(&graph);
+        let (transitive_deps, transitive_without_direct_deps) = calculate_transitive_deps(&graph);
 
         Self {
             graph,
             settings,
             history: HashMap::new(),
             transitive_deps,
+            transitive_without_direct_deps,
             current_node_id: None,
             dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
@@ -229,7 +238,8 @@ impl<'a> ReduceContext<'a> {
         self.graph
             .add_edge(dependent_node_id, node_id, EdgeProps {})
             .unwrap();
-        self.transitive_deps = calculate_transitive_deps(&self.graph);
+        (self.transitive_deps, self.transitive_without_direct_deps) =
+            calculate_transitive_deps(&self.graph);
 
         self.log(
             format!(
@@ -262,7 +272,8 @@ impl<'a> ReduceContext<'a> {
         self.graph
             .remove_edge(self.graph.get_edge_id(dependent_node_id, node_id).unwrap())
             .unwrap();
-        self.transitive_deps = calculate_transitive_deps(&self.graph);
+        (self.transitive_deps, self.transitive_without_direct_deps) =
+            calculate_transitive_deps(&self.graph);
 
         self.log(
             format!(
@@ -438,6 +449,11 @@ impl<'a> ReduceContext<'a> {
 
         let dependent = self.dependent_candidates.pop().unwrap();
 
+        self.log(&format!(
+            "  Trying a new candidate. Remaining candidates: {}\n",
+            self.dependent_candidates.len()
+        ));
+
         self.attempts.push(ReductionAttempt {
             candidates: GeneratedCandidates {
                 node_id: self.current_node_id.unwrap(),
@@ -479,8 +495,17 @@ impl<'a> ReduceContext<'a> {
         &self.attempts
     }
 
-    pub fn has_transitive_deps(&self, dependent_node_id: NodeId, node_id: NodeId) -> bool {
-        self.transitive_deps[dependent_node_id].contains(&node_id)
+    pub fn has_transitive_deps(
+        &self,
+        dependent_node_id: NodeId,
+        node_id: NodeId,
+        consider_direct_deps: bool,
+    ) -> bool {
+        if consider_direct_deps {
+            self.transitive_deps[dependent_node_id].contains(&node_id)
+        } else {
+            self.transitive_without_direct_deps[dependent_node_id].contains(&node_id)
+        }
     }
 }
 

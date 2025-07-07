@@ -479,6 +479,9 @@ As we considered the dependents $n_j$ in reverse topological order,
 all $\text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$
 are determined. Thus, we can still finish the optimization process in one pass.
 
+As a bonus, because we have less edges to remove, the rebuild times are reduced, and the optimization
+can be done faster.
+
 #### Rules that Should Remain Untouched
 
 We support allowlist and blocklist where users can specify texts or regexes to match rules. Only dependencies declared via allowed or not-blocked rules can be modified.
