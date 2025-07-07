@@ -37,7 +37,7 @@ struct Args {
     #[arg(short, long)]
     deps_only: bool,
 
-    #[arg(long, default_value = "config.toml")]
+    #[arg(long, default_value = "depreduce.toml")]
     config: String,
 
     #[arg(
