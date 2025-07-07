@@ -41,24 +41,38 @@ struct Args {
 
     #[arg(
         long,
+        default_value = "false",
         help = "Disable dependency flattening: prevents the reducer from adding dependencies of the node being optimized to the dependent node being reduced as dependencies"
     )]
     disable_dependency_flattening: bool,
 
-    #[arg(long)]
+    #[arg(
+        long,
+        default_value = "false",
+        help = "Enable dependency flattening for alias targets. Disabled by default to avoid flattening the alias targets because they are usually used to simplify the dependency names or combine multiple dependencies as a whole."
+    )]
     enable_dependency_flattening_for_alias_targets: bool,
 
     #[arg(
         long,
+        default_value = "false",
         help = "Disable dependency lifting: prevents the reducer from adding the node being optimized to the dependents of the dependent node being reduced as a dependency"
     )]
     disable_dependency_lifting: bool,
 
     #[arg(
         long,
+        default_value = "false",
         help = "Only can be set when disable_dependency_flattening and disable_dependency_lifting are both set"
     )]
     disable_topological_sorting: bool,
+
+    #[arg(
+        long,
+        default_value = "false",
+        help = "Also consider to remove a dependency even if it can still be accessed transitively. Disabled by default to avoid removing direct dependencies."
+    )]
+    enable_optimization_if_transitive_deps_exists: bool,
 }
 
 fn run_reducer_test(
@@ -167,7 +181,6 @@ fn run_reducer_test(
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
         editor: &editor,
-        graph: &graph,
         build_command: build_script,
         cwd: workspace_root,
         save_build_log: true,
@@ -177,10 +190,12 @@ fn run_reducer_test(
             .enable_dependency_flattening_for_alias_targets,
         disable_dependency_lifting: args.disable_dependency_lifting,
         disable_topological_sorting: args.disable_topological_sorting,
+        disable_optimization_if_transitive_deps_exists: !args
+            .enable_optimization_if_transitive_deps_exists,
 
         skip_node_ids: skip_node_ids.iter().map(|(id, _class)| *id).collect(),
     };
-    let mut ctx = reducer.reduce(&settings).unwrap();
+    let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
     let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
     postprocessor.process();
@@ -188,7 +203,7 @@ fn run_reducer_test(
     println!("End reduction test at {:?}", chrono::offset::Local::now());
 
     let attempts = ctx.get_attempts().to_vec();
-    (graph, attempts)
+    (ctx.graph, attempts)
 }
 
 fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {

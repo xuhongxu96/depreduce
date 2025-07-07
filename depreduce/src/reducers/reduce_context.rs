@@ -6,13 +6,12 @@ use serde::{Deserialize, Serialize};
 use utils::indent_all_lines;
 
 use crate::editors::{DepEditor, FileEdit};
-use crate::graph::{DependencyGraph, NodeId};
+use crate::graph::{DependencyGraph, EdgeProps, NodeId};
 
 pub const INDENT_SIZE_FOR_STDOUT: usize = 8;
 
 pub struct ReduceSettings<'a> {
     pub editor: &'a dyn DepEditor,
-    pub graph: &'a DependencyGraph,
     pub build_command: String,
     pub cwd: String,
     pub save_build_log: bool,
@@ -22,6 +21,7 @@ pub struct ReduceSettings<'a> {
     pub disable_dependency_flattening_for_alias_targets: bool,
     pub disable_dependency_lifting: bool,
     pub disable_topological_sorting: bool,
+    pub disable_optimization_if_transitive_deps_exists: bool,
 
     pub skip_node_ids: HashSet<NodeId>,
 }
@@ -93,13 +93,11 @@ pub struct ReductionAttempt {
 }
 
 pub struct ReduceContext<'a> {
+    pub graph: DependencyGraph,
     pub settings: &'a ReduceSettings<'a>,
 
     history: HashMap<String, String>,
-    in_degrees: Vec<i32>,
-
-    added_node2in_nodes: Vec<HashSet<NodeId>>,
-    removed_node2in_nodes: Vec<HashSet<NodeId>>,
+    transitive_deps: Vec<HashSet<NodeId>>,
 
     current_node_id: Option<NodeId>,
     dependent_candidates: BinaryHeap<(usize, NodeId)>,
@@ -108,36 +106,40 @@ pub struct ReduceContext<'a> {
     node2topsort_index: Vec<usize>,
 }
 
-fn calculate_in_degrees(graph: &DependencyGraph) -> Vec<i32> {
-    graph
-        .nodes
-        .iter()
-        .map(|node| {
-            graph
-                .node2in_edges
-                .get(&node.id)
-                .map(|edges| {
-                    edges.iter().filter(|(src_node_id, _)| {
-                        !graph.nodes[**src_node_id].props.t.is_alias_target()
-                    })
-                })
-                .map_or(0, |edges| edges.count().try_into().unwrap())
-        })
-        .collect()
+fn calculate_transitive_deps(graph: &DependencyGraph) -> Vec<HashSet<NodeId>> {
+    let mut transitive_deps = vec![HashSet::new(); graph.nodes.len()];
+
+    let mut topsorted_nodes = graph.topsort();
+    topsorted_nodes.reverse();
+
+    for node_id in topsorted_nodes {
+        let mut deps = HashSet::new();
+        if let Some(out_edges) = graph.node2out_edges.get(&node_id) {
+            for (&dep_node_id, _) in out_edges {
+                deps.insert(dep_node_id);
+                deps.extend(&transitive_deps[dep_node_id]);
+            }
+        }
+        transitive_deps[node_id] = deps;
+    }
+
+    transitive_deps
 }
 
 impl<'a> ReduceContext<'a> {
-    pub fn new(settings: &'a ReduceSettings<'a>) -> Self {
+    pub fn new(graph: DependencyGraph, settings: &'a ReduceSettings<'a>) -> Self {
+        let graph_node_len = graph.nodes.len();
+        let transitive_deps = calculate_transitive_deps(&graph);
+
         Self {
+            graph,
             settings,
             history: HashMap::new(),
-            in_degrees: calculate_in_degrees(settings.graph),
-            added_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
-            removed_node2in_nodes: vec![HashSet::new(); settings.graph.nodes.len()],
+            transitive_deps,
             current_node_id: None,
             dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
-            node2topsort_index: vec![0; settings.graph.nodes.len()],
+            node2topsort_index: vec![0; graph_node_len],
         }
     }
 
@@ -147,17 +149,9 @@ impl<'a> ReduceContext<'a> {
         }
     }
 
-    pub fn get_removed_dependents(&self, node_id: NodeId) -> &HashSet<NodeId> {
-        &self.removed_node2in_nodes[node_id]
-    }
-
-    pub fn get_added_dependents(&self, node_id: NodeId) -> &HashSet<NodeId> {
-        &self.added_node2in_nodes[node_id]
-    }
-
     pub fn check_remove_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) -> bool {
-        let label = || self.settings.graph.nodes[node_id].label.clone();
-        let dependent_label = || self.settings.graph.nodes[dependent_node_id].label.clone();
+        let label = || self.graph.nodes[node_id].label.clone();
+        let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
         if self.settings.skip_node_ids.contains(&dependent_node_id) {
             self.log(&format!(
@@ -172,26 +166,18 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn check_add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) -> bool {
-        let mut already_added = self
-            .get_added_dependents(node_id)
-            .contains(&dependent_node_id);
+        let label = || self.graph.nodes[node_id].label.clone();
+        let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
-        if let Some(edges) = self.settings.graph.node2out_edges.get(&dependent_node_id) {
+        if let Some(edges) = self.graph.node2out_edges.get(&dependent_node_id) {
             if edges.contains_key(&node_id) {
-                already_added = true;
+                self.log(&format!(
+                    "  Skipping adding {} -> {} (already exists)\n",
+                    dependent_label(),
+                    label()
+                ));
+                return false;
             }
-        }
-
-        let label = || self.settings.graph.nodes[node_id].label.clone();
-        let dependent_label = || self.settings.graph.nodes[dependent_node_id].label.clone();
-
-        if already_added {
-            self.log(&format!(
-                "  Skipping adding {} -> {} (already exists)\n",
-                dependent_label(),
-                label()
-            ));
-            return false;
         }
 
         if self.settings.skip_node_ids.contains(&dependent_node_id) {
@@ -203,7 +189,7 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        match self.settings.graph.nodes[node_id].props.t {
+        match self.graph.nodes[node_id].props.t {
             crate::graph::NodeType::Target(_) => {}
             _ => {
                 self.log(&format!(
@@ -220,17 +206,19 @@ impl<'a> ReduceContext<'a> {
 
     pub fn add_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
         assert!(
-            !self.added_node2in_nodes[node_id].contains(&dependent_node_id),
-            "Node {} is already added to node {}",
-            self.settings.graph.nodes[node_id].label,
-            self.settings.graph.nodes[dependent_node_id].label
+            !self
+                .graph
+                .get_in_edges(node_id)
+                .map_or(false, |edges| edges.contains_key(&dependent_node_id)),
+            "Node {} is already a dependency of node {}",
+            self.graph.nodes[node_id].label,
+            self.graph.nodes[dependent_node_id].label
         );
 
         if self.current_node_id.map_or(false, |id| id == node_id) {
             self.log(&format!(
                 "  Adding {} as a dependent candidate of {}\n",
-                self.settings.graph.nodes[dependent_node_id].label,
-                self.settings.graph.nodes[node_id].label
+                self.graph.nodes[dependent_node_id].label, self.graph.nodes[node_id].label
             ));
             self.dependent_candidates.push((
                 self.node2topsort_index[dependent_node_id],
@@ -238,13 +226,16 @@ impl<'a> ReduceContext<'a> {
             ));
         }
 
-        self.added_node2in_nodes[node_id].insert(dependent_node_id);
-        self.removed_node2in_nodes[node_id].remove(&dependent_node_id);
-        self.in_degrees[node_id] += 1;
+        self.graph
+            .add_edge(dependent_node_id, node_id, EdgeProps {})
+            .unwrap();
+        self.transitive_deps = calculate_transitive_deps(&self.graph);
+
         self.log(
             format!(
                 "  In-degree of {} is now {}\n",
-                self.settings.graph.nodes[node_id].label, self.in_degrees[node_id]
+                self.graph.nodes[node_id].label,
+                self.get_indegree(node_id)
             )
             .as_str(),
         );
@@ -260,19 +251,24 @@ impl<'a> ReduceContext<'a> {
 
     pub fn remove_dependent(&mut self, node_id: NodeId, dependent_node_id: NodeId) {
         assert!(
-            !self.removed_node2in_nodes[node_id].contains(&dependent_node_id),
+            self.graph
+                .get_in_edges(node_id)
+                .map_or(false, |edges| edges.contains_key(&dependent_node_id)),
             "Node {} is already removed from node {}",
-            self.settings.graph.nodes[node_id].label,
-            self.settings.graph.nodes[dependent_node_id].label
+            self.graph.nodes[node_id].label,
+            self.graph.nodes[dependent_node_id].label
         );
 
-        self.added_node2in_nodes[node_id].remove(&dependent_node_id);
-        self.removed_node2in_nodes[node_id].insert(dependent_node_id);
-        self.in_degrees[node_id] -= 1;
+        self.graph
+            .remove_edge(self.graph.get_edge_id(dependent_node_id, node_id).unwrap())
+            .unwrap();
+        self.transitive_deps = calculate_transitive_deps(&self.graph);
+
         self.log(
             format!(
                 "  In-degree of {} is now {}\n",
-                self.settings.graph.nodes[node_id].label, self.in_degrees[node_id]
+                self.graph.nodes[node_id].label,
+                self.get_indegree(node_id)
             )
             .as_str(),
         );
@@ -287,7 +283,15 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn get_indegree(&self, node_id: NodeId) -> i32 {
-        self.in_degrees[node_id]
+        self.graph
+            .node2in_edges
+            .get(&node_id)
+            .map(|edges| {
+                edges.iter().filter(|(src_node_id, _)| {
+                    !self.graph.nodes[**src_node_id].props.t.is_alias_target()
+                })
+            })
+            .map_or(0, |edges| edges.count().try_into().unwrap())
     }
 
     pub fn backup(&mut self, edit: &FileEdit) {
@@ -454,33 +458,15 @@ impl<'a> ReduceContext<'a> {
         self.dependent_candidates.clear();
         self.current_node_id = Some(node_id);
 
-        if let Some(dependents) = self.settings.graph.node2in_edges.get(&node_id) {
-            self.dependent_candidates.extend(
-                dependents
-                    .iter()
-                    .filter(|(dependent_node_id, _)| {
-                        !self.removed_node2in_nodes[node_id].contains(dependent_node_id)
-                    })
-                    .map(|(dependent_node_id, _)| {
-                        (
-                            self.node2topsort_index[*dependent_node_id],
-                            *dependent_node_id,
-                        )
-                    }),
-            )
+        if let Some(dependents) = self.graph.node2in_edges.get(&node_id) {
+            self.dependent_candidates
+                .extend(dependents.iter().map(|(dependent_node_id, _)| {
+                    (
+                        self.node2topsort_index[*dependent_node_id],
+                        *dependent_node_id,
+                    )
+                }))
         }
-
-        self.dependent_candidates
-            .extend(
-                self.added_node2in_nodes[node_id]
-                    .iter()
-                    .map(|&dependent_node_id| {
-                        (
-                            self.node2topsort_index[dependent_node_id],
-                            dependent_node_id,
-                        )
-                    }),
-            );
     }
 
     pub fn log(&mut self, message: &str) {
@@ -492,11 +478,15 @@ impl<'a> ReduceContext<'a> {
     pub fn get_attempts(&self) -> &[ReductionAttempt] {
         &self.attempts
     }
+
+    pub fn has_transitive_deps(&self, dependent_node_id: NodeId, node_id: NodeId) -> bool {
+        self.transitive_deps[dependent_node_id].contains(&node_id)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
 
     use super::*;
     use utils::*;
@@ -506,11 +496,29 @@ mod tests {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
         let graph = query.to_dep_graph(false).unwrap();
+        let editor = BazelDepEditor::new(&query, "".to_string());
+        let settings = ReduceSettings {
+            editor: &editor,
+            build_command: "bazel build //...".to_string(),
+            cwd: ".".to_string(),
+            save_build_log: false,
+            disable_dependency_flattening: false,
+            disable_dependency_flattening_for_alias_targets: false,
+            disable_dependency_lifting: false,
+            disable_topological_sorting: false,
+            disable_optimization_if_transitive_deps_exists: false,
+            skip_node_ids: HashSet::new(),
+        };
 
-        let in_degrees = calculate_in_degrees(&graph)
+        let ctx = ReduceContext::new(graph, &settings);
+
+        let in_degrees = ctx
+            .graph
+            .nodes
             .iter()
+            .map(|node| ctx.get_indegree(node.id))
             .enumerate()
-            .map(|(i, &d)| (i, graph.nodes[i].label.to_string(), d))
+            .map(|(i, d)| (i, ctx.graph.nodes[i].label.to_string(), d))
             .collect::<Vec<_>>();
 
         let res = to_json_lines(&in_degrees);

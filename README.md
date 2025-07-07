@@ -481,7 +481,7 @@ are determined. Thus, we can still finish the optimization process in one pass.
 
 #### Rules that Should Remain Untouched
 
-We support allowlist and blocklist where users can specify texts or regexes to match rules. Only dependencies declared via allowed rules can be modified.
+We support allowlist and blocklist where users can specify texts or regexes to match rules. Only dependencies declared via allowed or not-blocked rules can be modified.
 
 See [blockrules.txt](blockrules.txt) as an example.
 

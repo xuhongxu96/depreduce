@@ -21,7 +21,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
     }
 
     fn get_candidates(&self) -> Vec<Candidate> {
-        let graph = self.ctx.settings.graph;
+        let graph = &self.ctx.graph;
         let mut candidates: Vec<Candidate> = Vec::new();
 
         let mut added_deps: Vec<&AddOperation> = Vec::new();
@@ -69,7 +69,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
     }
 
     pub fn process(&mut self) {
-        let &ReduceSettings { graph, editor, .. } = self.ctx.settings;
+        let &ReduceSettings { editor, .. } = self.ctx.settings;
 
         let candidates = self.get_candidates();
 
@@ -80,9 +80,9 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
                 Some("Recover Alias".to_string()),
             );
 
-            let node_label = graph.nodes[candidate.node_id].label.clone();
+            let node_label = self.ctx.graph.nodes[candidate.node_id].label.clone();
             for dep_node_id in &candidate.added_deps {
-                let dep_label = graph.nodes[*dep_node_id].label.clone();
+                let dep_label = self.ctx.graph.nodes[*dep_node_id].label.clone();
                 if let Ok(edit) = editor.remove(&node_label, &dep_label, true) {
                     self.ctx.backup(&edit);
                     self.ctx.apply(edit);
@@ -93,7 +93,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
             }
 
             for dep_node_id in &candidate.removed_deps {
-                let dep_label = graph.nodes[*dep_node_id].label.clone();
+                let dep_label = self.ctx.graph.nodes[*dep_node_id].label.clone();
                 if let Ok(edit) = editor.add(&node_label, &dep_label) {
                     self.ctx.backup(&edit);
                     self.ctx.apply(edit);

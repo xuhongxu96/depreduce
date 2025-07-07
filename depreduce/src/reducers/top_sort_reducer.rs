@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::editors::DepEditor;
-use crate::graph::NodeId;
+use crate::graph::{DependencyGraph, NodeId};
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 
 pub struct TopSortReducer {}
@@ -16,8 +16,8 @@ impl TopSortReducer {
         node_id: NodeId,
         dependent_node_id: NodeId,
     ) -> bool {
-        let label = ctx.settings.graph.nodes[node_id].label.clone();
-        let dependent_label = ctx.settings.graph.nodes[dependent_node_id].label.clone();
+        let label = ctx.graph.nodes[node_id].label.clone();
+        let dependent_label = ctx.graph.nodes[dependent_node_id].label.clone();
 
         ctx.log(&format!(
             "  Trying to lift dependency node {} to {}\n",
@@ -25,7 +25,7 @@ impl TopSortReducer {
         ));
 
         let mut lifted_edges: Vec<(NodeId, NodeId)> = Vec::new();
-        if let Some(in_edges) = ctx.settings.graph.node2in_edges.get(&dependent_node_id) {
+        if let Some(in_edges) = ctx.graph.node2in_edges.get(&dependent_node_id).cloned() {
             let mut dependent_of_dependents: Vec<_> = in_edges
                 .iter()
                 .map(|(dependent_of_dependent, _)| dependent_of_dependent)
@@ -33,9 +33,8 @@ impl TopSortReducer {
             dependent_of_dependents.sort();
 
             for &dependent_of_dependent in dependent_of_dependents {
-                let dependent_of_dependent_label = ctx.settings.graph.nodes[dependent_of_dependent]
-                    .label
-                    .clone();
+                let dependent_of_dependent_label =
+                    ctx.graph.nodes[dependent_of_dependent].label.clone();
 
                 if !ctx.check_add_dependent(node_id, dependent_of_dependent) {
                     continue;
@@ -100,31 +99,25 @@ impl TopSortReducer {
         node_id: NodeId,
         dependent_node_id: NodeId,
     ) -> bool {
-        let label = ctx.settings.graph.nodes[node_id].label.clone();
+        let label = ctx.graph.nodes[node_id].label.clone();
         ctx.log(&format!(
             "  Trying to flatten dependencies for node {}\n",
             label
         ));
 
         if ctx.settings.disable_dependency_flattening_for_alias_targets
-            && ctx.settings.graph.nodes[node_id].props.t.is_alias_target()
+            && ctx.graph.nodes[node_id].props.t.is_alias_target()
         {
             ctx.log("  Skipping flattening for alias target because disable_dependency_flattening_for_alias_targets was set\n");
             return false;
         }
 
         let mut transitive_deps: HashSet<(NodeId, String)> = HashSet::new();
-        if let Some(tgt2edge) = ctx.settings.graph.node2out_edges.get(&node_id) {
+        if let Some(tgt2edge) = ctx.graph.node2out_edges.get(&node_id) {
             tgt2edge.keys().for_each(|dep_node| {
                 transitive_deps.insert((
                     *dep_node,
-                    ctx.settings
-                        .graph
-                        .nodes
-                        .get(*dep_node)
-                        .unwrap()
-                        .label
-                        .clone(),
+                    ctx.graph.nodes.get(*dep_node).unwrap().label.clone(),
                 ));
             });
         }
@@ -137,7 +130,7 @@ impl TopSortReducer {
 
         let mut added_edges: Vec<(NodeId, NodeId)> = Vec::new();
 
-        let dependent_label = ctx.settings.graph.nodes[dependent_node_id].label.clone();
+        let dependent_label = ctx.graph.nodes[dependent_node_id].label.clone();
         for (transitive_dep_id, transitive_dep_label) in &transitive_deps {
             if !ctx.check_add_dependent(*transitive_dep_id, dependent_node_id) {
                 continue;
@@ -197,8 +190,8 @@ impl TopSortReducer {
 
         let mut removed = false;
 
-        let label = ctx.settings.graph.nodes[node_id].label.clone();
-        let dependent_label = ctx.settings.graph.nodes[dependent_node_id].label.clone();
+        let label = ctx.graph.nodes[node_id].label.clone();
+        let dependent_label = ctx.graph.nodes[dependent_node_id].label.clone();
 
         if ctx.get_indegree(dependent_node_id) <= 0 {
             ctx.log(
@@ -213,6 +206,13 @@ impl TopSortReducer {
         }
 
         if !ctx.check_remove_dependent(node_id, dependent_node_id) {
+            return false;
+        }
+
+        if ctx.settings.disable_optimization_if_transitive_deps_exists
+            && ctx.has_transitive_deps(dependent_node_id, node_id)
+        {
+            ctx.log("  Skipping removal because disable_optimization_if_transitive_deps_exists was set and transitive deps exist\n");
             return false;
         }
 
@@ -269,21 +269,24 @@ impl TopSortReducer {
         }
     }
 
-    pub fn reduce<'a>(&self, settings: &'a ReduceSettings) -> Result<ReduceContext<'a>, String> {
-        let &ReduceSettings { graph, .. } = settings;
+    pub fn reduce<'a>(
+        &self,
+        graph: DependencyGraph,
+        settings: &'a ReduceSettings,
+    ) -> Result<ReduceContext<'a>, String> {
         assert!(
             !settings.disable_topological_sorting
                 || (settings.disable_dependency_flattening && settings.disable_dependency_lifting),
             "disable_topological_sorting can only be set when disable_dependency_flattening and disable_dependency_lifting are both set"
         );
 
-        let mut ctx = ReduceContext::new(settings);
+        let mut ctx = ReduceContext::new(graph, settings);
 
         let sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
-            graph.topsort()
+            ctx.graph.topsort()
         } else {
             ctx.log("Topological sorting is disabled, using original order.\n");
-            (0..graph.nodes.len()).collect()
+            (0..ctx.graph.nodes.len()).collect()
         };
 
         ctx.init_node2topsort_index(&sorted_nodes);
@@ -293,14 +296,14 @@ impl TopSortReducer {
             ctx.log(&format!(
                 "  {}: \t{}\n",
                 i,
-                graph.nodes.get(*node_id).unwrap().label
+                ctx.graph.nodes.get(*node_id).unwrap().label
             ));
         }
 
         for (i, &node_id) in sorted_nodes.iter().enumerate() {
             ctx.log(&format!(
                 "Processing node: {} ({}/{})\n",
-                graph.nodes.get(node_id).unwrap().label,
+                ctx.graph.nodes.get(node_id).unwrap().label,
                 i + 1,
                 sorted_nodes.len()
             ));
@@ -348,7 +351,6 @@ pub(crate) mod tests {
         let reducer = TopSortReducer {};
         let settings = ReduceSettings {
             editor: &editor,
-            graph: &graph,
             build_command: get_test_data_path!(build_script)
                 .to_string_lossy()
                 .to_string(),
@@ -358,9 +360,10 @@ pub(crate) mod tests {
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
+            disable_optimization_if_transitive_deps_exists: false,
             skip_node_ids: HashSet::new(),
         };
-        let mut ctx = reducer.reduce(&settings).unwrap();
+        let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
         additional_actions(&mut ctx);
 
@@ -372,7 +375,8 @@ pub(crate) mod tests {
             read_or_create_test_data!(format!("{}{}", expected_out, ".ops.jsonl"), res)
         );
 
-        let graph_json = serde_json::to_string(&graph).expect("Failed to serialize graph to JSON");
+        let graph_json =
+            serde_json::to_string(&ctx.graph).expect("Failed to serialize graph to JSON");
         assert_eq!(
             graph_json,
             read_or_create_test_data!(format!("{}{}", expected_out, ".graph.json"), graph_json)

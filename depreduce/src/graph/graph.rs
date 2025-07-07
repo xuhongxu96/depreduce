@@ -52,7 +52,7 @@ pub struct Edge {
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
 pub struct DependencyGraph {
     pub nodes: Vec<Node>,
-    pub edges: Vec<Edge>,
+    pub edges: Vec<Option<Edge>>,
 
     #[serde(skip)]
     pub name2node: HashMap<String, NodeId>,
@@ -86,14 +86,16 @@ impl DependencyGraph {
         self.node2out_edges.clear();
         self.node2in_edges.clear();
         for edge in &self.edges {
-            self.node2out_edges
-                .entry(edge.from)
-                .or_default()
-                .insert(edge.to, edge.id);
-            self.node2in_edges
-                .entry(edge.to)
-                .or_default()
-                .insert(edge.from, edge.id);
+            if let Some(edge) = edge {
+                self.node2out_edges
+                    .entry(edge.from)
+                    .or_default()
+                    .insert(edge.to, edge.id);
+                self.node2in_edges
+                    .entry(edge.to)
+                    .or_default()
+                    .insert(edge.from, edge.id);
+            }
         }
     }
 
@@ -149,11 +151,28 @@ impl DependencyGraph {
             to,
             props,
         };
-        self.edges.push(edge);
+        self.edges.push(Some(edge));
 
         self.node2out_edges.entry(from).or_default().insert(to, id);
         self.node2in_edges.entry(to).or_default().insert(from, id);
         Ok(id)
+    }
+
+    pub fn remove_edge(&mut self, edge_id: EdgeId) -> Result<(), String> {
+        if edge_id >= self.edges.len() {
+            return Err(format!("Edge with id {} does not exist", edge_id));
+        }
+
+        let edge = self.edges[edge_id].as_ref().unwrap();
+        if let Some(edges) = self.node2out_edges.get_mut(&edge.from) {
+            edges.remove(&edge.to);
+        }
+        if let Some(edges) = self.node2in_edges.get_mut(&edge.to) {
+            edges.remove(&edge.from);
+        }
+
+        self.edges[edge_id] = None;
+        Ok(())
     }
 
     pub fn get_node_id(&self, label: &str) -> Option<NodeId> {
@@ -186,12 +205,14 @@ impl DependencyGraph {
             .unwrap();
         }
         for edge in &self.edges {
-            writeln!(
-                dot,
-                "    {} -> {} [label=\"{}\"]",
-                edge.from, edge.to, edge.id
-            )
-            .unwrap();
+            if let Some(edge) = edge {
+                writeln!(
+                    dot,
+                    "    {} -> {} [label=\"{}\"]",
+                    edge.from, edge.to, edge.id
+                )
+                .unwrap();
+            }
         }
         writeln!(dot, "}}").unwrap();
         dot
@@ -322,8 +343,8 @@ mod tests {
             .expect("Should add edge");
         assert_eq!(edge_id, 0);
         assert_eq!(graph.edges.len(), 1);
-        assert_eq!(graph.edges[0].from, id1);
-        assert_eq!(graph.edges[0].to, id2);
+        assert_eq!(graph.edges[0].as_ref().unwrap().from, id1);
+        assert_eq!(graph.edges[0].as_ref().unwrap().to, id2);
     }
 
     #[test]
