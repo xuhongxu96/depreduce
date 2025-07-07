@@ -3,8 +3,12 @@ use std::{collections::HashSet, path::Path, process::exit};
 use clap::Parser;
 
 use depreduce::{
+    configs::{NodeInfo, ReduceConfig},
     editors::BazelDepEditor,
-    graph::{DependencyGraph, bazel_xml_parser::parse_bazel_xml},
+    graph::{
+        DependencyGraph, NodeId,
+        bazel_xml_parser::{Query, parse_bazel_xml},
+    },
     postprocessors::AliasTargetPostprocessor,
     reducers::{
         reduce_context::{ReduceSettings, ReductionAttempt},
@@ -33,11 +37,8 @@ struct Args {
     #[arg(short, long)]
     deps_only: bool,
 
-    #[arg(long, default_value = "allowrules.txt")]
-    allow_rules: String,
-
-    #[arg(long, default_value = "blockrules.txt")]
-    block_rules: String,
+    #[arg(long, default_value = "config.toml")]
+    config: String,
 
     #[arg(
         long,
@@ -92,80 +93,37 @@ fn run_reducer_test(
 
     let query = parse_bazel_xml(xml).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
+
+    let config = ReduceConfig::from_toml(
+        &std::fs::read_to_string(&args.config).expect("Failed to read config file"),
+    )
+    .expect("Failed to parse config file");
+
     let node_and_rule_class = query.to_node_and_rule_class();
 
-    let mut skip_node_ids = HashSet::new();
-    if !args.allow_rules.is_empty() {
-        let allow_rules: Vec<String> = std::fs::read_to_string(&args.allow_rules)
-            .unwrap_or_default()
-            .lines()
-            .map(|line| line.trim().to_string())
-            .collect();
-
-        let allow_rule_strs: Vec<&str> = allow_rules
+    let from_filter = config.from.to_executable_filter();
+    let skip_from_node_labels = from_filter.get_skip_nodes(
+        &node_and_rule_class
             .iter()
-            .filter(|s| !s.starts_with("regex:"))
-            .map(|s| s.as_str())
-            .collect();
-
-        let allow_rule_regexes: Vec<regex::Regex> = allow_rules
-            .iter()
-            .filter(|s| s.starts_with("regex:"))
-            .map(|s| regex::Regex::new(&s.trim_start_matches("regex:")).unwrap())
-            .collect();
-
-        if !allow_rules.is_empty() {
-            node_and_rule_class.iter().for_each(|(node, class)| {
-                if !allow_rule_strs.contains(&class.as_str())
-                    && !allow_rule_regexes.iter().any(|r| r.is_match(class))
-                {
-                    graph.get_node_id(node).map(|id| {
-                        skip_node_ids.insert((id, class));
-                    });
-                }
-            });
-        }
-    }
-
-    if !args.block_rules.is_empty() {
-        let block_rules: Vec<String> = std::fs::read_to_string(&args.block_rules)
-            .unwrap_or_default()
-            .lines()
-            .map(|line| line.trim().to_string())
-            .collect();
-
-        let block_rule_strs: Vec<&str> = block_rules
-            .iter()
-            .filter(|s| !s.starts_with("regex:"))
-            .map(|s| s.as_str())
-            .collect();
-
-        let block_rule_regexes: Vec<regex::Regex> = block_rules
-            .iter()
-            .filter(|s| s.starts_with("regex:"))
-            .map(|s| regex::Regex::new(&s.trim_start_matches("regex:")).unwrap())
-            .collect();
-
-        if !block_rules.is_empty() {
-            node_and_rule_class.iter().for_each(|(node, class)| {
-                if block_rule_strs.contains(&class.as_str())
-                    || block_rule_regexes.iter().any(|r| r.is_match(class))
-                {
-                    graph.get_node_id(node).map(|id| {
-                        skip_node_ids.insert((id, class));
-                    });
-                }
-            });
-        }
-    }
-
-    println!(
-        "Skipping nodes: {:#?}",
-        skip_node_ids
-            .iter()
-            .map(|(id, class)| { (&graph.nodes[*id].label, class) })
-            .collect::<Vec<_>>()
+            .map(|(node, class)| NodeInfo {
+                rule_class: class.as_str(),
+                target: node.as_str(),
+            })
+            .collect::<Vec<_>>()[..],
     );
+    let to_filter = config.to.to_executable_filter();
+    let skip_to_node_labels = to_filter.get_skip_nodes(
+        &node_and_rule_class
+            .iter()
+            .map(|(node, class)| NodeInfo {
+                rule_class: class.as_str(),
+                target: node.as_str(),
+            })
+            .collect::<Vec<_>>()[..],
+    );
+
+    println!("Skipping `from` nodes: {:#?}", skip_from_node_labels);
+    println!("Skipping `to` nodes: {:#?}", skip_to_node_labels);
 
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
@@ -193,7 +151,22 @@ fn run_reducer_test(
         disable_optimization_if_transitive_deps_exists: !args
             .enable_optimization_if_transitive_deps_exists,
 
-        skip_node_ids: skip_node_ids.iter().map(|(id, _class)| *id).collect(),
+        skip_from_node_ids: skip_from_node_labels
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
+        skip_to_node_ids: skip_to_node_labels
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
     };
     let mut ctx = reducer.reduce(graph, &settings).unwrap();
 

@@ -1,0 +1,5 @@
+[from.block]
+rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+
+[to.block]
+rule_classes = ['regex:_import$']

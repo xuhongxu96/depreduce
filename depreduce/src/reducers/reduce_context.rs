@@ -23,7 +23,8 @@ pub struct ReduceSettings<'a> {
     pub disable_topological_sorting: bool,
     pub disable_optimization_if_transitive_deps_exists: bool,
 
-    pub skip_node_ids: HashSet<NodeId>,
+    pub skip_from_node_ids: HashSet<NodeId>,
+    pub skip_to_node_ids: HashSet<NodeId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -162,9 +163,22 @@ impl<'a> ReduceContext<'a> {
         let label = || self.graph.nodes[node_id].label.clone();
         let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
-        if self.settings.skip_node_ids.contains(&dependent_node_id) {
+        if self
+            .settings
+            .skip_from_node_ids
+            .contains(&dependent_node_id)
+        {
             self.log(&format!(
-                "  Skipping removing {} -> {} (skipped by rules in settings)\n",
+                "  Skipping removing {} -> {} (skipped by `from` rules in config)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        if self.settings.skip_to_node_ids.contains(&node_id) {
+            self.log(&format!(
+                "  Skipping removing {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
                 label()
             ));
@@ -189,9 +203,22 @@ impl<'a> ReduceContext<'a> {
             }
         }
 
-        if self.settings.skip_node_ids.contains(&dependent_node_id) {
+        if self
+            .settings
+            .skip_from_node_ids
+            .contains(&dependent_node_id)
+        {
             self.log(&format!(
-                "  Skipping adding {} -> {} (skipped by rules in settings)\n",
+                "  Skipping adding {} -> {} (skipped by `from` rules in config)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        if self.settings.skip_to_node_ids.contains(&node_id) {
+            self.log(&format!(
+                "  Skipping adding {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
                 label()
             ));
@@ -532,7 +559,8 @@ mod tests {
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
-            skip_node_ids: HashSet::new(),
+            skip_from_node_ids: HashSet::new(),
+            skip_to_node_ids: HashSet::new(),
         };
 
         let ctx = ReduceContext::new(graph, &settings);

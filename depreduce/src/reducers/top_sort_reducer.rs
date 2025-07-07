@@ -360,7 +360,8 @@ pub(crate) mod tests {
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
-            skip_node_ids: HashSet::new(),
+            skip_from_node_ids: HashSet::new(),
+            skip_to_node_ids: HashSet::new(),
         };
         additional_settings(&mut settings);
 
