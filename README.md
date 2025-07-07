@@ -452,6 +452,39 @@ In terms of efficiency, because we minimize the rebuild cost in topological orde
 try to remove edges for a node and trigger a rebuild, we have already minimized all its
 dependents, which means the incremental rebuild can be done as fast as we can expect.
 
+### How to Avoid Unexpected Architectural Changes
+
+#### Missing Direct Dependencies
+
+See [Bazel - Dependencies](https://bazel.build/concepts/dependencies#actual-and-declared-dependencies) for an example of the hazard
+introduced by missing direct dependencies.
+
+Because our approach will try to remove every edge in the dependency graph,
+it will remove the dependencies that can be accessed from transitive
+dependencies, even if these dependencies are directly used by the current target.
+
+This won't be a big issue, since if someone did refactor the code and
+break the dependencies, the build will be broken and developers can
+locate and fix the issue easily. However, it still can be an unexpected
+architectural change as well as a regression in the build code, which makes
+the dependency reduction result hard to be accepted.
+
+To mitigate this issue, we provide an option to check an additional condition
+before we try to remove the edge $n_j \rightarrow n_i$:
+If $n_i \in \text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$, 
+which means even if we removed $n_j \rightarrow n_i$, $n_j$ still transitively depends on $n_i$,
+let's just keep this edge and skip the following steps.
+
+As we considered the dependents $n_j$ in reverse topological order, 
+all $\text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$
+are determined. Thus, we can still finish the optimization process in one pass.
+
+#### Rules that Should Remain Untouched
+
+We support allowlist and blocklist where users can specify texts or regexes to match rules. Only dependencies declared via allowed rules can be modified.
+
+See [blockrules.txt](blockrules.txt) as an example.
+
 ## Implementation
 
 ### Static Dependency Analysis via [`depreduce`]
