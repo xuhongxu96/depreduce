@@ -116,7 +116,7 @@ fn calculate_transitive_deps(graph: &DependencyGraph) -> Vec<HashSet<NodeId>> {
         let mut deps = HashSet::new();
         if let Some(out_edges) = graph.node2out_edges.get(&node_id) {
             for (&dep_node_id, _) in out_edges {
-                deps.insert(dep_node_id);
+                // we do not consider the direct deps as transitive deps
                 deps.extend(&transitive_deps[dep_node_id]);
             }
         }
