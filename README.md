@@ -525,9 +525,9 @@ See [depreduce.toml](depreduce.toml) as a real example.
 
 ## Implementation
 
-### Static Dependency Analysis via [`depreduce`]
+### Dependency Analysis via [`depreduce`]
 
-[`depreduce`] is a novel tool for static dependency analysis and reduction proposed by us.
+[`depreduce`] is a novel tool for dependency analysis and reduction proposed by us.
 
 It will use a custom build script as the test oracle, and try to
 reduce dependencies in the approach we proposed above.
