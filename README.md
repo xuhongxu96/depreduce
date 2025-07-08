@@ -473,7 +473,7 @@ To mitigate this issue, we provide an option to check an additional condition
 before we try to remove the edge $n_j \rightarrow n_i$:
 If $n_i \in \text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$, 
 which means even if we removed $n_j \rightarrow n_i$, $n_j$ still transitively depends on $n_i$ and the rebuild cost won't be reduced.
-Let's just keep this edge and skip the next steps.
+Let's just keep this edge.
 
 As we considered the dependents $n_j$ in reverse topological order, 
 all $\text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$
