@@ -5,43 +5,41 @@ use crate::graph::{DependencyGraph, NodeId};
 pub struct RebuildCostCalculator<'a> {
     graph: &'a DependencyGraph,
 
-    nodes_to_rebuild_cache: HashMap<NodeId, HashSet<NodeId>>,
+    nodes_to_rebuild_cache: Vec<Option<HashSet<NodeId>>>,
 }
 
 impl<'a> RebuildCostCalculator<'a> {
     pub fn new(graph: &'a DependencyGraph) -> Self {
         RebuildCostCalculator {
             graph,
-            nodes_to_rebuild_cache: HashMap::new(),
+            nodes_to_rebuild_cache: vec![None; graph.nodes.len()],
         }
     }
 
     fn cache_nodes_to_rebuild(&mut self, node_id: NodeId) {
         let mut nodes_to_rebuild = HashSet::new();
 
-        if !nodes_to_rebuild.contains(&node_id) {
+        if self.nodes_to_rebuild_cache[node_id].is_none() {
             if let Some(dependencies) = self.graph.get_in_edges(node_id) {
                 for (dependent_node_id, _) in dependencies {
                     nodes_to_rebuild.insert(*dependent_node_id);
                     self.cache_nodes_to_rebuild(*dependent_node_id);
                     nodes_to_rebuild.extend(
-                        self.nodes_to_rebuild_cache
-                            .get(dependent_node_id)
+                        self.nodes_to_rebuild_cache[*dependent_node_id]
+                            .as_ref()
                             .unwrap()
                             .iter(),
                     );
                 }
             }
+            self.nodes_to_rebuild_cache[node_id] = Some(nodes_to_rebuild);
         }
-
-        self.nodes_to_rebuild_cache
-            .insert(node_id, nodes_to_rebuild);
     }
 
     pub fn calculate_rebuild_cost(&mut self, node_id: NodeId) -> usize {
         self.cache_nodes_to_rebuild(node_id);
 
-        let nodes_to_rebuild = self.nodes_to_rebuild_cache.get(&node_id).unwrap();
+        let nodes_to_rebuild = self.nodes_to_rebuild_cache[node_id].as_ref().unwrap();
         nodes_to_rebuild.len()
     }
 
@@ -72,9 +70,8 @@ mod tests {
         let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
         assert_eq!(5, calculator.calculate_rebuild_cost(a_cpp_node_id));
 
-        let mut rebuild_nodes: Vec<_> = calculator
-            .nodes_to_rebuild_cache
-            .get(&a_cpp_node_id)
+        let mut rebuild_nodes: Vec<_> = calculator.nodes_to_rebuild_cache[a_cpp_node_id]
+            .as_ref()
             .unwrap()
             .iter()
             .copied()
@@ -102,9 +99,8 @@ mod tests {
         let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
         assert_eq!(4, calculator.calculate_rebuild_cost(a_cpp_node_id));
 
-        let mut rebuild_nodes: Vec<_> = calculator
-            .nodes_to_rebuild_cache
-            .get(&a_cpp_node_id)
+        let mut rebuild_nodes: Vec<_> = calculator.nodes_to_rebuild_cache[a_cpp_node_id]
+            .as_ref()
             .unwrap()
             .iter()
             .copied()

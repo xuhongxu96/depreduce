@@ -94,6 +94,7 @@ fn run_reducer_test(
 
     let query = parse_bazel_xml(xml).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
+    println!("Parsed dep graph");
     let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
     println!("Original rebuild cost: {}", original_cost);
 
