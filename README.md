@@ -472,8 +472,8 @@ the dependency reduction result hard to be accepted.
 To mitigate this issue, we provide an option to check an additional condition
 before we try to remove the edge $n_j \rightarrow n_i$:
 If $n_i \in \text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$, 
-which means even if we removed $n_j \rightarrow n_i$, $n_j$ still transitively depends on $n_i$,
-let's just keep this edge and skip the following steps.
+which means even if we removed $n_j \rightarrow n_i$, $n_j$ still transitively depends on $n_i$ and the rebuild cost won't be reduced.
+Let's just keep this edge and skip the next steps.
 
 As we considered the dependents $n_j$ in reverse topological order, 
 all $\text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$
@@ -482,11 +482,46 @@ are determined. Thus, we can still finish the optimization process in one pass.
 As a bonus, because we have less edges to remove, the rebuild times are reduced, and the optimization
 can be done faster.
 
-#### Rules that Should Remain Untouched
+#### Configuration of Allowlist/Blocklist for Target Nodes
 
-We support allowlist and blocklist where users can specify texts or regexes to match rules. Only dependencies declared via allowed or not-blocked rules can be modified.
+We support allowlist and blocklist where users can specify texts or regexes to match nodes. 
 
-See [blockrules.txt](blockrules.txt) as an example.
+Allowlist and blocklist can be set for both `from` and `to` nodes.
+Only when both `from` and `to` nodes are allowed or not blocked, can an edge from `from` node to `to` node be added or removed.
+
+If allowlist is specified, only nodes matched by allowlist will be considered.
+If blocklist is specified, nodes matched by blocklist will not be considered.
+If both allowlist and blocklist is specified, only nodes that matched by allowlist
+and not matched by blocklist will be considered.
+
+There are 2 fields of nodes can be matched: `rule class` and `target name`.
+You can specify the matching rules via `rule_classes` and `target_names`
+fields respectively in an allowlist or blocklist.
+For `target name`, please do use the fully-qualified target label starting 
+from `//` or `@`.
+
+Matching rules for `rule_classes` and `target_names` are specified as a list
+of strings, each element of which can be either a string for exact match,
+or a regex pattern prefixed with `regex:` for regex match.
+
+An example config is as follows:
+
+```toml
+[from.allow]
+rule_classes = ["java_import", "regex:^py_"]
+target_names = ["//main", "regex:test$"]
+
+[from.block]
+# ...
+
+[to.allow]
+# ...
+
+[to.block]
+# ...
+```
+
+See [depreduce.toml](depreduce.toml) as a real example.
 
 ## Implementation
 
