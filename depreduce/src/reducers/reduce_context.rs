@@ -379,6 +379,10 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn try_build(&mut self) -> Result<String, std::io::Error> {
+        self.log(&format!(
+            "  Running build command: {} (cwd: {})\n",
+            self.settings.build_command, self.settings.cwd
+        ));
         let mut process = Command::new("/bin/bash")
             .arg(&self.settings.build_command)
             .current_dir(&self.settings.cwd)
@@ -414,23 +418,25 @@ impl<'a> ReduceContext<'a> {
             return output;
         });
 
-        self.attempts
-            .last_mut()
-            .unwrap()
-            .ops
-            .push(Operation::Build(BuildOperation {
-                exit_code: exit.code().unwrap_or(-1),
-                stdout: if self.settings.save_build_log {
-                    stdout.unwrap_or_default()
-                } else {
-                    String::new()
-                },
-                stderr: if self.settings.save_build_log {
-                    stderr_str
-                } else {
-                    String::new()
-                },
-            }));
+        if !self.attempts.is_empty() {
+            self.attempts
+                .last_mut()
+                .unwrap()
+                .ops
+                .push(Operation::Build(BuildOperation {
+                    exit_code: exit.code().unwrap_or(-1),
+                    stdout: if self.settings.save_build_log {
+                        stdout.unwrap_or_default()
+                    } else {
+                        String::new()
+                    },
+                    stderr: if self.settings.save_build_log {
+                        stderr_str
+                    } else {
+                        String::new()
+                    },
+                }));
+        }
 
         if exit.success() {
             return Ok(format!("Build succeeded"));

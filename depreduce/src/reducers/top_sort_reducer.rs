@@ -298,6 +298,16 @@ impl TopSortReducer {
             ));
         }
 
+        match ctx.try_build() {
+            Ok(status) => {
+                ctx.log(&format!("  Triage build: {}\n", status));
+            }
+            Err(e) => {
+                ctx.log(&format!("  Triage build failed: {}\n", e));
+                return Err(format!("Triage build failed: {}\n", e));
+            }
+        }
+
         for (i, &node_id) in sorted_nodes.iter().enumerate() {
             ctx.log(&format!(
                 "Processing node: {} ({}/{})\n",
