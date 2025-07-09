@@ -78,7 +78,6 @@ struct Args {
 }
 
 fn run_reducer_test(
-    xml: &str,
     workspace_root: String,
     build_script: String,
     args: &Args,
@@ -92,7 +91,8 @@ fn run_reducer_test(
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
 
-    let query = parse_bazel_xml(xml).unwrap();
+    let xml_str = get_bazel_query(&args.workspace);
+    let query = parse_bazel_xml(&xml_str).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
     println!("Parsed dep graph");
     let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
@@ -181,9 +181,15 @@ fn run_reducer_test(
 
     let attempts = ctx.get_attempts().to_vec();
 
-    let new_cost = RebuildCostCalculator::new(&ctx.graph).calculate_rebuild_cost_sum();
+    // Recalculate the rebuild cost after reduction
+    let new_xml_str = get_bazel_query(&args.workspace);
+    let new_query = parse_bazel_xml(&new_xml_str).unwrap();
+    let new_graph = new_query.to_dep_graph(args.deps_only).unwrap();
+    let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 
+    // But we still want to return the original graph,
+    // because the reduction attempts are based on the original graph.
     (ctx.graph, attempts)
 }
 
@@ -208,10 +214,7 @@ fn main() {
         exit(1);
     }
 
-    let xml_str = get_bazel_query(&args.workspace);
-
     let (graph, attempts) = run_reducer_test(
-        &xml_str,
         Path::new(&args.workspace)
             .canonicalize()
             .unwrap()
