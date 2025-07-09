@@ -100,6 +100,7 @@ pub struct ReduceContext<'a> {
     history: HashMap<String, String>,
     transitive_deps: Vec<HashSet<NodeId>>,
     transitive_without_direct_deps: Vec<HashSet<NodeId>>,
+    added_deps: HashSet<(NodeId, NodeId)>, // src -> dep
 
     current_node_id: Option<NodeId>,
     dependent_candidates: BinaryHeap<(usize, NodeId)>,
@@ -146,6 +147,7 @@ impl<'a> ReduceContext<'a> {
             history: HashMap::new(),
             transitive_deps,
             transitive_without_direct_deps,
+            added_deps: HashSet::new(),
             current_node_id: None,
             dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
@@ -267,6 +269,7 @@ impl<'a> ReduceContext<'a> {
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
             calculate_transitive_deps(&self.graph);
+        self.added_deps.insert((dependent_node_id, node_id));
 
         self.log(
             format!(
@@ -301,6 +304,7 @@ impl<'a> ReduceContext<'a> {
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
             calculate_transitive_deps(&self.graph);
+        self.added_deps.remove(&(dependent_node_id, node_id));
 
         self.log(
             format!(
@@ -526,6 +530,10 @@ impl<'a> ReduceContext<'a> {
 
     pub fn get_attempts(&self) -> &[ReductionAttempt] {
         &self.attempts
+    }
+
+    pub fn is_added_dep(&self, dependent_node_id: NodeId, node_id: NodeId) -> bool {
+        self.added_deps.contains(&(dependent_node_id, node_id))
     }
 
     pub fn has_transitive_deps(

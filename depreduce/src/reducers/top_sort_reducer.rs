@@ -208,6 +208,7 @@ impl TopSortReducer {
         }
 
         if ctx.settings.disable_optimization_if_transitive_deps_exists
+            && !ctx.is_added_dep(dependent_node_id, node_id)
             && ctx.has_transitive_deps(dependent_node_id, node_id, false)
         {
             ctx.log("  Skipping removal because disable_optimization_if_transitive_deps_exists was set and transitive deps exist\n");
