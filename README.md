@@ -452,6 +452,118 @@ In terms of efficiency, because we minimize the rebuild cost in topological orde
 try to remove edges for a node and trigger a rebuild, we have already minimized all its
 dependents, which means the incremental rebuild can be done as fast as we can expect.
 
+### Is It the Optimal Strategy?
+
+To minimize each $R_i$, we did dependency lifting, dependency flattening and edge removal.
+Let's see if it can help to achieve the minimal dependents of $R_i$.
+
+#### Dependency Changes
+
+Suppose $\text{deps}'(n_j)$ is dependencies of $n_j$ after removal.
+
+If we remove $n_j \rightarrow n_i$, $\text{deps}(n_j) = \text{deps}'(n_j) \cup \{n_i\}$. 
+
+For $\forall n_k \in \text{deps}(n_j), \text{deps}_{\text{trans}}(n_k)$ has no change.
+
+Then, we have:
+
+```math
+\begin{split}
+\text{deps}_{\text{trans}}(n_j) &= \text{deps}(n_j) \cup \bigcup_{n_k \in \text{deps}(n_j)} \text{deps}_{\text{trans}}(n_k) \\
+&= \text{deps}'(n_j) \cup \{n_i\} \cup \bigcup_{n_k \in \text{deps}'(n_j) \cup \{n_i\}} \text{deps}_{\text{trans}}'(n_k) \\
+&= \text{deps}'(n_j) \cup \{n_i\} \cup \bigcup_{n_k \in \text{deps}'(n_j)} \text{deps}_{\text{trans}}'(n_k) \cup \text{deps}_{\text{trans}}(n_i) \\
+&= \text{deps}_{\text{trans}}'(n_j) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i)
+\end{split}
+```
+
+For $\forall n_k$, such that $n_j \in \text{deps}(n_k)$,
+
+```math
+\begin{split}
+\text{deps}_{\text{trans}}(n_k) &= \text{deps}(n_k) \cup \bigcup_{n_l \in \text{deps}(n_k)} \text{deps}_{\text{trans}}(n_l) \\
+&= \text{deps}(n_k) \cup \bigcup_{n_l \in \text{deps}(n_k)} \text{deps}_{\text{trans}}(n_l) \cup \text{deps}_{\text{trans}}(n_j) \\
+&= \text{deps}'(n_k) \cup \bigcup_{n_l \in \text{deps}'(n_k)} \text{deps}_{\text{trans}}'(n_l) \cup \text{deps}_{\text{trans}}'(n_j) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i) \\
+&= \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i) 
+\end{split}
+```
+
+For $\forall n_k$, such that $n_j \in \text{deps}_{\text{trans}}(n_k)$, 
+similar equation is still established, which can be proved by induction.
+
+Notice that $n_j \in \text{deps}_{\text{trans}}(n_k)$ is equivalent to $n_k \in \text{dependents}_{\text{trans}}(n_j)$. 
+Thus, we have:
+
+```math
+\text{deps}_{\text{trans}}(n_k) = \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i), \qquad \forall n_k \in \text{dependents}_{\text{trans}}(n_j)
+```
+
+
+#### Cause to Build Failure
+
+To ensure a successful build, the following condition must be satisfied:
+
+```math
+\forall i, \quad \text{deps}_{\text{real}}(n_i) \subseteq \text{deps}_{\text{trans}}(n_i)
+```
+
+We already know that only $\text{deps}_{\text{trans}}(n_j)$ and $\text{deps}_{\text{trans}}(n_k)$ such that $n_k \in \text{dependents}_{\text{trans}}(n_j)$ may have changes:
+
+```math
+\begin{align*}
+\text{deps}(n_j) &= \text{deps}'(n_j) \cup \{n_i\} \\
+\text{deps}_{\text{trans}}(n_k) &= \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i), \qquad \forall n_k \in \text{dependents}_{\text{trans}}(n_j)
+\end{align*}
+```
+
+If the build fails after edge removal, it means $n_i \in \text{deps}_{\text{real}}(n_j)$, or  $\text{deps}_{\text{real}}(n_k)$
+has an element that $\text{deps}_{\text{trans}}'(n_k)$ is missing:
+
+```math
+\begin{align}
+n_i \in \text{deps}_{\text{real}}(n_j) & \qquad \text{or}\\
+\text{deps}_{\text{real}}(n_k) \cap \left(\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)\right) \neq \emptyset & \qquad \exists n_k \in \text{dependents}_{\text{trans}}(n_j) 
+\end{align}
+```
+
+For $(1)$, we should not remove the edge because the dependency is really required.
+Now, we want to see whether it is still possible to remove the edge,
+if we can resolve the issues revealed by $(2)$.
+
+#### After Dependency Lifting and Flattening
+
+Suppose $\text{deps}^{\text{lift}}(n_i)$ is dependencies of $n_i$ after dependency lifting,
+and $\text{deps}^{\text{flatten}}(n_i)$ is dependencies of $n_i$ after dependency flattening.
+
+Dependency lifting will add edges
+$n_k \rightarrow n_i$ for every $n_k \in \text{dependents}(n_j)$,
+which means:
+
+```math
+\text{deps}_{\text{trans}}^{\text{lift}}(n_k) = \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\}
+```
+
+Dependency flattening copies all dependencies of $n_i$ to $n_j$, i.e., will
+add edges $n_j \rightarrow n_k$ for every $n_k \in \text{deps}(n_i)$, which means:
+
+```math
+\begin{split}
+\text{deps}^{\text{flatten}}(n_j) &= \text{deps}'(n_j) \cup \text{deps}(n_i) \\
+\Rightarrow \text{deps}_{\text{trans}}^{\text{flatten}}(n_j) &= \text{deps}_{\text{trans}}'(n_j) \cup \text{deps}_{\text{trans}}(n_i) \\
+\Rightarrow \text{deps}_{\text{trans}}^{\text{flatten}}(n_k) &= \text{deps}_{\text{trans}}'(n_k) \cup \text{deps}_{\text{trans}}(n_i), \qquad \forall n_k \in \text{dependents}(n_j) \\
+\end{split}
+```
+
+As you can see, after dependency lifting and flattening, the potential missing
+elements in $\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)$ are both re-added. 
+Now, the only cause to build failure will be $n_i \in \text{deps}_{\text{real}}(n_j)$, i.e. $n_j$ directly depends on $n_i$, in which case we definitely don't want to remove the edge.
+
+#### Summary
+
+After dependency lifting and flattening, we guarantee that the only cause to
+build failure is that there exists a direct dependency. Otherwise, the 
+dependency edge will be removed. So, we can ensure our removing strategy
+can lead to an optimal dependency graph where each node has the least number of dependents.
+
 ### How to Avoid Unexpected Architectural Changes
 
 #### Missing Direct Dependencies
