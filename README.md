@@ -469,11 +469,11 @@ locate and fix the issue easily. However, it still can be an unexpected
 architectural change as well as a regression in the build code, which makes
 the dependency reduction result hard to be accepted.
 
-To mitigate this issue, we provide an option to check an additional condition
+To mitigate this issue, we will by default check an additional condition
 before we try to remove the edge $n_j \rightarrow n_i$:
 If $n_i \in \text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$, 
 which means even if we removed $n_j \rightarrow n_i$, $n_j$ still transitively depends on $n_i$ and the rebuild cost won't be reduced.
-Let's just keep this edge.
+Let's just keep this edge unless it is a newly-added edge by dependency lifting or flattening.
 
 As we considered the dependents $n_j$ in reverse topological order, 
 all $\text{deps}_{\text{trans}}(n_k)$ where $n_k \in \text{deps}(n_j)$
