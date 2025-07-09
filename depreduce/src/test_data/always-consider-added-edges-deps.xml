@@ -1,0 +1,98 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<query version="2">
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/liba/ClassA.kt:1:1" name="//liba:ClassA.kt">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="kt_jvm_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/liba/BUILD:3:15" name="//liba:liba">
+        <string name="name" value="liba"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="srcs">
+            <label value="//liba:ClassA.kt"/>
+        </list>
+        <rule-input name="//liba:ClassA.kt"/>
+        <rule-output name="//liba:liba.jar"/>
+        <rule-output name="//liba:liba-sources.jar"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/libb/ClassB.kt:1:1" name="//libb:ClassB.kt">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="kt_jvm_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/libb/BUILD:3:15" name="//libb:libb">
+        <string name="name" value="libb"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="srcs">
+            <label value="//libb:ClassB.kt"/>
+        </list>
+        <list name="deps">
+            <label value="//liba:liba"/>
+        </list>
+        <rule-input name="//liba:liba"/>
+        <rule-input name="//libb:ClassB.kt"/>
+        <rule-output name="//libb:libb.jar"/>
+        <rule-output name="//libb:libb-sources.jar"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/libc/ClassC.kt:1:1" name="//libc:ClassC.kt">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="kt_jvm_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/libc/BUILD:3:15" name="//libc:libc">
+        <string name="name" value="libc"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+        <list name="srcs">
+            <label value="//libc:ClassC.kt"/>
+        </list>
+        <list name="deps">
+            <label value="//liba:liba"/>
+            <label value="//libb:libb"/>
+        </list>
+        <rule-input name="//liba:liba"/>
+        <rule-input name="//libb:libb"/>
+        <rule-input name="//libc:ClassC.kt"/>
+        <rule-output name="//libc:libc.jar"/>
+        <rule-output name="//libc:libc-sources.jar"/>
+    </rule>
+    <source-file location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/main/Main.kt:1:1" name="//main:Main.kt">
+        <visibility-label name="//visibility:private"/>
+    </source-file>
+    <rule class="java_binary" location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/main/BUILD:12:12" name="//main:main">
+        <string name="name" value="main"/>
+        <string name="generator_name" value="main"/>
+        <string name="generator_function" value="java_binary"/>
+        <string name="generator_location" value="main/BUILD:12:12"/>
+        <list name="runtime_deps">
+            <label value="//main:main_lib"/>
+        </list>
+        <label name="launcher" value="@bazel_tools//tools/jdk:launcher_flag_alias"/>
+        <string name="main_class" value="main.Main"/>
+        <rule-input name="//main:main_lib"/>
+        <rule-input name="@bazel_tools//tools/jdk:launcher_flag_alias"/>
+        <rule-output name="//main:main.jar"/>
+        <rule-output name="//main:main-src.jar"/>
+        <rule-output name="//main:main_deploy-src.jar"/>
+        <rule-output name="//main:main_deploy.jar"/>
+        <rule-output name="//main:main_deploy.jar.unstripped"/>
+    </rule>
+    <rule class="kt_jvm_library" location="/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges/main/BUILD:4:15" name="//main:main_lib">
+        <string name="name" value="main_lib"/>
+        <list name="srcs">
+            <label value="//main:Main.kt"/>
+        </list>
+        <list name="deps">
+            <label value="//libc:libc"/>
+        </list>
+        <rule-input name="//libc:libc"/>
+        <rule-input name="//main:Main.kt"/>
+        <rule-output name="//main:main_lib.jar"/>
+        <rule-output name="//main:main_lib-sources.jar"/>
+    </rule>
+    <rule class="launcher_flag_alias" location="/data/h445xu/.cache/bazel/_bazel_hongxu/4f57b495cdd99d487c0cb0809e563225/external/bazel_tools/tools/jdk/BUILD:196:20" name="@bazel_tools//tools/jdk:launcher_flag_alias">
+        <string name="name" value="launcher_flag_alias"/>
+        <list name="visibility">
+            <label value="//visibility:public"/>
+        </list>
+    </rule>
+</query>

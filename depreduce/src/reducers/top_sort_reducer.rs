@@ -478,4 +478,19 @@ pub(crate) mod tests {
             },
         );
     }
+
+    #[test]
+    fn test_always_consider_added_edges() {
+        run_reducer_test(
+            "always-consider-added-edges-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/always-consider-added-edges",
+            "../../../examples/always-consider-added-edges",
+            "build.sh",
+            "reducers/always-consider-added-edges",
+            |_| {},
+            |settings| {
+                settings.disable_optimization_if_transitive_deps_exists = true;
+            },
+        );
+    }
 }
