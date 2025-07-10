@@ -51,7 +51,7 @@ testing method to Bazel build system.
 However, in some cases, such as using Java, if you change a library,
 and compile an executable depending on this library, even though the executable 
 does not use the library in the source code, as long as you specify the dependency 
-in the build script, the executable jar will be repackaged, and of course, modified.
+in the build script, the executable jar will be repackaged, and of course, touched.
 
 Same thing happens for C/C++, while linking `liba.o` and `libb.o` to `main`, 
 even though `main` does not need `libb` in its source code. 
@@ -59,7 +59,7 @@ Thus, the original [`mkcheck`] cannot detect redundant dependency very well.
 
 To mitigate this issue, we detect file changes by SHA256 instead of the timestamp. This is feasible
 because we don't just touch the file but modify the file using custom touchers. And in this way,
-we can ensure the modified files are truly changed.
+we can ensure the touched files are truly changed.
 
 Nevertheless, it can miss some dependencies too. When archiving a
 static library depending on other static libraries, it won't actually package those 
