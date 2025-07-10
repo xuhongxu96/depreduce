@@ -31,6 +31,9 @@ struct Args {
 
     #[arg(short, long, default_value = "all")]
     touchers: String,
+
+    #[arg(long, default_value = "false")]
+    use_timestamp: bool,
 }
 
 fn enumerate_files(path: &str, ignore: bool) -> HashSet<String> {
@@ -87,7 +90,7 @@ fn main() {
         touchers,
     };
 
-    match artifacts.fuzz(true) {
+    match artifacts.fuzz(!args.use_timestamp) {
         Ok(res) => {
             let content = to_json_lines(&res.to_sorted_vec());
             std::fs::write(&args.output, content).expect("Failed to write output file");
