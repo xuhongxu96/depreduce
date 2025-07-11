@@ -226,8 +226,8 @@ Let the rebuild set of $n_i$ represented by $R_i$ denote the nodes (excluding $n
 
 ```math
 \begin{aligned}
-R_i &= \text{dependents}_{\text{trans}}(n_i) \setminus n_i \\
-    &= \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \setminus n_j \\
+R_i &= \text{dependents}_{\text{trans}}(n_i) \\
+    &= \text{dependents}(n_i) \cup \bigcup_{n_j \in \text{dependents}(n_i)} \text{dependents}_{\text{trans}}(n_j) \\
     &= \bigcup_{n_j \in \text{dependents}(n_i)} \left(R_j \cup \{n_j\}\right)
 \end{aligned}
 ```
