@@ -148,7 +148,14 @@
                     "kind": "bin"
                 }
             },
-            "args": [],
+            "args": [
+                "-i",
+                "examples/simple-cxx-project/strace.log",
+                "-c",
+                "examples/simple-cxx-project",
+                "-o",
+                "a.log"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {

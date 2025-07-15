@@ -22,11 +22,14 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
+    let cwd = std::fs::canonicalize(&args.cwd)
+        .unwrap_or_else(|_| panic!("Failed to canonicalize cwd: {}", args.cwd));
+
     let state = analyze(
         parse_syscall_desps(combine_syscall_lines(parse_strace_from_path(
             args.input.as_str(),
         ))),
-        args.cwd.as_str(),
+        cwd.to_str().unwrap(),
     );
 
     let dependency_extractor = extract_dependencies(&state);
