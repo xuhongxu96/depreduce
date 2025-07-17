@@ -90,8 +90,10 @@ impl DependencyExtractor {
             self.cache_final_dependencies(*index, &paths);
         }
         self.attentioned_paths = paths;
-        self.final_dep_caches
-            .retain(|k, v| v.len() > 1 && self.attentioned_paths.contains(k));
+
+        self.final_dep_caches.retain(|k, v| {
+            v.difference(&HashSet::from([*k])).count() > 0 && self.attentioned_paths.contains(k)
+        });
     }
 
     pub fn get_dependencies(&self) -> DependencyMap {
@@ -222,9 +224,16 @@ pub fn extract_dependencies(state: &State) -> DependencyExtractor {
             continue; // skip bazel external paths
         }
 
-        attentioned_paths.insert(path_index_in_graph);
-
         let path_index_in_vfs = state.vfs.get_index_by_path(path).unwrap();
+        if state
+            .vfs
+            .get_children(path_index_in_vfs)
+            .map_or(0, |c| c.len())
+            == 0
+        {
+            attentioned_paths.insert(path_index_in_graph);
+        }
+
         let children = state.vfs.get_children(path_index_in_vfs).unwrap();
         for (_, child_index) in children {
             if let Ok(child_path) = state.vfs.resolve_link_path(*child_index) {
