@@ -515,19 +515,15 @@ We already know that only $\text{deps}_{\text{trans}}(n_j)$ and $\text{deps}_{\t
 \end{align*}
 ```
 
-If the build fails after edge removal, it means $n_i \in \text{deps}_{\text{real}}(n_j)$, or  $\text{deps}_{\text{real}}(n_k)$
-has an element that $\text{deps}_{\text{trans}}'(n_k)$ is missing:
+If the build fails after edge removal, it means $\text{deps}_{\text{real}}(n_j)$ or  $\text{deps}_{\text{real}}(n_k)$
+has an element that $\text{deps}_{\text{trans}}'(n_j)$ or $\text{deps}_{\text{trans}}'(n_k)$ is missing:
 
 ```math
 \begin{align}
-n_i \in \text{deps}_{\text{real}}(n_j) & \qquad \text{or}\\
-\text{deps}_{\text{real}}(n_k) \cap \left(\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)\right) \neq \emptyset & \qquad \exists n_k \in \text{dependents}_{\text{trans}}(n_j) 
+\text{deps}_{\text{real}}(n_j) \cap \left(\{n_i\} \cup \text{deps}_{\text{trans}}'(n_i)\right) \neq \emptyset & \\
+\text{deps}_{\text{real}}(n_k) \cap \left(\{n_i\} \cup \text{deps}_{\text{trans}}'(n_i)\right) \neq \emptyset & \qquad \exists n_k \in \text{dependents}_{\text{trans}}(n_j) 
 \end{align}
 ```
-
-For $(1)$, we should not remove the edge because the dependency is really required.
-Now, we want to see whether it is still possible to remove the edge,
-if we can resolve the issues revealed by $(2)$.
 
 #### After Dependency Lifting and Flattening
 
@@ -539,7 +535,7 @@ $n_k \rightarrow n_i$ for every $n_k \in \text{dependents}(n_j)$,
 which means:
 
 ```math
-\text{deps}_{\text{trans}}^{\text{lift}}(n_k) = \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\}
+\text{deps}_{\text{trans}}^{\text{lift}}(n_k) = \text{deps}_{\text{trans}}'(n_k) \cup \{n_i\} \cup \text{deps}_{\text{trans}}(n_i)
 ```
 
 Dependency flattening copies all dependencies of $n_i$ to $n_j$, i.e., will
@@ -549,12 +545,12 @@ add edges $n_j \rightarrow n_k$ for every $n_k \in \text{deps}(n_i)$, which mean
 \begin{split}
 \text{deps}^{\text{flatten}}(n_j) &= \text{deps}'(n_j) \cup \text{deps}(n_i) \\
 \Rightarrow \text{deps}_{\text{trans}}^{\text{flatten}}(n_j) &= \text{deps}_{\text{trans}}'(n_j) \cup \text{deps}_{\text{trans}}(n_i) \\
-\Rightarrow \text{deps}_{\text{trans}}^{\text{flatten}}(n_k) &= \text{deps}_{\text{trans}}'(n_k) \cup \text{deps}_{\text{trans}}(n_i), \qquad \forall n_k \in \text{dependents}(n_j) \\
 \end{split}
 ```
 
 As you can see, after dependency lifting and flattening, the potential missing
-elements in $\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)$ are both re-added. 
+elements in $\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)$ in $(1)$ and $(2)$ are mostly added,
+except ${n_i}$ in $(1)$. 
 Now, the only cause to build failure will be $n_i \in \text{deps}_{\text{real}}(n_j)$, i.e. $n_j$ directly depends on $n_i$, in which case we definitely don't want to remove the edge.
 
 #### Summary
