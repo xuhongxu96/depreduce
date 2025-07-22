@@ -16,10 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        lfs: true
+        submodules: recursive
 
-    - name: LFS
-      run: git lfs pull
-    
     - name: Setup Bazel
       uses: abhinavsingh/setup-bazel@v3
       with:
