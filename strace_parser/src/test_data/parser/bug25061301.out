@@ -1,1 +1,0 @@
-{"Full":{"pid":2964881,"cmd":"cmd","resumed_cmd":null,"syscall":"write","args":"(360, \"CC = gcc\\nCPPFLAGS = -g -O3 -Wall -march=native\\n\\nOBJS = main.o iconv.o naive.o\\n\\nutf8to16: ${OBJS}\\n\\tgcc $^ -o $@\\n\\n.PHONY: clean\\nclean:\\n\\trm -f utf8to16 *.o\\n\", 153)","ret":"153","line_no":1}}

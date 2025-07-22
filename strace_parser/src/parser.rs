@@ -303,7 +303,7 @@ mod tests {
 
     #[test]
     fn test_large_file() {
-        let strace = read_test_data!("strace.log");
+        let strace = read_test_data!("strace-cxx.log");
 
         let res: Vec<_> = parse_strace_from_content(strace.as_bytes()).collect();
         let content = to_json_lines(&res);
