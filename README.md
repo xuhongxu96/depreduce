@@ -490,7 +490,7 @@ For $\forall n_k$, such that $n_j \in \text{deps}(n_k)$,
 For $\forall n_k$, such that $n_j \in \text{deps}_{\text{trans}}(n_k)$, 
 similar equation is still established, which can be proved by induction.
 
-Notice that $n_j \in \text{deps}_{\text{trans}}(n_k)$ is equivalent to $n_k \in \text{dependents}_{\text{trans}}(n_j)$. 
+Notice that $`n_j \in \text{deps}_{\text{trans}}(n_k)`$ is equivalent to $`n_k \in \text{dependents}_{\text{trans}}(n_j)`$. 
 Thus, we have:
 
 ```math
@@ -506,7 +506,7 @@ To ensure a successful build, the following condition must be satisfied:
 \forall i, \quad \text{deps}_{\text{real}}(n_i) \subseteq \text{deps}_{\text{trans}}(n_i)
 ```
 
-We already know that only $\text{deps}_{\text{trans}}(n_j)$ and $\text{deps}_{\text{trans}}(n_k)$ such that $n_k \in \text{dependents}_{\text{trans}}(n_j)$ may have changes:
+We already know that only $`\text{deps}_{\text{trans}}(n_j)`$ and $`\text{deps}_{\text{trans}}(n_k)`$ such that $`n_k \in \text{dependents}_{\text{trans}}(n_j)`$ may have changes:
 
 ```math
 \begin{align*}
@@ -515,8 +515,8 @@ We already know that only $\text{deps}_{\text{trans}}(n_j)$ and $\text{deps}_{\t
 \end{align*}
 ```
 
-If the build fails after edge removal, it means $\text{deps}_{\text{real}}(n_j)$ or  $\text{deps}_{\text{real}}(n_k)$
-has an element that $\text{deps}_{\text{trans}}'(n_j)$ or $\text{deps}_{\text{trans}}'(n_k)$ is missing:
+If the build fails after edge removal, it means $`\text{deps}_{\text{real}}(n_j)`$ or  $`\text{deps}_{\text{real}}(n_k)`$
+has an element that $`\text{deps}_{\text{trans}}'(n_j)`$ or $`\text{deps}_{\text{trans}}'(n_k)`$ is missing:
 
 ```math
 \begin{align}
@@ -549,9 +549,9 @@ add edges $n_j \rightarrow n_k$ for every $n_k \in \text{deps}(n_i)$, which mean
 ```
 
 As you can see, after dependency lifting and flattening, the potential missing
-elements in $\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)$ in $(1)$ and $(2)$ are mostly added,
-except ${n_i}$ in $(1)$. 
-Now, the only cause to build failure will be $n_i \in \text{deps}_{\text{real}}(n_j)$, i.e. $n_j$ directly depends on $n_i$, in which case we definitely don't want to remove the edge.
+elements in $`\{n_i\} \cup \text{deps}_{\text{trans}}(n_i)`$ in $`(1)`$ and $`(2)`$ are mostly added,
+except $`\{n_i\}`$ in $`(1)`$. 
+Now, the only cause to build failure will be $`n_i \in \text{deps}_{\text{real}}(n_j)`$, i.e. $n_j$ directly depends on $n_i$, in which case we definitely don't want to remove the edge.
 
 #### Summary
 
