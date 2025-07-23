@@ -147,6 +147,7 @@ fn run_reducer_test(
         cwd: workspace_root,
         save_build_log: true,
 
+        deps_only: args.deps_only,
         disable_dependency_flattening: args.disable_dependency_flattening,
         disable_dependency_flattening_for_alias_targets: !args
             .enable_dependency_flattening_for_alias_targets,

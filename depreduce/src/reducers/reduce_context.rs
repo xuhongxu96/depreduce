@@ -17,6 +17,7 @@ pub struct ReduceSettings<'a> {
     pub save_build_log: bool,
 
     // settings
+    pub deps_only: bool,
     pub disable_dependency_flattening: bool,
     pub disable_dependency_flattening_for_alias_targets: bool,
     pub disable_dependency_lifting: bool,
@@ -181,6 +182,19 @@ impl<'a> ReduceContext<'a> {
         if self.settings.skip_to_node_ids.contains(&node_id) {
             self.log(&format!(
                 "  Skipping removing {} -> {} (skipped by `to` rules in config)\n",
+                dependent_label(),
+                label()
+            ));
+            return false;
+        }
+
+        if self.graph.nodes[dependent_node_id]
+            .props
+            .t
+            .is_alias_target()
+        {
+            self.log(&format!(
+                "  Skipping removing {} -> {} (alias target)\n",
                 dependent_label(),
                 label()
             ));
@@ -568,6 +582,7 @@ mod tests {
             build_command: "bazel build //...".to_string(),
             cwd: ".".to_string(),
             save_build_log: false,
+            deps_only: false,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,

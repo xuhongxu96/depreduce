@@ -24,6 +24,14 @@ impl NodeType {
     pub fn is_alias_target(&self) -> bool {
         matches!(self, NodeType::Target(TargetType { is_alias: true }))
     }
+
+    pub fn is_source(&self) -> bool {
+        matches!(self, NodeType::Source)
+    }
+
+    pub fn is_generated_file(&self) -> bool {
+        matches!(self, NodeType::GeneratedFile)
+    }
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
