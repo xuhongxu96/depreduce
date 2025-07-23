@@ -85,7 +85,7 @@ impl std::fmt::Debug for BazelLabel {
     }
 }
 
-fn split_location(location: &str) -> (String, usize, usize) {
+pub fn split_location(location: &str) -> (String, usize, usize) {
     let parts: Vec<&str> = location.split(':').collect();
     assert_eq!(parts.len(), 3, "Invalid location format: {}", location);
 
