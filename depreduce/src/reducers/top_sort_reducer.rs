@@ -281,7 +281,7 @@ impl TopSortReducer {
 
         let mut ctx = ReduceContext::new(graph, settings);
 
-        let sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
+        let mut sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
             ctx.graph.topsort()
         } else {
             ctx.log("Topological sorting is disabled, using original order.\n");
@@ -293,9 +293,10 @@ impl TopSortReducer {
         ctx.log("Nodes:\n");
         for (i, node_id) in sorted_nodes.iter().enumerate() {
             ctx.log(&format!(
-                "  {}: \t{}\n",
+                "  {}: \t{} ({:?})\n",
                 i,
-                ctx.graph.nodes.get(*node_id).unwrap().label
+                ctx.graph.nodes.get(*node_id).unwrap().label,
+                ctx.graph.nodes.get(*node_id).unwrap().props
             ));
         }
 
@@ -307,6 +308,17 @@ impl TopSortReducer {
                 ctx.log(&format!("  Triage build failed: {}\n", e));
                 return Err(format!("Triage build failed: {}\n", e));
             }
+        }
+
+        if ctx.settings.deps_only {
+            sorted_nodes = sorted_nodes
+                .iter()
+                .filter(|&&node_id| {
+                    !ctx.graph.nodes[node_id].props.t.is_source()
+                        && !ctx.graph.nodes[node_id].props.t.is_generated_file()
+                })
+                .cloned()
+                .collect();
         }
 
         for (i, &node_id) in sorted_nodes.iter().enumerate() {
@@ -366,6 +378,7 @@ pub(crate) mod tests {
                 .to_string(),
             cwd: project_dir.clone(),
             save_build_log: false,
+            deps_only: false,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,

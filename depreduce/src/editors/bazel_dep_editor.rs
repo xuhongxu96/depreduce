@@ -47,10 +47,15 @@ impl BazelLabel {
         };
 
         if label.starts_with("@") {
-            let i = label.find('/').unwrap();
-            let mut res = BazelLabel::parse(&format!("/{}", &label[i + 1..]));
-            res.repo = label[..i].to_string();
-            return res;
+            if let Some(i) = label.find('/') {
+                let mut res = BazelLabel::parse(&format!("/{}", &label[i + 1..]));
+                res.repo = label[..i].to_string();
+                return res;
+            } else {
+                res.repo = label.to_string();
+                res.name = label.strip_prefix("@").unwrap_or(label).to_string();
+                return res;
+            }
         }
 
         if !label.starts_with("//") {

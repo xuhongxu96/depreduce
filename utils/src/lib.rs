@@ -146,6 +146,7 @@ pub fn get_bazel_query(workspace: &str) -> String {
     let mut p = Command::new("bazel")
         .arg("query")
         .arg("deps(//...)")
+        .arg("--keep_going")
         .arg("--notool_deps")
         .arg("--noimplicit_deps")
         .arg("--output")
