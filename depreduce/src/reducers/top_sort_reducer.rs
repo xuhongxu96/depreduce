@@ -384,6 +384,7 @@ pub(crate) mod tests {
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
+            disable_removal_from_alias_targets: true,
             skip_from_node_ids: HashSet::new(),
             skip_to_node_ids: HashSet::new(),
         };

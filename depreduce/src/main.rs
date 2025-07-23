@@ -75,6 +75,13 @@ struct Args {
         help = "Also consider to remove a dependency even if it can still be accessed transitively. Disabled by default to avoid removing direct dependencies."
     )]
     enable_optimization_if_transitive_deps_exists: bool,
+
+    #[arg(
+        long,
+        default_value = "false",
+        help = "Enable removal of alias targets. This is useful when you want to keep the alias targets in the graph"
+    )]
+    enable_removal_from_alias_targets: bool,
 }
 
 fn run_reducer_test(
@@ -155,6 +162,7 @@ fn run_reducer_test(
         disable_topological_sorting: args.disable_topological_sorting,
         disable_optimization_if_transitive_deps_exists: !args
             .enable_optimization_if_transitive_deps_exists,
+        disable_removal_from_alias_targets: !args.enable_removal_from_alias_targets,
 
         skip_from_node_ids: skip_from_node_labels
             .iter()
@@ -175,8 +183,10 @@ fn run_reducer_test(
     };
     let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
-    let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
-    postprocessor.process();
+    if !settings.disable_dependency_flattening_for_alias_targets {
+        let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
+        postprocessor.process();
+    }
 
     println!("End reduction test at {:?}", chrono::offset::Local::now());
 
