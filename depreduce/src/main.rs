@@ -121,6 +121,8 @@ fn run_reducer_test(
                 target: node.as_str(),
             })
             .collect::<Vec<_>>()[..],
+        &graph,
+        &query,
     );
     let to_filter = config.to.to_executable_filter();
     let skip_to_node_labels = to_filter.get_skip_nodes(
@@ -131,6 +133,8 @@ fn run_reducer_test(
                 target: node.as_str(),
             })
             .collect::<Vec<_>>()[..],
+        &graph,
+        &query,
     );
 
     println!("Skipping `from` nodes: {:#?}", skip_from_node_labels);

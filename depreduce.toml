@@ -1,5 +1,7 @@
 [from.block]
 rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+filters = ["no_select"]
 
 [to.block]
 rule_classes = ['regex:_import$']
+filters = ["no_select"]

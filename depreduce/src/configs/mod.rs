@@ -1,7 +1,15 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use regex::Regex;
 use serde::Deserialize;
+
+use crate::{
+    filters::Filterable,
+    graph::{DependencyGraph, bazel_xml_parser::Query},
+};
+
+mod filter_factory;
+use filter_factory::filter_factory;
 
 pub struct ExecutableRules {
     regexes: Vec<Regex>,
@@ -16,6 +24,7 @@ pub struct ExecutableFilterRules {
 pub struct ExecutableFilter {
     allow: Option<ExecutableFilterRules>,
     block: Option<ExecutableFilterRules>,
+    filters: Vec<Box<dyn Filterable>>,
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -32,6 +41,8 @@ pub struct FilterSpecification {
     pub allow: RuleSpecification,
     #[serde(default)]
     pub block: RuleSpecification,
+    #[serde(default)]
+    pub filters: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -66,7 +77,11 @@ impl FilterSpecification {
             None
         };
 
-        ExecutableFilter { allow, block }
+        ExecutableFilter {
+            allow,
+            block,
+            filters: self.filters.iter().map(|f| filter_factory(f)).collect(),
+        }
     }
 }
 
@@ -112,7 +127,12 @@ pub struct NodeInfo<'a, 'b> {
 }
 
 impl ExecutableFilter {
-    pub fn get_skip_nodes<'a, 'b>(&self, nodes: &[NodeInfo<'a, 'b>]) -> HashSet<&'b str> {
+    pub fn get_skip_nodes<'a, 'b, 'c: 'b>(
+        &self,
+        nodes: &[NodeInfo<'a, 'b>],
+        graph: &'c DependencyGraph,
+        query: &Query,
+    ) -> HashSet<&'b str> {
         let mut skip_nodes = HashSet::new();
 
         if self.allow.is_none() && self.block.is_none() {
@@ -133,12 +153,24 @@ impl ExecutableFilter {
             }
         }
 
+        for filter in &self.filters {
+            let nodes = filter.filter(graph, query);
+            skip_nodes.extend(
+                nodes
+                    .iter()
+                    .map(|&id| graph.nodes[id].label.as_str())
+                    .collect::<HashSet<_>>(),
+            );
+        }
+
         skip_nodes
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use super::*;
 
     #[test]
@@ -152,25 +184,39 @@ target_names = ['regex:test$', '//test:a']
 rule_classes = ['regex:^javadoc_', 'py_library']
 target_names = ['regex:test$', '//test:a']
         "#;
+        let dummy_graph = DependencyGraph {
+            nodes: vec![],
+            edges: vec![],
+            name2node: HashMap::new(),
+            node2out_edges: HashMap::new(),
+            node2in_edges: HashMap::new(),
+        };
 
         let cfg: ReduceConfig = toml::from_str(content).unwrap();
         for filter in [&cfg.from, &cfg.to] {
             let filter = filter.to_executable_filter();
 
-            let res = filter.get_skip_nodes(&[
-                NodeInfo {
-                    rule_class: "javadoc_library",
-                    target: "//test:a",
+            let res = filter.get_skip_nodes(
+                &[
+                    NodeInfo {
+                        rule_class: "javadoc_library",
+                        target: "//test:a",
+                    },
+                    NodeInfo {
+                        rule_class: "py_library",
+                        target: "//test:b",
+                    },
+                    NodeInfo {
+                        rule_class: "java_library",
+                        target: "//test:c",
+                    },
+                ],
+                &dummy_graph,
+                &Query {
+                    version: 1,
+                    values: vec![],
                 },
-                NodeInfo {
-                    rule_class: "py_library",
-                    target: "//test:b",
-                },
-                NodeInfo {
-                    rule_class: "java_library",
-                    target: "//test:c",
-                },
-            ]);
+            );
 
             assert!(res.contains("//test:a"));
             assert!(res.contains("//test:b"));
