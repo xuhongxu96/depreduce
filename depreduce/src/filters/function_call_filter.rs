@@ -4,6 +4,7 @@ use rustpython_parser::{
     Parse,
     ast::{self, Ranged},
 };
+use serde::Deserialize;
 
 use crate::{
     editors::split_location,
@@ -14,184 +15,191 @@ use crate::{
     },
 };
 
-fn has_called(e: &ast::Expr, func_id: &str) -> bool {
-    match e {
-        ast::Expr::Call(call) => {
-            call.func
-                .as_name_expr()
-                .map(|name| name.id.as_str() == func_id)
-                .unwrap_or(false)
-                || call
-                    .keywords
-                    .iter()
-                    .any(|kw| has_called(&kw.value, func_id))
-                || call.args.iter().any(|arg| has_called(&arg, func_id))
-                || has_called(&call.func, func_id)
-        }
-        ast::Expr::BoolOp(expr_bool_op) => {
-            expr_bool_op.values.iter().any(|v| has_called(v, func_id))
-        }
-        ast::Expr::NamedExpr(expr_named_expr) => has_called(&expr_named_expr.value, func_id),
-        ast::Expr::BinOp(expr_bin_op) => {
-            has_called(&expr_bin_op.left, func_id) || has_called(&expr_bin_op.right, func_id)
-        }
-        ast::Expr::UnaryOp(expr_unary_op) => has_called(&expr_unary_op.operand, func_id),
-        ast::Expr::Lambda(expr_lambda) => has_called(&expr_lambda.body, func_id),
-        ast::Expr::IfExp(expr_if_exp) => {
-            has_called(&expr_if_exp.test, func_id)
-                || has_called(&expr_if_exp.body, func_id)
-                || has_called(&expr_if_exp.orelse, func_id)
-        }
-        ast::Expr::Dict(expr_dict) => {
-            expr_dict
-                .keys
-                .iter()
-                .flatten()
-                .any(|k| has_called(k, func_id))
-                || expr_dict.values.iter().any(|v| has_called(v, func_id))
-        }
-        ast::Expr::Set(expr_set) => expr_set.elts.iter().any(|e| has_called(e, func_id)),
-        ast::Expr::ListComp(expr_list_comp) => {
-            has_called(&expr_list_comp.elt, func_id)
-                || expr_list_comp.generators.iter().any(|g| {
-                    has_called(&g.iter, func_id)
-                        || g.ifs.iter().any(|if_expr| has_called(if_expr, func_id))
-                })
-        }
-        ast::Expr::SetComp(expr_set_comp) => {
-            has_called(&expr_set_comp.elt, func_id)
-                || expr_set_comp.generators.iter().any(|g| {
-                    has_called(&g.iter, func_id)
-                        || g.ifs.iter().any(|if_expr| has_called(if_expr, func_id))
-                })
-        }
-        ast::Expr::DictComp(expr_dict_comp) => {
-            has_called(&expr_dict_comp.key, func_id)
-                || has_called(&expr_dict_comp.value, func_id)
-                || expr_dict_comp.generators.iter().any(|g| {
-                    has_called(&g.iter, func_id)
-                        || g.ifs.iter().any(|if_expr| has_called(if_expr, func_id))
-                })
-        }
-        ast::Expr::GeneratorExp(expr_generator_exp) => {
-            has_called(&expr_generator_exp.elt, func_id)
-                || expr_generator_exp.generators.iter().any(|g| {
-                    has_called(&g.iter, func_id)
-                        || g.ifs.iter().any(|if_expr| has_called(if_expr, func_id))
-                })
-        }
-        ast::Expr::Await(expr_await) => has_called(&expr_await.value, func_id),
-        ast::Expr::Yield(expr_yield) => expr_yield
-            .value
-            .as_ref()
-            .map_or(false, |v| has_called(v, func_id)),
-        ast::Expr::YieldFrom(expr_yield_from) => has_called(&expr_yield_from.value, func_id),
-        ast::Expr::Compare(expr_compare) => {
-            has_called(&expr_compare.left, func_id)
-                || expr_compare
-                    .comparators
-                    .iter()
-                    .any(|c| has_called(c, func_id))
-        }
-        ast::Expr::FormattedValue(expr_formatted_value) => {
-            has_called(&expr_formatted_value.value, func_id)
-        }
-        ast::Expr::JoinedStr(expr_joined_str) => expr_joined_str
-            .values
-            .iter()
-            .any(|v| has_called(v, func_id)),
-        ast::Expr::Attribute(expr_attribute) => has_called(&expr_attribute.value, func_id),
-        ast::Expr::Subscript(expr_subscript) => {
-            has_called(&expr_subscript.value, func_id) || has_called(&expr_subscript.slice, func_id)
-        }
-        ast::Expr::Starred(expr_starred) => has_called(&expr_starred.value, func_id),
-        ast::Expr::List(expr_list) => expr_list.elts.iter().any(|e| has_called(e, func_id)),
-        ast::Expr::Tuple(expr_tuple) => expr_tuple.elts.iter().any(|e| has_called(e, func_id)),
-        ast::Expr::Slice(expr_slice) => {
-            expr_slice
-                .lower
-                .as_ref()
-                .map_or(false, |v| has_called(v, func_id))
-                || expr_slice
-                    .upper
-                    .as_ref()
-                    .map_or(false, |v| has_called(v, func_id))
-                || expr_slice
-                    .step
-                    .as_ref()
-                    .map_or(false, |v| has_called(v, func_id))
-        }
-        ast::Expr::Name(expr_name) => false,
-        ast::Expr::Constant(_) => false,
-    }
-}
-
-fn get_targets_containing_select(
-    query: &Query,
-    graph: &DependencyGraph,
-    func_id: &str,
-) -> HashSet<NodeId> {
-    let mut res = HashSet::new();
-
-    let mut path2labels: HashMap<String, Vec<(String, usize)>> = HashMap::new();
-    for value in &query.values {
-        match value {
-            SkyValue::Rule(rule) => {
-                let (path, start_line, _end_col) = split_location(&rule.location);
-                path2labels
-                    .entry(path)
-                    .or_default()
-                    .push((rule.name.clone(), start_line));
-            }
-            _ => {}
-        }
-    }
-
-    for (path, mut labels) in path2labels {
-        if let Some(build_content) = std::fs::read_to_string(&path).ok() {
-            let ast = rustpython_parser::ast::Suite::parse(&build_content, &path).unwrap();
-            let mut ast_i = 0;
-            labels.sort_by_key(|(_, start_line)| *start_line);
-            for (label, start_line) in labels {
-                let start_offset = build_content
-                    .lines()
-                    .take(start_line - 1)
-                    .map(|s| s.len() + 1)
-                    .sum::<usize>();
-
-                while ast_i < ast.len() {
-                    let stmt = &ast[ast_i];
-                    if stmt.range().start().to_usize() < start_offset {
-                        ast_i += 1;
-                        continue;
-                    }
-                    match stmt {
-                        ast::Stmt::Expr(e) => {
-                            if has_called(&e.value, func_id) {
-                                if let Some(id) = graph.get_node_id(&label) {
-                                    res.insert(id);
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                    ast_i += 1;
-                    break;
-                }
-            }
-        }
-    }
-
-    res
-}
-
+#[derive(Debug, Deserialize, Default)]
 pub struct FunctionCallFilter {
-    pub func_id: String,
+    pub func: String,
+    pub keys: HashSet<String>,
 }
 
 impl Filterable for FunctionCallFilter {
     fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
-        get_targets_containing_select(query, graph, &self.func_id)
+        self.get_targets_containing_select(query, graph)
+    }
+}
+
+impl FunctionCallFilter {
+    fn get_targets_containing_select(
+        &self,
+        query: &Query,
+        graph: &DependencyGraph,
+    ) -> HashSet<NodeId> {
+        let mut res = HashSet::new();
+
+        let mut path2labels: HashMap<String, Vec<(String, usize)>> = HashMap::new();
+        for value in &query.values {
+            match value {
+                SkyValue::Rule(rule) => {
+                    let (path, start_line, _end_col) = split_location(&rule.location);
+                    path2labels
+                        .entry(path)
+                        .or_default()
+                        .push((rule.name.clone(), start_line));
+                }
+                _ => {}
+            }
+        }
+
+        for (path, mut labels) in path2labels {
+            if let Some(build_content) = std::fs::read_to_string(&path).ok() {
+                let ast = rustpython_parser::ast::Suite::parse(&build_content, &path).unwrap();
+                let mut ast_i = 0;
+                labels.sort_by_key(|(_, start_line)| *start_line);
+                for (label, start_line) in labels {
+                    let start_offset = build_content
+                        .lines()
+                        .take(start_line - 1)
+                        .map(|s| s.len() + 1)
+                        .sum::<usize>();
+
+                    while ast_i < ast.len() {
+                        let stmt = &ast[ast_i];
+                        if stmt.range().start().to_usize() < start_offset {
+                            ast_i += 1;
+                            continue;
+                        }
+                        match stmt {
+                            ast::Stmt::Expr(e) => {
+                                if self.has_called(&e.value) {
+                                    if let Some(id) = graph.get_node_id(&label) {
+                                        res.insert(id);
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
+                        ast_i += 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        res
+    }
+
+    fn has_called(&self, e: &ast::Expr) -> bool {
+        match e {
+            ast::Expr::Call(call) => {
+                call.func
+                    .as_name_expr()
+                    .map(|name| name.id.as_str() == self.func)
+                    .unwrap_or(false)
+                    || call
+                        .keywords
+                        .iter()
+                        .filter(|kw| {
+                            if self.keys.is_empty() {
+                                return true;
+                            }
+
+                            if let Some(key) = kw.arg.as_ref() {
+                                self.keys.contains(key.as_str())
+                            } else {
+                                false
+                            }
+                        })
+                        .any(|kw| self.has_called(&kw.value))
+                    || call.args.iter().any(|arg| self.has_called(arg))
+                    || self.has_called(&call.func)
+            }
+            ast::Expr::BoolOp(expr_bool_op) => {
+                expr_bool_op.values.iter().any(|v| self.has_called(v))
+            }
+            ast::Expr::NamedExpr(expr_named_expr) => self.has_called(&expr_named_expr.value),
+            ast::Expr::BinOp(expr_bin_op) => {
+                self.has_called(&expr_bin_op.left) || self.has_called(&expr_bin_op.right)
+            }
+            ast::Expr::UnaryOp(expr_unary_op) => self.has_called(&expr_unary_op.operand),
+            ast::Expr::Lambda(expr_lambda) => self.has_called(&expr_lambda.body),
+            ast::Expr::IfExp(expr_if_exp) => {
+                self.has_called(&expr_if_exp.test)
+                    || self.has_called(&expr_if_exp.body)
+                    || self.has_called(&expr_if_exp.orelse)
+            }
+            ast::Expr::Dict(expr_dict) => {
+                expr_dict.keys.iter().flatten().any(|k| self.has_called(k))
+                    || expr_dict.values.iter().any(|v| self.has_called(v))
+            }
+            ast::Expr::Set(expr_set) => expr_set.elts.iter().any(|e| self.has_called(e)),
+            ast::Expr::ListComp(expr_list_comp) => {
+                self.has_called(&expr_list_comp.elt)
+                    || expr_list_comp.generators.iter().any(|g| {
+                        self.has_called(&g.iter)
+                            || g.ifs.iter().any(|if_expr| self.has_called(if_expr))
+                    })
+            }
+            ast::Expr::SetComp(expr_set_comp) => {
+                self.has_called(&expr_set_comp.elt)
+                    || expr_set_comp.generators.iter().any(|g| {
+                        self.has_called(&g.iter)
+                            || g.ifs.iter().any(|if_expr| self.has_called(if_expr))
+                    })
+            }
+            ast::Expr::DictComp(expr_dict_comp) => {
+                self.has_called(&expr_dict_comp.key)
+                    || self.has_called(&expr_dict_comp.value)
+                    || expr_dict_comp.generators.iter().any(|g| {
+                        self.has_called(&g.iter)
+                            || g.ifs.iter().any(|if_expr| self.has_called(if_expr))
+                    })
+            }
+            ast::Expr::GeneratorExp(expr_generator_exp) => {
+                self.has_called(&expr_generator_exp.elt)
+                    || expr_generator_exp.generators.iter().any(|g| {
+                        self.has_called(&g.iter)
+                            || g.ifs.iter().any(|if_expr| self.has_called(if_expr))
+                    })
+            }
+            ast::Expr::Await(expr_await) => self.has_called(&expr_await.value),
+            ast::Expr::Yield(expr_yield) => expr_yield
+                .value
+                .as_ref()
+                .map_or(false, |v| self.has_called(v)),
+            ast::Expr::YieldFrom(expr_yield_from) => self.has_called(&expr_yield_from.value),
+            ast::Expr::Compare(expr_compare) => {
+                self.has_called(&expr_compare.left)
+                    || expr_compare.comparators.iter().any(|c| self.has_called(c))
+            }
+            ast::Expr::FormattedValue(expr_formatted_value) => {
+                self.has_called(&expr_formatted_value.value)
+            }
+            ast::Expr::JoinedStr(expr_joined_str) => {
+                expr_joined_str.values.iter().any(|v| self.has_called(v))
+            }
+            ast::Expr::Attribute(expr_attribute) => self.has_called(&expr_attribute.value),
+            ast::Expr::Subscript(expr_subscript) => {
+                self.has_called(&expr_subscript.value) || self.has_called(&expr_subscript.slice)
+            }
+            ast::Expr::Starred(expr_starred) => self.has_called(&expr_starred.value),
+            ast::Expr::List(expr_list) => expr_list.elts.iter().any(|e| self.has_called(e)),
+            ast::Expr::Tuple(expr_tuple) => expr_tuple.elts.iter().any(|e| self.has_called(e)),
+            ast::Expr::Slice(expr_slice) => {
+                expr_slice
+                    .lower
+                    .as_ref()
+                    .map_or(false, |v| self.has_called(v))
+                    || expr_slice
+                        .upper
+                        .as_ref()
+                        .map_or(false, |v| self.has_called(v))
+                    || expr_slice
+                        .step
+                        .as_ref()
+                        .map_or(false, |v| self.has_called(v))
+            }
+            ast::Expr::Name(_) => false,
+            ast::Expr::Constant(_) => false,
+        }
     }
 }
 
@@ -216,7 +224,8 @@ mod tests {
         let graph = query.to_dep_graph(false).unwrap();
 
         let filter = FunctionCallFilter {
-            func_id: "select".to_string(),
+            func: "select".to_string(),
+            keys: HashSet::new(),
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 1);
@@ -224,5 +233,23 @@ mod tests {
             graph.nodes[*res.iter().next().unwrap()].label,
             "//trpc/overload_control:overload_control_defs"
         );
+
+        let filter = FunctionCallFilter {
+            func: "select".to_string(),
+            keys: HashSet::from_iter(vec!["defines".to_string()].iter().cloned()),
+        };
+        let res = filter.filter(&graph, &query);
+        assert_eq!(res.len(), 1);
+        assert_eq!(
+            graph.nodes[*res.iter().next().unwrap()].label,
+            "//trpc/overload_control:overload_control_defs"
+        );
+
+        let filter = FunctionCallFilter {
+            func: "select".to_string(),
+            keys: HashSet::from_iter(vec!["deps".to_string()].iter().cloned()),
+        };
+        let res = filter.filter(&graph, &query);
+        assert_eq!(res.len(), 0);
     }
 }

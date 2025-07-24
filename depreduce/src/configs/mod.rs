@@ -4,12 +4,9 @@ use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
-    filters::Filterable,
+    filters::{Filterable, FunctionCallFilter},
     graph::{DependencyGraph, bazel_xml_parser::Query},
 };
-
-mod filter_factory;
-use filter_factory::filter_factory;
 
 pub struct ExecutableRules {
     regexes: Vec<Regex>,
@@ -35,6 +32,12 @@ pub struct RuleSpecification {
     pub target_names: Vec<String>,
 }
 
+#[derive(Debug, Deserialize, Default)]
+pub struct TargetFilters {
+    #[serde(default)]
+    pub func_filter: Option<FunctionCallFilter>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct FilterSpecification {
     #[serde(default)]
@@ -42,13 +45,25 @@ pub struct FilterSpecification {
     #[serde(default)]
     pub block: RuleSpecification,
     #[serde(default)]
-    pub filters: Vec<String>,
+    pub filters: TargetFilters,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ReduceConfig {
     pub from: FilterSpecification,
     pub to: FilterSpecification,
+}
+
+impl TargetFilters {
+    fn to_filters(self) -> Vec<Box<dyn Filterable>> {
+        let mut filters: Vec<Box<dyn Filterable>> = Vec::new();
+
+        if let Some(func_filter) = self.func_filter {
+            filters.push(Box::new(func_filter));
+        }
+
+        filters
+    }
 }
 
 impl ReduceConfig {
@@ -58,7 +73,7 @@ impl ReduceConfig {
 }
 
 impl FilterSpecification {
-    pub fn to_executable_filter(&self) -> ExecutableFilter {
+    pub fn to_executable_filter(self) -> ExecutableFilter {
         let allow = if !self.allow.rule_classes.is_empty() || !self.allow.target_names.is_empty() {
             Some(ExecutableFilterRules {
                 rule_class_rules: ExecutableRules::parse(&self.allow.rule_classes),
@@ -80,7 +95,7 @@ impl FilterSpecification {
         ExecutableFilter {
             allow,
             block,
-            filters: self.filters.iter().map(|f| filter_factory(f)).collect(),
+            filters: self.filters.to_filters(),
         }
     }
 }
@@ -193,7 +208,7 @@ target_names = ['regex:test$', '//test:a']
         };
 
         let cfg: ReduceConfig = toml::from_str(content).unwrap();
-        for filter in [&cfg.from, &cfg.to] {
+        for filter in [cfg.from, cfg.to] {
             let filter = filter.to_executable_filter();
 
             let res = filter.get_skip_nodes(

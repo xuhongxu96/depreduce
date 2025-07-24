@@ -1,11 +1,11 @@
-[from]
-filters = ["no_select"]
-
 [from.block]
 rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 
-[to]
-filters = ["no_select"]
+[from.filters]
+func_filter = {func = "select", keys = ["deps", "defines"]}
 
 [to.block]
 rule_classes = ['regex:_import$']
+
+[to.filters]
+func_filter = {func = "select", keys = ["deps", "defines"]}
