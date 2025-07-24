@@ -25,5 +25,4 @@ pub trait DepEditor {
 
 mod bazel_dep_editor;
 
-pub use bazel_dep_editor::BazelDepEditor;
-pub use bazel_dep_editor::split_location;
+pub use bazel_dep_editor::*;

@@ -7,7 +7,7 @@ use rustpython_parser::{
 use serde::Deserialize;
 
 use crate::{
-    editors::split_location,
+    editors::{BazelLabel, get_fn_name_and_rule_name, split_location},
     filters::Filterable,
     graph::{
         DependencyGraph, NodeId,
@@ -54,7 +54,7 @@ impl FunctionCallFilter {
                 let ast = rustpython_parser::ast::Suite::parse(&build_content, &path).unwrap();
                 let mut ast_i = 0;
                 labels.sort_by_key(|(_, start_line)| *start_line);
-                for (label, start_line) in labels {
+                for (label, start_line) in labels.clone() {
                     let start_offset = build_content
                         .lines()
                         .take(start_line - 1)
@@ -69,15 +69,18 @@ impl FunctionCallFilter {
                         }
                         match stmt {
                             ast::Stmt::Expr(e) => {
-                                if self.has_called(&e.value) {
-                                    if let Some(id) = graph.get_node_id(&label) {
-                                        res.insert(id);
+                                if let Some((name, _)) = get_fn_name_and_rule_name(&e.value) {
+                                    if name == BazelLabel::parse(&label).name {
+                                        if self.has_called(&e.value) {
+                                            if let Some(id) = graph.get_node_id(&label) {
+                                                res.insert(id);
+                                            }
+                                        }
                                     }
                                 }
                             }
                             _ => {}
                         }
-                        ast_i += 1;
                         break;
                     }
                 }

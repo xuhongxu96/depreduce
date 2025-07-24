@@ -16,10 +16,10 @@ pub struct BazelDepEditor {
 }
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
-struct BazelLabel {
-    name: String,
-    package: String,
-    repo: String,
+pub struct BazelLabel {
+    pub name: String,
+    pub package: String,
+    pub repo: String,
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
@@ -39,7 +39,7 @@ impl Interval {
 }
 
 impl BazelLabel {
-    fn parse(label: &str) -> BazelLabel {
+    pub fn parse(label: &str) -> BazelLabel {
         let mut res = BazelLabel {
             name: String::new(),
             package: String::new(),
@@ -124,6 +124,41 @@ fn get_list_insert_pos(
         }
         _ => {}
     }
+    None
+}
+
+pub fn get_fn_name_and_rule_name(expr: &rustpython_parser::ast::Expr) -> Option<(String, String)> {
+    use rustpython_parser::ast;
+
+    let mut name = None;
+    let mut rule = None;
+
+    match expr {
+        ast::Expr::Call(e) => {
+            if let Some(n) = e.func.as_name_expr().map(|n| n.id.as_str()) {
+                rule = Some(n.to_string());
+            }
+
+            name = e.keywords.iter().find_map(|kw| {
+                if let Some(ident) = &kw.arg {
+                    if ident == "name" {
+                        if let ast::Expr::Constant(c) = &kw.value {
+                            return Some(c.value.as_str().cloned().unwrap_or_default());
+                        }
+                    }
+                }
+                None
+            });
+        }
+        _ => {}
+    };
+
+    if let Some(name) = name {
+        if let Some(rule) = rule {
+            return Some((name, rule));
+        }
+    }
+
     None
 }
 
@@ -246,6 +281,7 @@ impl BazelDepEditor {
 
     fn get_insertion_pos(
         &self,
+        label: &str,
         path: &str,
         build_content: &str,
         start_line: usize,
@@ -268,7 +304,11 @@ impl BazelDepEditor {
             }
             match stmt {
                 ast::Stmt::Expr(e) => {
-                    res = get_list_insert_pos(&e.value, keywords);
+                    if let Some((label_name, _)) = get_fn_name_and_rule_name(&e.value) {
+                        if BazelLabel::parse(label).name == label_name {
+                            res = get_list_insert_pos(&e.value, keywords);
+                        }
+                    }
                 }
                 _ => {}
             }
@@ -285,6 +325,7 @@ impl BazelDepEditor {
 
     fn extract_all_labels(
         &self,
+        label: &str,
         path: &str,
         build_content: &str,
         start_line: usize,
@@ -305,8 +346,15 @@ impl BazelDepEditor {
             if stmt.range().start().to_usize() < start_offset {
                 continue;
             }
+
             match stmt {
-                ast::Stmt::Expr(e) => res.extend(extract_list_items(&e.value, keywords)),
+                ast::Stmt::Expr(e) => {
+                    if let Some((label_name, _)) = get_fn_name_and_rule_name(&e.value) {
+                        if BazelLabel::parse(label).name == label_name {
+                            res = extract_list_items(&e.value, keywords);
+                        }
+                    }
+                }
                 _ => {}
             }
             break;
@@ -357,7 +405,7 @@ impl DepEditor for BazelDepEditor {
 
             let build = std::fs::read_to_string(&path).unwrap();
             if let Some(pos) =
-                self.get_insertion_pos(&path, &build, start_line, &self.keywords_for_deps)
+                self.get_insertion_pos(label, &path, &build, start_line, &self.keywords_for_deps)
             {
                 Ok(FileEdit {
                     path: path,
@@ -396,6 +444,7 @@ impl DepEditor for BazelDepEditor {
             }
             let mut build = std::fs::read_to_string(&path).unwrap();
             let candidate_labels = self.extract_all_labels(
+                &label,
                 &path,
                 &build,
                 start_line,
@@ -552,6 +601,7 @@ mod tests {
 
         let path = format!("{}/main/BUILD", get_test_workspace_root());
         let labels = editor.extract_all_labels(
+            "main",
             &path,
             &std::fs::read_to_string(&path).unwrap(),
             3,
@@ -571,6 +621,7 @@ mod tests {
             get_test_data_path!("").to_string_lossy().to_string(),
         );
         let labels = editor.extract_all_labels(
+            "main",
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
@@ -590,6 +641,7 @@ mod tests {
             get_test_data_path!("").to_string_lossy().to_string(),
         );
         let pos = editor.get_insertion_pos(
+            "main",
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,

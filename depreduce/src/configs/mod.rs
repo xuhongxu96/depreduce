@@ -58,9 +58,17 @@ impl TargetFilters {
     fn to_filters(self) -> Vec<Box<dyn Filterable>> {
         let mut filters: Vec<Box<dyn Filterable>> = Vec::new();
 
-        if let Some(func_filter) = self.func_filter {
-            filters.push(Box::new(func_filter));
+        macro_rules! add_filters {
+            ( $( $filter:expr ),* ) => {
+            $(
+                if let Some(filter) = $filter {
+                    filters.push(Box::new(filter));
+                }
+            )*
+            };
         }
+
+        add_filters!(self.func_filter);
 
         filters
     }
