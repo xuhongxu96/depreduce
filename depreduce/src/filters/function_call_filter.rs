@@ -19,11 +19,29 @@ use crate::{
 pub struct FunctionCallFilter {
     pub func: String,
     pub keys: HashSet<String>,
+
+    #[serde(default)]
+    pub transitive: bool,
 }
 
 impl Filterable for FunctionCallFilter {
     fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
-        self.get_targets_containing_select(query, graph)
+        let nodes = self.get_targets_containing_select(query, graph);
+        let (transitive_dependents, _) = graph.calculate_transitive_dependents();
+
+        if self.transitive {
+            nodes
+                .iter()
+                .flat_map(|&node_id| {
+                    transitive_dependents[node_id]
+                        .iter()
+                        .cloned()
+                        .filter(move |dep_id| *dep_id != node_id)
+                })
+                .collect()
+        } else {
+            nodes
+        }
     }
 }
 
@@ -208,7 +226,7 @@ impl FunctionCallFilter {
 
 #[cfg(test)]
 mod tests {
-    use utils::{get_test_data_path, read_test_data};
+    use utils::{get_test_data_path, read_or_create_test_data, read_test_data};
 
     use crate::graph::bazel_xml_parser::parse_bazel_xml;
 
@@ -229,6 +247,7 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::new(),
+            transitive: false,
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 1);
@@ -240,17 +259,24 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["defines".to_string()].iter().cloned()),
+            transitive: true,
         };
         let res = filter.filter(&graph, &query);
-        assert_eq!(res.len(), 1);
+        let mut res = res
+            .iter()
+            .map(|id| graph.nodes[*id].label.clone())
+            .collect::<Vec<_>>();
+        res.sort();
+        let res = res.join("\n");
         assert_eq!(
-            graph.nodes[*res.iter().next().unwrap()].label,
-            "//trpc/overload_control:overload_control_defs"
+            res,
+            read_or_create_test_data!("filters/transitive_results.txt", res)
         );
 
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["deps".to_string()].iter().cloned()),
+            transitive: false,
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 0);

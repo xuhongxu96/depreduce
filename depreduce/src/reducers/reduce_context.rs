@@ -111,37 +111,10 @@ pub struct ReduceContext<'a> {
     node2topsort_index: Vec<usize>,
 }
 
-fn calculate_transitive_deps(
-    graph: &DependencyGraph,
-) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
-    let mut transitive_deps = vec![HashSet::new(); graph.nodes.len()];
-    let mut transitive_without_direct_deps = vec![HashSet::new(); graph.nodes.len()];
-
-    let mut topsorted_nodes = graph.topsort();
-    topsorted_nodes.reverse();
-
-    for node_id in topsorted_nodes {
-        let mut deps = HashSet::new();
-        let mut non_direct_deps = HashSet::new();
-        if let Some(out_edges) = graph.node2out_edges.get(&node_id) {
-            for (&dep_node_id, _) in out_edges {
-                // we do not consider the direct deps as transitive deps
-                deps.insert(dep_node_id);
-                deps.extend(&transitive_deps[dep_node_id]);
-                non_direct_deps.extend(&transitive_deps[dep_node_id]);
-            }
-        }
-        transitive_deps[node_id] = deps;
-        transitive_without_direct_deps[node_id] = non_direct_deps;
-    }
-
-    (transitive_deps, transitive_without_direct_deps)
-}
-
 impl<'a> ReduceContext<'a> {
     pub fn new(graph: DependencyGraph, settings: &'a ReduceSettings<'a>) -> Self {
         let graph_node_len = graph.nodes.len();
-        let (transitive_deps, transitive_without_direct_deps) = calculate_transitive_deps(&graph);
+        let (transitive_deps, transitive_without_direct_deps) = graph.calculate_transitive_deps();
 
         Self {
             graph,
@@ -284,7 +257,7 @@ impl<'a> ReduceContext<'a> {
             .add_edge(dependent_node_id, node_id, EdgeProps {})
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
-            calculate_transitive_deps(&self.graph);
+            self.graph.calculate_transitive_deps();
         self.added_deps.insert((dependent_node_id, node_id));
 
         self.log(
@@ -319,7 +292,7 @@ impl<'a> ReduceContext<'a> {
             .remove_edge(self.graph.get_edge_id(dependent_node_id, node_id).unwrap())
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
-            calculate_transitive_deps(&self.graph);
+            self.graph.calculate_transitive_deps();
         self.added_deps.remove(&(dependent_node_id, node_id));
 
         self.log(

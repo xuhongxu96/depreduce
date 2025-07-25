@@ -21,7 +21,7 @@ pub struct ExecutableFilterRules {
 pub struct ExecutableFilter {
     allow: Option<ExecutableFilterRules>,
     block: Option<ExecutableFilterRules>,
-    filters: Vec<Box<dyn Filterable>>,
+    filters: Vec<FilterType>,
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -32,10 +32,10 @@ pub struct RuleSpecification {
     pub target_names: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Default)]
-pub struct TargetFilters {
-    #[serde(default)]
-    pub func_filter: Option<FunctionCallFilter>,
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+pub enum FilterType {
+    FunctionCall(FunctionCallFilter),
 }
 
 #[derive(Debug, Deserialize)]
@@ -45,7 +45,7 @@ pub struct FilterSpecification {
     #[serde(default)]
     pub block: RuleSpecification,
     #[serde(default)]
-    pub filters: TargetFilters,
+    pub filters: Vec<FilterType>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,23 +54,11 @@ pub struct ReduceConfig {
     pub to: FilterSpecification,
 }
 
-impl TargetFilters {
-    fn to_filters(self) -> Vec<Box<dyn Filterable>> {
-        let mut filters: Vec<Box<dyn Filterable>> = Vec::new();
-
-        macro_rules! add_filters {
-            ( $( $filter:expr ),* ) => {
-            $(
-                if let Some(filter) = $filter {
-                    filters.push(Box::new(filter));
-                }
-            )*
-            };
+impl FilterType {
+    fn to_filterable<'a>(&'a self) -> &'a dyn Filterable {
+        match &self {
+            FilterType::FunctionCall(f) => f,
         }
-
-        add_filters!(self.func_filter);
-
-        filters
     }
 }
 
@@ -103,7 +91,7 @@ impl FilterSpecification {
         ExecutableFilter {
             allow,
             block,
-            filters: self.filters.to_filters(),
+            filters: self.filters,
         }
     }
 }
@@ -177,7 +165,7 @@ impl ExecutableFilter {
         }
 
         for filter in &self.filters {
-            let nodes = filter.filter(graph, query);
+            let nodes = filter.to_filterable().filter(graph, query);
             skip_nodes.extend(
                 nodes
                     .iter()
@@ -203,9 +191,24 @@ mod tests {
 rule_classes = ['regex:^javadoc_', 'py_library']
 target_names = ['regex:test$', '//test:a']
 
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps"]
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["defines"]
+
 [to.block]
 rule_classes = ['regex:^javadoc_', 'py_library']
 target_names = ['regex:test$', '//test:a']
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["defines"]
         "#;
         let dummy_graph = DependencyGraph {
             nodes: vec![],
@@ -216,6 +219,9 @@ target_names = ['regex:test$', '//test:a']
         };
 
         let cfg: ReduceConfig = toml::from_str(content).unwrap();
+        assert_eq!(cfg.from.filters.len(), 2);
+        assert_eq!(cfg.to.filters.len(), 1);
+
         for filter in [cfg.from, cfg.to] {
             let filter = filter.to_executable_filter();
 

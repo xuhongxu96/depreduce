@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Debug,
+};
 
 use serde::{Deserialize, Serialize};
 use std::fmt::Write;
@@ -281,6 +284,55 @@ impl DependencyGraph {
         }
 
         result
+    }
+
+    pub fn calculate_transitive_deps(&self) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
+        let mut transitive_deps = vec![HashSet::new(); self.nodes.len()];
+        let mut transitive_without_direct_deps = vec![HashSet::new(); self.nodes.len()];
+
+        let mut topsorted_nodes = self.topsort();
+        topsorted_nodes.reverse();
+
+        for node_id in topsorted_nodes {
+            let mut deps = HashSet::new();
+            let mut non_direct_deps = HashSet::new();
+            if let Some(out_edges) = self.node2out_edges.get(&node_id) {
+                for (&dep_node_id, _) in out_edges {
+                    // we do not consider the direct deps as transitive deps
+                    deps.insert(dep_node_id);
+                    deps.extend(&transitive_deps[dep_node_id]);
+                    non_direct_deps.extend(&transitive_deps[dep_node_id]);
+                }
+            }
+            transitive_deps[node_id] = deps;
+            transitive_without_direct_deps[node_id] = non_direct_deps;
+        }
+
+        (transitive_deps, transitive_without_direct_deps)
+    }
+
+    pub fn calculate_transitive_dependents(&self) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
+        let mut transitive_dependents = vec![HashSet::new(); self.nodes.len()];
+        let mut transitive_without_direct_dependents = vec![HashSet::new(); self.nodes.len()];
+
+        let topsorted_nodes = self.topsort();
+
+        for node_id in topsorted_nodes {
+            let mut dependents = HashSet::new();
+            let mut non_direct_dependents = HashSet::new();
+            if let Some(in_edges) = self.node2in_edges.get(&node_id) {
+                for (&dependent_node_id, _) in in_edges {
+                    // we do not consider the direct deps as transitive deps
+                    dependents.insert(dependent_node_id);
+                    dependents.extend(&transitive_dependents[dependent_node_id]);
+                    non_direct_dependents.extend(&transitive_dependents[dependent_node_id]);
+                }
+            }
+            transitive_dependents[node_id] = dependents;
+            transitive_without_direct_dependents[node_id] = non_direct_dependents;
+        }
+
+        (transitive_dependents, transitive_without_direct_dependents)
     }
 }
 
