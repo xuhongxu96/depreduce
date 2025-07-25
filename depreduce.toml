@@ -4,13 +4,15 @@ rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 [[from.filters]]
 type = "FunctionCall"
 func = "select"
-keys = ["deps"]
+keys = ["deps", "defines"]
 
 [[from.filters]]
-type = "FunctionCall"
-func = "select"
-keys = ["defines"]
-transitive = true
+type = "Alias"
 
 [to.block]
 rule_classes = ['regex:_import$']
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]

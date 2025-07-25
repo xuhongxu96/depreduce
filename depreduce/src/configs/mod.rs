@@ -4,7 +4,7 @@ use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
-    filters::{Filterable, FunctionCallFilter},
+    filters::{AliasLikeFilter, Filterable, FunctionCallFilter},
     graph::{DependencyGraph, bazel_xml_parser::Query},
 };
 
@@ -36,6 +36,7 @@ pub struct RuleSpecification {
 #[serde(tag = "type")]
 pub enum FilterType {
     FunctionCall(FunctionCallFilter),
+    Alias(AliasLikeFilter),
 }
 
 #[derive(Debug, Deserialize)]
@@ -58,6 +59,7 @@ impl FilterType {
     fn to_filterable<'a>(&'a self) -> &'a dyn Filterable {
         match &self {
             FilterType::FunctionCall(f) => f,
+            FilterType::Alias(f) => f,
         }
     }
 }

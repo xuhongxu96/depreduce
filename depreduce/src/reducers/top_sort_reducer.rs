@@ -344,10 +344,7 @@ impl TopSortReducer {
 pub(crate) mod tests {
     use utils::*;
 
-    use crate::{
-        editors::BazelDepEditor,
-        graph::bazel_xml_parser::{Query, parse_bazel_xml},
-    };
+    use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
 
     use super::*;
 
@@ -384,7 +381,6 @@ pub(crate) mod tests {
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
-            disable_removal_from_alias_targets: true,
             skip_from_node_ids: HashSet::new(),
             skip_to_node_ids: HashSet::new(),
         };

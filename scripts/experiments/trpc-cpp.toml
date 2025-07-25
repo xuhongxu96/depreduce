@@ -1,12 +1,22 @@
 [from.block]
 rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 
-[from.filters]
-func_filter = {func = "select", keys = ["deps", "defines"]}
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+
+[[from.filters]]
+type = "Alias"
 
 [to.block]
 rule_classes = ['regex:_import$']
-target_names = ['regex:_raw$']
+target_names = ['regex:_raw$', '@com_google_protobuf//:protobuf']
 
-[to.filters]
-func_filter = {func = "select", keys = ["deps", "defines"]}
+[[to.filters]]
+type = "Alias"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
