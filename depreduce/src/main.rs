@@ -103,35 +103,19 @@ fn run_reducer_test(
     )
     .expect("Failed to parse config file");
 
-    let node_and_rule_class = query.to_node_and_rule_class();
+    let skip_from_node_labels = config.from.get_skip_nodes(&graph, &query);
+    let skip_to_node_labels = config.to.get_skip_nodes(&graph, &query);
 
-    let from_filter = config.from.to_executable_filter();
-    let skip_from_node_labels = from_filter.get_skip_nodes(
-        &node_and_rule_class
-            .iter()
-            .map(|(node, class)| NodeInfo {
-                rule_class: class.as_str(),
-                target: node.as_str(),
-            })
-            .collect::<Vec<_>>()[..],
-        &graph,
-        &query,
+    println!(
+        "Skipping `from` nodes ({}): {:#?}",
+        skip_from_node_labels.len(),
+        skip_from_node_labels
     );
-    let to_filter = config.to.to_executable_filter();
-    let skip_to_node_labels = to_filter.get_skip_nodes(
-        &node_and_rule_class
-            .iter()
-            .map(|(node, class)| NodeInfo {
-                rule_class: class.as_str(),
-                target: node.as_str(),
-            })
-            .collect::<Vec<_>>()[..],
-        &graph,
-        &query,
+    println!(
+        "Skipping `to` nodes ({}): {:#?}",
+        skip_to_node_labels.len(),
+        skip_to_node_labels
     );
-
-    println!("Skipping `from` nodes: {:#?}", skip_from_node_labels);
-    println!("Skipping `to` nodes: {:#?}", skip_to_node_labels);
 
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(

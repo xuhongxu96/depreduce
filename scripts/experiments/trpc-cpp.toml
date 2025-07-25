@@ -1,5 +1,6 @@
-[from.block]
-rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 
 [[from.filters]]
 type = "FunctionCall"
@@ -9,9 +10,9 @@ keys = ["deps", "defines"]
 [[from.filters]]
 type = "Alias"
 
-[to.block]
-rule_classes = ['regex:_import$']
-target_names = ['regex:_raw$', '@com_google_protobuf//:protobuf']
+[[to.filters]]
+block.rule_classes = ['regex:_import$']
+block.target_names = ['regex:_raw$', '@com_google_protobuf//:protobuf']
 
 [[to.filters]]
 type = "Alias"

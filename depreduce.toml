@@ -1,5 +1,6 @@
-[from.block]
-rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 
 [[from.filters]]
 type = "FunctionCall"
@@ -9,8 +10,9 @@ keys = ["deps", "defines"]
 [[from.filters]]
 type = "Alias"
 
-[to.block]
-rule_classes = ['regex:_import$']
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
 
 [[to.filters]]
 type = "FunctionCall"
