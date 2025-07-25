@@ -465,7 +465,7 @@ impl DepEditor for BazelDepEditor {
                     if c == '\n' {
                         replacement.push('\n');
                     } else {
-                        replacement.push(' ');
+                        // replacement.push(' ');
                     }
                 }
                 build.replace_range(interval.to_range(), &replacement);

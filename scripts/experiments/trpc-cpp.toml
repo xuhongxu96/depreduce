@@ -1,23 +1,25 @@
 [[from.filters]]
 type = "Rule"
 block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+block.target_names = ["//trpc/transport/client/fiber/testing:thread_model_op"]
 
 [[from.filters]]
 type = "FunctionCall"
 func = "select"
 keys = ["deps", "defines"]
+transitive_level = 1
 
 [[from.filters]]
 type = "Alias"
 
 [[to.filters]]
+type = "Rule"
 block.rule_classes = ['regex:_import$']
-block.target_names = ['regex:_raw$', '@com_google_protobuf//:protobuf']
+block.target_names = [
+    'regex:_raw$',
+    '@com_google_protobuf//:protobuf',
+    '//trpc/server:server_context',
+]
 
 [[to.filters]]
 type = "Alias"
-
-[[to.filters]]
-type = "FunctionCall"
-func = "select"
-keys = ["deps", "defines"]
