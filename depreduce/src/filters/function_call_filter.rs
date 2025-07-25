@@ -21,27 +21,33 @@ pub struct FunctionCallFilter {
     pub keys: HashSet<String>,
 
     #[serde(default)]
-    pub transitive: bool,
+    pub transitive_level: i32,
 }
 
 impl Filterable for FunctionCallFilter {
     fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
-        let nodes = self.get_targets_containing_select(query, graph);
-        let (transitive_dependents, _) = graph.calculate_transitive_dependents();
+        let mut nodes = self.get_targets_containing_select(query, graph);
 
-        if self.transitive {
-            nodes
-                .iter()
-                .flat_map(|&node_id| {
-                    transitive_dependents[node_id]
-                        .iter()
-                        .cloned()
-                        .filter(move |dep_id| *dep_id != node_id)
-                })
-                .collect()
-        } else {
-            nodes
+        if self.transitive_level > 0 {
+            let mut visited = HashSet::new();
+            for _level in 0..self.transitive_level {
+                let mut next_nodes = HashSet::new();
+                for &node in &nodes {
+                    if visited.contains(&node) {
+                        continue;
+                    }
+                    visited.insert(node);
+                    graph.node2in_edges.get(&node).map(|edges| {
+                        for (from, _) in edges {
+                            next_nodes.insert(from);
+                        }
+                    });
+                }
+                nodes.extend(next_nodes);
+            }
         }
+
+        nodes
     }
 }
 
@@ -247,7 +253,7 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::new(),
-            transitive: false,
+            transitive_level: 0,
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 1);
@@ -259,7 +265,7 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["defines".to_string()].iter().cloned()),
-            transitive: true,
+            transitive_level: 1,
         };
         let res = filter.filter(&graph, &query);
         let mut res = res
@@ -276,7 +282,7 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["deps".to_string()].iter().cloned()),
-            transitive: false,
+            transitive_level: 0,
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 0);
