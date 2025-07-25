@@ -182,7 +182,10 @@ fn is_alias_like_target(rule: &crate::graph::bazel_xml_parser::Rule) -> bool {
             match prop {
                 VariantProp::List(list_prop) => {
                     if list_prop.name == "srcs" {
-                        return false;
+                        return list_prop
+                            .items
+                            .as_ref()
+                            .map_or(true, |items| items.len() == 0);
                     }
                 }
                 _ => {}
