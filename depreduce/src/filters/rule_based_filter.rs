@@ -4,7 +4,7 @@ use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
-    filters::Filterable,
+    filters::{CommonFilterOptions, Filterable, InternalFilterable},
     graph::{DependencyGraph, NodeId, bazel_xml_parser::Query},
 };
 struct ExecutableRules {
@@ -32,6 +32,9 @@ pub struct RuleBasedFilter {
 
     #[serde(default)]
     pub block: RuleSpecification,
+
+    #[serde(flatten)]
+    pub options: CommonFilterOptions,
 }
 
 impl ExecutableRules {
@@ -96,8 +99,8 @@ impl RuleBasedFilter {
     }
 }
 
-impl Filterable for RuleBasedFilter {
-    fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
+impl InternalFilterable for RuleBasedFilter {
+    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
         let node_and_rule_class = query.to_node_and_rule_class();
         let (allow, block) = self.to_executable_filter();
 
@@ -123,6 +126,10 @@ impl Filterable for RuleBasedFilter {
 
         res
     }
+
+    fn options(&self) -> &super::CommonFilterOptions {
+        &self.options
+    }
 }
 
 #[cfg(test)]
@@ -139,6 +146,7 @@ mod tests {
                 rule_classes: vec!["regex:^javadoc_".to_string(), "py_library".to_string()],
                 target_names: vec!["regex:test$".to_string(), "//test:a".to_string()],
             },
+            options: CommonFilterOptions::default(),
         };
 
         let xml = r#"

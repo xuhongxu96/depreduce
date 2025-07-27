@@ -24,8 +24,10 @@ pub struct ReduceSettings<'a> {
     pub disable_topological_sorting: bool,
     pub disable_optimization_if_transitive_deps_exists: bool,
 
-    pub skip_from_node_ids: HashSet<NodeId>,
-    pub skip_to_node_ids: HashSet<NodeId>,
+    pub skip_from_node_ids_for_addition: HashSet<NodeId>,
+    pub skip_to_node_ids_for_addition: HashSet<NodeId>,
+    pub skip_from_node_ids_for_removal: HashSet<NodeId>,
+    pub skip_to_node_ids_for_removal: HashSet<NodeId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -141,7 +143,7 @@ impl<'a> ReduceContext<'a> {
 
         if self
             .settings
-            .skip_from_node_ids
+            .skip_from_node_ids_for_removal
             .contains(&dependent_node_id)
         {
             self.log(&format!(
@@ -152,7 +154,11 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        if self.settings.skip_to_node_ids.contains(&node_id) {
+        if self
+            .settings
+            .skip_to_node_ids_for_removal
+            .contains(&node_id)
+        {
             self.log(&format!(
                 "  Skipping removing {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
@@ -181,7 +187,7 @@ impl<'a> ReduceContext<'a> {
 
         if self
             .settings
-            .skip_from_node_ids
+            .skip_from_node_ids_for_addition
             .contains(&dependent_node_id)
         {
             self.log(&format!(
@@ -192,7 +198,11 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        if self.settings.skip_to_node_ids.contains(&node_id) {
+        if self
+            .settings
+            .skip_to_node_ids_for_addition
+            .contains(&node_id)
+        {
             self.log(&format!(
                 "  Skipping adding {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
@@ -548,8 +558,10 @@ mod tests {
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
-            skip_from_node_ids: HashSet::new(),
-            skip_to_node_ids: HashSet::new(),
+            skip_from_node_ids_for_removal: HashSet::new(),
+            skip_to_node_ids_for_removal: HashSet::new(),
+            skip_from_node_ids_for_addition: HashSet::new(),
+            skip_to_node_ids_for_addition: HashSet::new(),
         };
 
         let ctx = ReduceContext::new(graph, &settings);

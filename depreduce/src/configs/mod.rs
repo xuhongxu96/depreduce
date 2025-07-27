@@ -48,25 +48,41 @@ pub struct NodeInfo<'a, 'b> {
     pub target: &'b str,
 }
 
+pub struct SkipNodes<'a> {
+    pub for_addition: HashSet<&'a str>,
+    pub for_removal: HashSet<&'a str>,
+}
+
 impl FilterSpecification {
     pub fn get_skip_nodes<'a, 'b, 'c: 'b>(
         &self,
         graph: &'c DependencyGraph,
         query: &Query,
-    ) -> HashSet<&'b str> {
-        let mut skip_nodes = HashSet::new();
+    ) -> SkipNodes<'b> {
+        let mut for_addition = HashSet::new();
+        let mut for_removal = HashSet::new();
 
         for filter in &self.filters {
-            let nodes = filter.to_filterable().filter(graph, query);
-            skip_nodes.extend(
-                nodes
-                    .iter()
-                    .map(|&id| graph.nodes[id].label.as_str())
-                    .collect::<HashSet<_>>(),
-            );
+            let filter = filter.to_filterable();
+            let nodes = filter.filter(graph, query);
+            match filter.get_op_type() {
+                FilterOperationType::Add => {
+                    for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                }
+                FilterOperationType::Remove => {
+                    for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                }
+                FilterOperationType::All => {
+                    for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                    for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                }
+            }
         }
 
-        skip_nodes
+        SkipNodes {
+            for_addition,
+            for_removal,
+        }
     }
 }
 

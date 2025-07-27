@@ -11,6 +11,7 @@ transitive_level = 1
 
 [[from.filters]]
 type = "Alias"
+remove_only = true
 
 [[to.filters]]
 type = "Rule"
@@ -23,3 +24,4 @@ block.target_names = [
 
 [[to.filters]]
 type = "Alias"
+remove_only = true

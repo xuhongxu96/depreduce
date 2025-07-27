@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 use crate::{
     editors::{BazelLabel, get_fn_name_and_rule_name, split_location},
-    filters::Filterable,
+    filters::{CommonFilterOptions, InternalFilterable},
     graph::{
         DependencyGraph, NodeId,
         bazel_xml_parser::{Query, SkyValue},
@@ -20,34 +20,17 @@ pub struct FunctionCallFilter {
     pub func: String,
     pub keys: HashSet<String>,
 
-    #[serde(default)]
-    pub transitive_level: i32,
+    #[serde(flatten)]
+    pub options: CommonFilterOptions,
 }
 
-impl Filterable for FunctionCallFilter {
-    fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
-        let mut nodes = self.get_targets_containing_select(query, graph);
+impl InternalFilterable for FunctionCallFilter {
+    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
+        self.get_targets_containing_select(query, graph)
+    }
 
-        if self.transitive_level > 0 {
-            let mut visited = HashSet::new();
-            for _level in 0..self.transitive_level {
-                let mut next_nodes = HashSet::new();
-                for &node in &nodes {
-                    if visited.contains(&node) {
-                        continue;
-                    }
-                    visited.insert(node);
-                    graph.node2in_edges.get(&node).map(|edges| {
-                        for (from, _) in edges {
-                            next_nodes.insert(from);
-                        }
-                    });
-                }
-                nodes.extend(next_nodes);
-            }
-        }
-
-        nodes
+    fn options(&self) -> &CommonFilterOptions {
+        &self.options
     }
 }
 
@@ -234,7 +217,7 @@ impl FunctionCallFilter {
 mod tests {
     use utils::{get_test_data_path, read_or_create_test_data, read_test_data};
 
-    use crate::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml};
 
     use super::*;
 
@@ -253,7 +236,11 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::new(),
-            transitive_level: 0,
+            options: CommonFilterOptions {
+                add_only: false,
+                remove_only: false,
+                transitive_level: 0,
+            },
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 1);
@@ -265,7 +252,11 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["defines".to_string()].iter().cloned()),
-            transitive_level: 1,
+            options: CommonFilterOptions {
+                add_only: false,
+                remove_only: false,
+                transitive_level: 1,
+            },
         };
         let res = filter.filter(&graph, &query);
         let mut res = res
@@ -282,7 +273,11 @@ mod tests {
         let filter = FunctionCallFilter {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["deps".to_string()].iter().cloned()),
-            transitive_level: 0,
+            options: CommonFilterOptions {
+                add_only: false,
+                remove_only: false,
+                transitive_level: 0,
+            },
         };
         let res = filter.filter(&graph, &query);
         assert_eq!(res.len(), 0);

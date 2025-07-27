@@ -462,10 +462,8 @@ impl DepEditor for BazelDepEditor {
                 // replace interval of build as spaces with the same length of the interval, but keep \n as \n
                 let mut replacement = String::new();
                 for c in build[interval.to_range()].chars() {
-                    if c == '\n' {
-                        replacement.push('\n');
-                    } else {
-                        // replacement.push(' ');
+                    if c.is_whitespace() {
+                        replacement.push(c);
                     }
                 }
                 build.replace_range(interval.to_range(), &replacement);

@@ -107,14 +107,25 @@ fn run_reducer_test(
     let skip_to_node_labels = config.to.get_skip_nodes(&graph, &query);
 
     println!(
-        "Skipping `from` nodes ({}): {:#?}",
-        skip_from_node_labels.len(),
-        skip_from_node_labels
+        "Skipping `from` nodes for removal ({}): {:#?}",
+        skip_from_node_labels.for_removal.len(),
+        skip_from_node_labels.for_removal
     );
     println!(
-        "Skipping `to` nodes ({}): {:#?}",
-        skip_to_node_labels.len(),
-        skip_to_node_labels
+        "Skipping `to` nodes for removal ({}): {:#?}",
+        skip_to_node_labels.for_removal.len(),
+        skip_to_node_labels.for_removal
+    );
+
+    println!(
+        "Skipping `from` nodes for addition ({}): {:#?}",
+        skip_from_node_labels.for_addition.len(),
+        skip_from_node_labels.for_addition
+    );
+    println!(
+        "Skipping `to` nodes for addition ({}): {:#?}",
+        skip_to_node_labels.for_addition.len(),
+        skip_to_node_labels.for_addition
     );
 
     let editor = if args.deps_only {
@@ -144,7 +155,8 @@ fn run_reducer_test(
         disable_optimization_if_transitive_deps_exists: !args
             .enable_optimization_if_transitive_deps_exists,
 
-        skip_from_node_ids: skip_from_node_labels
+        skip_from_node_ids_for_removal: skip_from_node_labels
+            .for_removal
             .iter()
             .map(|label| {
                 graph
@@ -152,7 +164,26 @@ fn run_reducer_test(
                     .expect(&format!("Node {} not found in graph", label))
             })
             .collect(),
-        skip_to_node_ids: skip_to_node_labels
+        skip_to_node_ids_for_removal: skip_to_node_labels
+            .for_removal
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
+        skip_from_node_ids_for_addition: skip_from_node_labels
+            .for_addition
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
+        skip_to_node_ids_for_addition: skip_to_node_labels
+            .for_addition
             .iter()
             .map(|label| {
                 graph

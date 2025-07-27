@@ -9,6 +9,7 @@ keys = ["deps", "defines"]
 
 [[from.filters]]
 type = "Alias"
+remove_only = true
 
 [[to.filters]]
 type = "Rule"
