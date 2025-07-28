@@ -141,6 +141,10 @@ impl<'a> ReduceContext<'a> {
         let label = || self.graph.nodes[node_id].label.clone();
         let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
+        if self.is_added_dep(dependent_node_id, node_id) {
+            return false;
+        }
+
         if self
             .settings
             .skip_from_node_ids_for_removal
