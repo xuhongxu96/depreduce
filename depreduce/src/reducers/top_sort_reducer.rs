@@ -15,7 +15,7 @@ impl TopSortReducer {
         ctx: &mut ReduceContext,
         node_id: NodeId,
         dependent_node_id: NodeId,
-    ) -> bool {
+    ) -> (bool, Vec<(NodeId, NodeId)>) {
         let label = ctx.graph.nodes[node_id].label.clone();
         let dependent_label = ctx.graph.nodes[dependent_node_id].label.clone();
 
@@ -67,25 +67,22 @@ impl TopSortReducer {
                 "  No in-edges for {} -> {}, skipping lift\n",
                 dependent_label, label
             ));
-            return false;
+            return (false, vec![]);
         }
 
         if lifted_edges.is_empty() {
             ctx.log("  No changes made, skipping build\n");
-            return false;
+            return (false, vec![]);
         }
 
         match ctx.try_build() {
             Ok(status) => {
-                for (from, to) in lifted_edges {
-                    ctx.add_dependent(to, from);
-                }
                 ctx.log(&format!("  Committed changes: {}\n", status));
-                true
+                (true, lifted_edges)
             }
             Err(e) => {
                 ctx.log(&format!("  {}\n", e));
-                false
+                (false, lifted_edges)
             }
         }
     }
@@ -98,7 +95,7 @@ impl TopSortReducer {
         ctx: &mut ReduceContext,
         node_id: NodeId,
         dependent_node_id: NodeId,
-    ) -> bool {
+    ) -> (bool, Vec<(NodeId, NodeId)>) {
         let label = ctx.graph.nodes[node_id].label.clone();
         ctx.log(&format!(
             "  Trying to flatten dependencies for node {}\n",
@@ -109,7 +106,7 @@ impl TopSortReducer {
             && ctx.graph.nodes[node_id].props.t.is_alias_target()
         {
             ctx.log("  Skipping flattening for alias target because disable_dependency_flattening_for_alias_targets was set\n");
-            return false;
+            return (false, vec![]);
         }
 
         let mut transitive_deps: HashSet<(NodeId, String)> = HashSet::new();
@@ -155,27 +152,24 @@ impl TopSortReducer {
                         "Failed to add {} -> {}: {}\n",
                         dependent_label, transitive_dep_label, e
                     ));
-                    return false;
+                    return (false, vec![]);
                 }
             }
         }
 
         if added_edges.is_empty() {
             ctx.log("  No changes made, skipping build\n");
-            return false;
+            return (false, vec![]);
         }
 
         match ctx.try_build() {
             Ok(status) => {
-                for (from, to) in added_edges {
-                    ctx.add_dependent(to, from);
-                }
                 ctx.log(&format!("  Committed changes: {}\n", status));
-                return true;
+                return (true, added_edges);
             }
             Err(e) => {
                 ctx.log(&format!("  {}\n", e));
-                return false;
+                return (false, added_edges);
             }
         }
     }
@@ -248,15 +242,25 @@ impl TopSortReducer {
             }
             Err(e) => {
                 ctx.log(&format!("  {}\n\n", e));
-                if !ctx.settings.disable_dependency_lifting
-                    && self.try_lift_deps(ctx, node_id, dependent_node_id)
-                {
-                    ctx.remove_dependent(node_id, dependent_node_id);
-                    ctx.commit_changes();
-                    true
-                } else if !ctx.settings.disable_dependency_flattening
-                    && self.try_flatten_deps(ctx, node_id, dependent_node_id)
-                {
+
+                let mut is_success = false;
+                let mut added_edges: Vec<(NodeId, NodeId)> = Vec::new();
+
+                if !ctx.settings.disable_dependency_lifting {
+                    (is_success, added_edges) = self.try_lift_deps(ctx, node_id, dependent_node_id);
+                }
+
+                if !is_success && !ctx.settings.disable_dependency_flattening {
+                    let (is_flatten_success, flattened_edges) =
+                        self.try_flatten_deps(ctx, node_id, dependent_node_id);
+                    is_success = is_flatten_success;
+                    added_edges.extend(flattened_edges);
+                }
+
+                if is_success {
+                    for (from, to) in added_edges {
+                        ctx.add_dependent(to, from);
+                    }
                     ctx.remove_dependent(node_id, dependent_node_id);
                     ctx.commit_changes();
                     true
