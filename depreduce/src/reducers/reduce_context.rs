@@ -142,7 +142,8 @@ impl<'a> ReduceContext<'a> {
         let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
         if self.is_added_dep(dependent_node_id, node_id) {
-            return false;
+            // If the edge was added by us, we can always remove it.
+            return true;
         }
 
         if self
