@@ -1,11 +1,13 @@
 [[from.filters]]
 type = "Rule"
 block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+remove_only = true
 
 [[from.filters]]
 type = "FunctionCall"
 func = "select"
 keys = ["deps", "defines"]
+remove_only = true
 
 [[from.filters]]
 type = "Alias"
@@ -14,8 +16,10 @@ remove_only = true
 [[to.filters]]
 type = "Rule"
 block.rule_classes = ['regex:_import$']
+remove_only = true
 
 [[to.filters]]
 type = "FunctionCall"
 func = "select"
 keys = ["deps", "defines"]
+remove_only = true
