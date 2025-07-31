@@ -25,6 +25,7 @@ block.target_names = [
     'regex:_raw$',
     '@com_google_protobuf//:protobuf',
     '//trpc/server:server_context',
+    "//trpc/filter:client_filter_controller",
 ]
 remove_only = true
 
