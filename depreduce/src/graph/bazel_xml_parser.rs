@@ -105,6 +105,9 @@ pub enum VariantProp {
 
     #[serde(rename = "rule-default-setting")]
     RuleDefaultSetting(RuleIO),
+
+    #[serde(rename="license")]
+    License,
 }
 
 #[derive(Debug, Deserialize)]
