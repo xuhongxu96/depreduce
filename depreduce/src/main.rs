@@ -30,6 +30,14 @@ struct Args {
     #[arg(
         short,
         long,
+        default_value = "//...",
+        help = "Target to query dependencies for"
+    )]
+    target: String,
+
+    #[arg(
+        short,
+        long,
         default_value = "logs/",
         help = "Output directory for reduction attempts and dep graph"
     )]
@@ -91,7 +99,7 @@ fn run_reducer_test(
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
 
-    let xml_str = get_bazel_query(&args.workspace);
+    let xml_str = get_bazel_query(&args.workspace, &args.target);
     let query = parse_bazel_xml(&xml_str).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
     println!("Parsed dep graph");
@@ -204,7 +212,7 @@ fn run_reducer_test(
     let attempts = ctx.get_attempts().to_vec();
 
     // Recalculate the rebuild cost after reduction
-    let new_xml_str = get_bazel_query(&args.workspace);
+    let new_xml_str = get_bazel_query(&args.workspace, &args.target);
     let new_query = parse_bazel_xml(&new_xml_str).unwrap();
     let new_graph = new_query.to_dep_graph(args.deps_only).unwrap();
     let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();

@@ -142,10 +142,13 @@ pub fn remove_lines_with_indent(text: &str, indent_size: usize) -> String {
         .join("\n")
 }
 
-pub fn get_bazel_query(workspace: &str) -> String {
+pub fn get_bazel_query(workspace: &str, target: &str) -> String {
     let mut p = Command::new("bazel")
         .arg("query")
-        .arg("deps(//...)")
+        .arg(format!(
+            "deps({})",
+            if target.is_empty() { "//..." } else { target }
+        ))
         .arg("--keep_going")
         .arg("--notool_deps")
         .arg("--noimplicit_deps")

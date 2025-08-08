@@ -10,13 +10,16 @@ struct Args {
     #[arg(short, long)]
     workspace: String,
 
+    #[arg(short, long, default_value = "//...")]
+    target: String,
+
     #[arg(short, long)]
     deps_only: bool,
 }
 
 fn main() {
     let args = Args::parse();
-    let xml_str = get_bazel_query(&args.workspace);
+    let xml_str = get_bazel_query(&args.workspace, &args.target);
     let query = parse_bazel_xml(&xml_str).unwrap();
     let graph = query.to_dep_graph(args.deps_only).unwrap();
     let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
