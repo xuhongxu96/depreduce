@@ -20,8 +20,12 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let xml_str = get_bazel_query(&args.workspace, &args.target);
-    let query = parse_bazel_xml(&xml_str).unwrap();
-    let graph = query.to_dep_graph(args.deps_only).unwrap();
-    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
-    println!("Rebuild cost: {}", original_cost);
+    if let Ok(query) = parse_bazel_xml(&xml_str) {
+        let graph = query.to_dep_graph(args.deps_only).unwrap();
+        let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+        println!("Rebuild cost: {}", original_cost);
+    } else {
+        eprintln!("Failed to parse bazel query xml.");
+        eprintln!("{}", xml_str);
+    }
 }

@@ -44,7 +44,7 @@ pub struct StringProp {
 #[derive(Debug, Deserialize)]
 pub struct ListProp {
     #[serde(rename = "@name")]
-    pub name: String,
+    pub name: Option<String>,
 
     #[serde(rename = "$value")]
     pub items: Option<Vec<VariantProp>>,
@@ -59,7 +59,7 @@ pub struct Pair {
 #[derive(Debug, Deserialize)]
 pub struct DictProp {
     #[serde(rename = "@name")]
-    pub name: String,
+    pub name: Option<String>,
 
     #[serde(rename = "pair")]
     pub pairs: Option<Vec<Pair>>,
@@ -106,7 +106,7 @@ pub enum VariantProp {
     #[serde(rename = "rule-default-setting")]
     RuleDefaultSetting(RuleIO),
 
-    #[serde(rename="license")]
+    #[serde(rename = "license")]
     License,
 }
 
@@ -184,7 +184,7 @@ fn is_alias_like_target(rule: &crate::graph::bazel_xml_parser::Rule) -> bool {
         for prop in props {
             match prop {
                 VariantProp::List(list_prop) => {
-                    if list_prop.name == "srcs" {
+                    if list_prop.name.as_ref().map_or(false, |name| name == "srcs") {
                         return list_prop
                             .items
                             .as_ref()
@@ -252,7 +252,9 @@ impl Query {
                     if let Some(props) = &rule.props {
                         for prop in props {
                             match prop {
-                                VariantProp::List(list) if list.name == "deps" => {
+                                VariantProp::List(list)
+                                    if list.name.as_ref().map_or(false, |name| name == "deps") =>
+                                {
                                     if !deps_only {
                                         continue;
                                     }
