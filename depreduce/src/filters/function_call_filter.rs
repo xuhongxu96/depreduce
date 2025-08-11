@@ -217,7 +217,10 @@ impl FunctionCallFilter {
 mod tests {
     use utils::{get_test_data_path, read_or_create_test_data, read_test_data};
 
-    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml};
+    use crate::{
+        filters::{FilterOperationScope, Filterable},
+        graph::bazel_xml_parser::parse_bazel_xml,
+    };
 
     use super::*;
 
@@ -237,8 +240,7 @@ mod tests {
             func: "select".to_string(),
             keys: HashSet::new(),
             options: CommonFilterOptions {
-                add_only: false,
-                remove_only: false,
+                scope: FilterOperationScope::default(),
                 transitive_level: 0,
             },
         };
@@ -253,8 +255,7 @@ mod tests {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["defines".to_string()].iter().cloned()),
             options: CommonFilterOptions {
-                add_only: false,
-                remove_only: false,
+                scope: FilterOperationScope::default(),
                 transitive_level: 1,
             },
         };
@@ -274,8 +275,7 @@ mod tests {
             func: "select".to_string(),
             keys: HashSet::from_iter(vec!["deps".to_string()].iter().cloned()),
             options: CommonFilterOptions {
-                add_only: false,
-                remove_only: false,
+                scope: FilterOperationScope::default(),
                 transitive_level: 0,
             },
         };

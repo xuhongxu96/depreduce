@@ -3,7 +3,9 @@ use std::collections::HashSet;
 
 use crate::graph::{DependencyGraph, NodeId, bazel_xml_parser::Query};
 
-pub enum FilterOperationType {
+#[derive(Debug, Deserialize, Default)]
+pub enum FilterOperationScope {
+    #[default]
     All,
     Add,
     Remove,
@@ -12,10 +14,7 @@ pub enum FilterOperationType {
 #[derive(Debug, Deserialize, Default)]
 struct CommonFilterOptions {
     #[serde(default)]
-    pub add_only: bool,
-
-    #[serde(default)]
-    pub remove_only: bool,
+    pub scope: FilterOperationScope,
 
     #[serde(default)]
     pub transitive_level: i32,
@@ -28,18 +27,12 @@ trait InternalFilterable {
 
 pub trait Filterable {
     fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId>;
-    fn get_op_type(&self) -> FilterOperationType;
+    fn get_op_type(&self) -> &FilterOperationScope;
 }
 
 impl<T: InternalFilterable> Filterable for T {
-    fn get_op_type(&self) -> FilterOperationType {
-        if self.options().add_only {
-            FilterOperationType::Add
-        } else if self.options().remove_only {
-            FilterOperationType::Remove
-        } else {
-            FilterOperationType::All
-        }
+    fn get_op_type(&self) -> &FilterOperationScope {
+        &self.options().scope
     }
 
     fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {

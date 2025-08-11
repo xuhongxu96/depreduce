@@ -5,18 +5,18 @@ block.target_names = [
     "//trpc/transport/client/fiber/testing:thread_model_op",
     "//trpc/filter:filter_controller",
 ]
-remove_only = true
+scope = "Remove"
 
 [[from.filters]]
 type = "FunctionCall"
 func = "select"
 keys = ["deps", "defines"]
 transitive_level = 1
-remove_only = true
+scope = "Remove"
 
 [[from.filters]]
 type = "Alias"
-remove_only = true
+scope = "Remove"
 
 [[to.filters]]
 type = "Rule"
@@ -27,8 +27,8 @@ block.target_names = [
     '//trpc/server:server_context',
     "//trpc/filter:client_filter_controller",
 ]
-remove_only = true
+scope = "Remove"
 
 [[to.filters]]
 type = "Alias"
-remove_only = true
+scope = "Remove"

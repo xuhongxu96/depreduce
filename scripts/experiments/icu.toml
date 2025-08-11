@@ -1,6 +1,6 @@
 [[from.filters]]
 type = "Rule"
-block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_', 'cc_library']
 scope = "Remove"
 
 [[from.filters]]

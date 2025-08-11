@@ -66,13 +66,13 @@ impl FilterSpecification {
             let filter = filter.to_filterable();
             let nodes = filter.filter(graph, query);
             match filter.get_op_type() {
-                FilterOperationType::Add => {
+                FilterOperationScope::Add => {
                     for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
                 }
-                FilterOperationType::Remove => {
+                FilterOperationScope::Remove => {
                     for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
                 }
-                FilterOperationType::All => {
+                FilterOperationScope::All => {
                     for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
                     for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
                 }
