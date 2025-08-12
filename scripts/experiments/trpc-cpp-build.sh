@@ -6,4 +6,4 @@ set -e
 # )
 
 bazel build //... ${ARGS[@]}
-bazel test --spawn_strategy=standalone --notest_keep_going //... ${ARGS[@]}
+bazel test --spawn_strategy=local --notest_keep_going //... ${ARGS[@]}
