@@ -5,3 +5,4 @@ export RUST_BACKTRACE=1
     --deps-only \
     --config $PWD/scripts/experiments/rocketmq.toml \
     --output rocketmq-output > rocketmq.stdout 2>rocketmq.stderr
+# https://github.com/apache/rocketmq/pull/9610
