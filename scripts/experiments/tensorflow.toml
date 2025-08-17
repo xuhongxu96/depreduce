@@ -1,0 +1,26 @@
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+block.target_names = ['regex:^//third_party']
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+scope = "Remove"
