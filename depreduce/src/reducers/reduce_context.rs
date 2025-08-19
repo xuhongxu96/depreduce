@@ -103,7 +103,7 @@ pub struct ReduceContext<'a> {
     history: HashMap<String, String>,
     transitive_deps: Vec<HashSet<NodeId>>,
     transitive_without_direct_deps: Vec<HashSet<NodeId>>,
-    added_deps: HashSet<(NodeId, NodeId)>, // src -> dep
+    original_deps: HashSet<(NodeId, NodeId)>, // src -> dep
 
     current_node_id: Option<NodeId>,
     dependent_candidates: BinaryHeap<(usize, NodeId)>,
@@ -116,6 +116,15 @@ impl<'a> ReduceContext<'a> {
     pub fn new(graph: DependencyGraph, settings: &'a ReduceSettings<'a>) -> Self {
         let graph_node_len = graph.nodes.len();
         let (transitive_deps, transitive_without_direct_deps) = graph.calculate_transitive_deps();
+        let original_deps = graph
+            .node2in_edges
+            .iter()
+            .flat_map(|(node_id, edges)| {
+                edges
+                    .iter()
+                    .map(move |(dependent_node_id, _)| (*dependent_node_id, *node_id))
+            })
+            .collect::<HashSet<_>>();
 
         Self {
             graph,
@@ -123,7 +132,7 @@ impl<'a> ReduceContext<'a> {
             history: HashMap::new(),
             transitive_deps,
             transitive_without_direct_deps,
-            added_deps: HashSet::new(),
+            original_deps,
             current_node_id: None,
             dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
@@ -258,7 +267,6 @@ impl<'a> ReduceContext<'a> {
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
             self.graph.calculate_transitive_deps();
-        self.added_deps.insert((dependent_node_id, node_id));
 
         self.log(
             format!(
@@ -293,7 +301,6 @@ impl<'a> ReduceContext<'a> {
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
             self.graph.calculate_transitive_deps();
-        self.added_deps.remove(&(dependent_node_id, node_id));
 
         self.log(
             format!(
@@ -522,7 +529,7 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn is_added_dep(&self, dependent_node_id: NodeId, node_id: NodeId) -> bool {
-        self.added_deps.contains(&(dependent_node_id, node_id))
+        !self.original_deps.contains(&(dependent_node_id, node_id))
     }
 
     pub fn has_transitive_deps(

@@ -1,13 +1,7 @@
 [[from.filters]]
 type = "Rule"
-allow.rule_classes = ['cc_library']
-block.target_names = [
-    'regex:^//third_party',
-    'regex:^//tensorflow/lite',
-    'regex:^//tensorflow/compiler',
-    'regex:^//tensorflow/python',
-    'regex:^//tensorflow/java',
-]
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+scope = "Remove"
 
 [[from.filters]]
 type = "FunctionCall"

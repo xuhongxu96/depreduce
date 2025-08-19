@@ -19,3 +19,4 @@ bazel test
 -//tensorflow/java/... 
 -//tensorflow/python/tools:large_matmul_no_multithread_test 
 -//tensorflow/python/tools:large_matmul_yes_multithread_test
+-//tensorflow/python/distribute:moving_averages_test_2gpu
