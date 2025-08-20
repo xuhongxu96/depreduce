@@ -1,12 +1,12 @@
 [[from.filters]]
 type = "Rule"
-block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_', 'regex:^js_']
 scope = "Remove"
 
 [[from.filters]]
 type = "FunctionCall"
-func = "select"
-keys = ["deps", "defines"]
+func = "select_for_plugin_api"
+keys = ["deps", "defines", "srcs"]
 scope = "Remove"
 
 [[from.filters]]
@@ -16,10 +16,15 @@ scope = "Remove"
 [[to.filters]]
 type = "Rule"
 block.rule_classes = ['regex:_import$']
+block.target_names = ['@error_prone_annotations//jar', '@jsr305_annotations//jar']
 scope = "Remove"
 
 [[to.filters]]
 type = "FunctionCall"
-func = "select"
-keys = ["deps", "defines"]
+func = "select_for_plugin_api"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
 scope = "Remove"

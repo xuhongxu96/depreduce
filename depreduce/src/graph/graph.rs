@@ -49,8 +49,10 @@ pub struct Node {
     pub props: NodeProps,
 }
 
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
-pub struct EdgeProps {}
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EdgeProps {
+    pub unremovable: bool,
+}
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Edge {
@@ -399,7 +401,7 @@ mod tests {
             )
             .unwrap();
         let edge_id = graph
-            .add_edge(id1, id2, EdgeProps {})
+            .add_edge(id1, id2, EdgeProps::default())
             .expect("Should add edge");
         assert_eq!(edge_id, 0);
         assert_eq!(graph.edges.len(), 1);
@@ -418,7 +420,7 @@ mod tests {
                 },
             )
             .unwrap();
-        let result = graph.add_edge(id, id, EdgeProps {});
+        let result = graph.add_edge(id, id, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -433,7 +435,7 @@ mod tests {
                 },
             )
             .unwrap();
-        let result = graph.add_edge(id, id + 1, EdgeProps {});
+        let result = graph.add_edge(id, id + 1, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -456,9 +458,9 @@ mod tests {
                 },
             )
             .unwrap();
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
         // Try to add the same edge again
-        let result = graph.add_edge(id1, id2, EdgeProps {});
+        let result = graph.add_edge(id1, id2, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -498,7 +500,7 @@ mod tests {
                 },
             )
             .unwrap();
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
 
         // Simulate deserialization by clearing indices
         graph.name2node.clear();
@@ -553,9 +555,15 @@ mod tests {
             )
             .unwrap();
 
-        graph.add_edge(id_foo, id_bar, EdgeProps {}).unwrap();
-        graph.add_edge(id_bar, id_baz, EdgeProps {}).unwrap();
-        graph.add_edge(id_foo, id_baz, EdgeProps {}).unwrap();
+        graph
+            .add_edge(id_foo, id_bar, EdgeProps::default())
+            .unwrap();
+        graph
+            .add_edge(id_bar, id_baz, EdgeProps::default())
+            .unwrap();
+        graph
+            .add_edge(id_foo, id_baz, EdgeProps::default())
+            .unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -592,8 +600,8 @@ mod tests {
             )
             .unwrap();
 
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
-        graph.add_edge(id2, id3, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
+        graph.add_edge(id2, id3, EdgeProps::default()).unwrap();
 
         let order = graph.topsort();
         let pos = |id| order.iter().position(|&x| x == id).unwrap();
@@ -675,10 +683,10 @@ mod tests {
             .unwrap();
 
         // a -> b, a -> c, b -> d, c -> d
-        graph.add_edge(id_a, id_b, EdgeProps {}).unwrap();
-        graph.add_edge(id_a, id_c, EdgeProps {}).unwrap();
-        graph.add_edge(id_b, id_d, EdgeProps {}).unwrap();
-        graph.add_edge(id_c, id_d, EdgeProps {}).unwrap();
+        graph.add_edge(id_a, id_b, EdgeProps::default()).unwrap();
+        graph.add_edge(id_a, id_c, EdgeProps::default()).unwrap();
+        graph.add_edge(id_b, id_d, EdgeProps::default()).unwrap();
+        graph.add_edge(id_c, id_d, EdgeProps::default()).unwrap();
 
         let order = graph.topsort();
         let pos = |id| order.iter().position(|&x| x == id).unwrap();

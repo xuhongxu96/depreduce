@@ -139,12 +139,12 @@ fn run_reducer_test(
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
             &query,
-            workspace_root.to_string(),
+            &workspace_root,
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
         )
     } else {
-        BazelDepEditor::new(&query, workspace_root.to_string())
+        BazelDepEditor::new(&query, &workspace_root)
     };
 
     let reducer = TopSortReducer {};

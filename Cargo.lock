@@ -273,6 +273,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
+ "normalize-path",
  "quick-xml",
  "regex",
  "rstest",

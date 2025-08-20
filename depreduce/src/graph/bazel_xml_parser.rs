@@ -280,7 +280,7 @@ impl Query {
                                                     graph.add_edge(
                                                         node_id,
                                                         dep_node_id,
-                                                        EdgeProps {},
+                                                        EdgeProps::default(),
                                                     )?;
                                                 }
                                             }
@@ -305,7 +305,7 @@ impl Query {
                                         });
 
                                     if graph.get_edge_id(node_id, tgt).is_none() {
-                                        graph.add_edge(node_id, tgt, EdgeProps {})?;
+                                        graph.add_edge(node_id, tgt, EdgeProps::default())?;
                                     }
                                 }
                                 VariantProp::RuleOutput(rule_io) => {
@@ -326,10 +326,56 @@ impl Query {
                                         });
 
                                     if graph.get_edge_id(src, node_id).is_none() {
-                                        graph.add_edge(src, node_id, EdgeProps {})?;
+                                        graph.add_edge(src, node_id, EdgeProps::default())?;
                                     }
                                 }
                                 _ => {}
+                            }
+                        }
+                        if deps_only {
+                            // deps from exports are unremovable because we only consider `deps` for removal
+                            // but they still need to be in the graph as we analyze the transitive dependencies
+                            for prop in props {
+                                match prop {
+                                    VariantProp::List(list)
+                                        if list
+                                            .name
+                                            .as_ref()
+                                            .map_or(false, |name| name == "exports") =>
+                                    {
+                                        if let Some(items) = &list.items {
+                                            for item in items {
+                                                if let VariantProp::Label(label) = item {
+                                                    let dep_name = label.value.as_ref().unwrap();
+                                                    let dep_node_id = graph
+                                                        .get_node_id(dep_name)
+                                                        .unwrap_or_else(|| {
+                                                            graph
+                                                                .add_node(
+                                                                    dep_name.clone(),
+                                                                    NodeProps {
+                                                                        t: NodeType::Unknown,
+                                                                    },
+                                                                )
+                                                                .unwrap()
+                                                        });
+
+                                                    if graph
+                                                        .get_edge_id(node_id, dep_node_id)
+                                                        .is_none()
+                                                    {
+                                                        graph.add_edge(
+                                                            node_id,
+                                                            dep_node_id,
+                                                            EdgeProps { unremovable: true },
+                                                        )?;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    _ => {}
+                                }
                             }
                         }
                     }

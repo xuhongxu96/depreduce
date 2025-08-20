@@ -181,6 +181,22 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
+        if let Some(edge_id) = self.graph.get_edge_id(dependent_node_id, node_id) {
+            if self.graph.edges[edge_id]
+                .as_ref()
+                .unwrap()
+                .props
+                .unremovable
+            {
+                self.log(&format!(
+                    "  Skipping removing {} -> {} (edge is unremovable)\n",
+                    dependent_label(),
+                    label()
+                ));
+                return false;
+            }
+        }
+
         true
     }
 
@@ -263,7 +279,7 @@ impl<'a> ReduceContext<'a> {
         }
 
         self.graph
-            .add_edge(dependent_node_id, node_id, EdgeProps {})
+            .add_edge(dependent_node_id, node_id, EdgeProps::default())
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
             self.graph.calculate_transitive_deps();
@@ -325,8 +341,13 @@ impl<'a> ReduceContext<'a> {
             .node2in_edges
             .get(&node_id)
             .map(|edges| {
-                edges.iter().filter(|(src_node_id, _)| {
-                    !self.graph.nodes[**src_node_id].props.t.is_alias_target()
+                edges.iter().filter(|&(src_node_id, edge_id)| {
+                    !self.graph.nodes[*src_node_id].props.t.is_alias_target()
+                        && !self.graph.edges[*edge_id]
+                            .as_ref()
+                            .unwrap()
+                            .props
+                            .unremovable
                 })
             })
             .map_or(0, |edges| edges.count().try_into().unwrap())
@@ -508,13 +529,23 @@ impl<'a> ReduceContext<'a> {
         self.current_node_id = Some(node_id);
 
         if let Some(dependents) = self.graph.node2in_edges.get(&node_id) {
-            self.dependent_candidates
-                .extend(dependents.iter().map(|(dependent_node_id, _)| {
-                    (
-                        self.node2topsort_index[*dependent_node_id],
-                        *dependent_node_id,
-                    )
-                }))
+            self.dependent_candidates.extend(
+                dependents
+                    .iter()
+                    .filter(|&(_, edge_id)| {
+                        !self.graph.edges[*edge_id]
+                            .as_ref()
+                            .unwrap()
+                            .props
+                            .unremovable
+                    })
+                    .map(|(dependent_node_id, _)| {
+                        (
+                            self.node2topsort_index[*dependent_node_id],
+                            *dependent_node_id,
+                        )
+                    }),
+            )
         }
     }
 
@@ -548,7 +579,10 @@ impl<'a> ReduceContext<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
+    use crate::{
+        editors::BazelDepEditor,
+        graph::bazel_xml_parser::{Query, parse_bazel_xml},
+    };
 
     use super::*;
     use utils::*;
@@ -558,7 +592,13 @@ mod tests {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
         let graph = query.to_dep_graph(false).unwrap();
-        let editor = BazelDepEditor::new(&query, "".to_string());
+        let editor = BazelDepEditor::new(
+            &Query {
+                values: vec![],
+                version: 0,
+            },
+            "",
+        );
         let settings = ReduceSettings {
             editor: &editor,
             build_command: "bazel build //...".to_string(),

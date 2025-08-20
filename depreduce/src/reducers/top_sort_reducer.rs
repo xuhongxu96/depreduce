@@ -346,6 +346,8 @@ impl TopSortReducer {
 
 #[cfg(test)]
 pub(crate) mod tests {
+    use std::path::Path;
+
     use utils::*;
 
     use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
@@ -361,15 +363,40 @@ pub(crate) mod tests {
         additional_actions: impl Fn(&mut ReduceContext) -> (),
         additional_settings: impl Fn(&mut ReduceSettings) -> (),
     ) {
-        let project_dir = get_test_data_path!(project_dir)
-            .to_string_lossy()
+        run_reducer_test_internal(
+            xml_file,
+            original_workspace_root,
+            project_dir,
+            build_script,
+            expected_out,
+            additional_actions,
+            additional_settings,
+            false,
+        );
+    }
+
+    pub fn run_reducer_test_internal(
+        xml_file: &str,
+        original_workspace_root: &str,
+        project_dir: &str,
+        build_script: &str,
+        expected_out: &str,
+        additional_actions: impl Fn(&mut ReduceContext) -> (),
+        additional_settings: impl Fn(&mut ReduceSettings) -> (),
+        deps_only: bool,
+    ) {
+        let project_dir = Path::new(get_test_data_path!(project_dir).to_str().unwrap())
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
             .to_string();
 
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
-        let editor = BazelDepEditor::new(&query, project_dir.clone());
+        let graph = query.to_dep_graph(deps_only).unwrap();
+        let editor = BazelDepEditor::new(&query, &project_dir);
 
         let reducer = TopSortReducer {};
         let mut settings = ReduceSettings {
@@ -379,7 +406,7 @@ pub(crate) mod tests {
                 .to_string(),
             cwd: project_dir.clone(),
             save_build_log: false,
-            deps_only: false,
+            deps_only,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
@@ -492,6 +519,22 @@ pub(crate) mod tests {
             |settings| {
                 settings.disable_optimization_if_transitive_deps_exists = true;
             },
+        );
+    }
+
+    #[test]
+    fn test_keep_direct_deps_exports() {
+        run_reducer_test_internal(
+            "keep-direct-deps-exports-deps.xml",
+            "/data/h445xu/repo/bazel-dep-reduce/examples/keep-direct-deps-exports",
+            "../../../examples/keep-direct-deps-exports",
+            "build.sh",
+            "reducers/keep-direct-deps-exports",
+            |_| {},
+            |settings| {
+                settings.disable_optimization_if_transitive_deps_exists = true;
+            },
+            true,
         );
     }
 
