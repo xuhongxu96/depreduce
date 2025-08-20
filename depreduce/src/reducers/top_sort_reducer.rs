@@ -526,7 +526,7 @@ pub(crate) mod tests {
     fn test_keep_direct_deps_exports() {
         run_reducer_test_internal(
             "keep-direct-deps-exports-deps.xml",
-            "/data/h445xu/repo/bazel-dep-reduce/examples/keep-direct-deps-exports",
+            "/data/h445xu/repo/depreduce/examples/keep-direct-deps-exports",
             "../../../examples/keep-direct-deps-exports",
             "build.sh",
             "reducers/keep-direct-deps-exports",
