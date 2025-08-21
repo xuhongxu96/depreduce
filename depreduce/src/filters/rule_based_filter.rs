@@ -158,7 +158,7 @@ mod tests {
         "#;
 
         let query = parse_bazel_xml(xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
 
         let res = filter.filter(&graph, &query);
 

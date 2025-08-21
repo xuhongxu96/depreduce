@@ -65,7 +65,7 @@ mod tests {
     fn test_rebuild_cost_calculator_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
         let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
         assert_eq!(5, calculator.calculate_rebuild_cost(a_cpp_node_id));
@@ -94,7 +94,7 @@ mod tests {
     fn test_rebuild_cost_calculator_cxx_optimized() {
         let xml = read_test_data!("cxx-deps-optimized.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
         let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
         assert_eq!(4, calculator.calculate_rebuild_cost(a_cpp_node_id));

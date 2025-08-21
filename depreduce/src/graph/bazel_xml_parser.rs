@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::Deserialize;
 
 use crate::graph::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType};
@@ -210,7 +212,11 @@ impl Query {
             .collect()
     }
 
-    pub fn to_dep_graph(&self, deps_only: bool) -> Result<DependencyGraph, String> {
+    pub fn to_dep_graph(
+        &self,
+        deps_only: bool,
+        readonly_deps_attrs: &HashSet<String>,
+    ) -> Result<DependencyGraph, String> {
         let mut graph = DependencyGraph::new();
 
         for value in &self.values {
@@ -256,10 +262,9 @@ impl Query {
                             for prop in props {
                                 match prop {
                                     VariantProp::List(list)
-                                        if list
-                                            .name
-                                            .as_ref()
-                                            .map_or(false, |name| name == "exports") =>
+                                        if list.name.as_ref().map_or(false, |name| {
+                                            readonly_deps_attrs.contains(name)
+                                        }) =>
                                     {
                                         if let Some(items) = &list.items {
                                             for item in items {
@@ -442,7 +447,7 @@ mod tests {
     fn test_convert_query_to_dep_graph_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -455,7 +460,7 @@ mod tests {
     fn test_convert_query_to_dep_graph_cxx_deps_only() {
         let xml = read_test_data!("cxx-deps.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(true).unwrap();
+        let graph = query.to_dep_graph(true, &HashSet::new()).unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -468,7 +473,7 @@ mod tests {
     fn test_convert_query_to_dep_graph_perses() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
 
         let res = to_json_lines(&graph.to_dependency_map().to_sorted_vec());
         assert_eq!(

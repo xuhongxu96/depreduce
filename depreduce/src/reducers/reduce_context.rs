@@ -596,7 +596,7 @@ mod tests {
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
         let editor = BazelDepEditor::new(
             &Query {
                 values: vec![],

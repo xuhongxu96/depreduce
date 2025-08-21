@@ -25,6 +25,9 @@ pub struct FilterSpecification {
 pub struct ReduceConfig {
     pub from: FilterSpecification,
     pub to: FilterSpecification,
+
+    #[serde(default = "HashSet::new")]
+    pub readonly_deps_attrs: HashSet<String>,
 }
 
 impl FilterType {

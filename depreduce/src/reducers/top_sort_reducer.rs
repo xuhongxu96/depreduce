@@ -316,6 +316,19 @@ impl TopSortReducer {
             ));
         }
 
+        ctx.log("Unremovable edges:\n");
+        for i in 0..ctx.graph.edges.len() {
+            if let Some(e) = ctx.graph.edges[i].clone() {
+                if e.props.unremovable {
+                    ctx.log(&format!(
+                        "  {} -> {}\n",
+                        ctx.graph.nodes.get(e.from).unwrap().label,
+                        ctx.graph.nodes.get(e.to).unwrap().label
+                    ));
+                }
+            }
+        }
+
         match ctx.try_build() {
             Ok(status) => {
                 ctx.log(&format!("  Triage build: {}\n", status));
@@ -384,6 +397,7 @@ pub(crate) mod tests {
             additional_actions,
             additional_settings,
             false,
+            &HashSet::new(),
         );
     }
 
@@ -396,6 +410,7 @@ pub(crate) mod tests {
         additional_actions: impl Fn(&mut ReduceContext) -> (),
         additional_settings: impl Fn(&mut ReduceSettings) -> (),
         deps_only: bool,
+        readonly_deps_attrs: &HashSet<String>,
     ) {
         let project_dir = Path::new(get_test_data_path!(project_dir).to_str().unwrap())
             .canonicalize()
@@ -407,7 +422,7 @@ pub(crate) mod tests {
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(deps_only).unwrap();
+        let graph = query.to_dep_graph(deps_only, readonly_deps_attrs).unwrap();
         let editor = BazelDepEditor::new(&query, &project_dir);
 
         let reducer = TopSortReducer {};
@@ -547,6 +562,7 @@ pub(crate) mod tests {
                 settings.disable_optimization_if_transitive_deps_exists = true;
             },
             true,
+            &HashSet::from(["exports".to_string()]),
         );
     }
 

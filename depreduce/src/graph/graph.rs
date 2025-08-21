@@ -177,6 +177,10 @@ impl DependencyGraph {
         }
 
         let edge = self.edges[edge_id].as_ref().unwrap();
+        if edge.props.unremovable {
+            return Err(format!("Edge with id {} is marked as unremovable", edge_id));
+        }
+
         if let Some(edges) = self.node2out_edges.get_mut(&edge.from) {
             edges.remove(&edge.to);
         }

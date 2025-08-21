@@ -99,17 +99,19 @@ fn run_reducer_test(
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
 
-    let xml_str = get_bazel_query(&args.workspace, &args.target);
-    let query = parse_bazel_xml(&xml_str).unwrap();
-    let graph = query.to_dep_graph(args.deps_only).unwrap();
-    println!("Parsed dep graph");
-    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
-    println!("Original rebuild cost: {}", original_cost);
-
     let config = ReduceConfig::from_toml(
         &std::fs::read_to_string(&args.config).expect("Failed to read config file"),
     )
     .expect("Failed to parse config file");
+
+    let xml_str = get_bazel_query(&args.workspace, &args.target);
+    let query = parse_bazel_xml(&xml_str).unwrap();
+    let graph = query
+        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
+        .unwrap();
+    println!("Parsed dep graph");
+    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+    println!("Original rebuild cost: {}", original_cost);
 
     let skip_from_node_labels = config.from.get_skip_nodes(&graph, &query);
     let skip_to_node_labels = config.to.get_skip_nodes(&graph, &query);
@@ -214,7 +216,9 @@ fn run_reducer_test(
     // Recalculate the rebuild cost after reduction
     let new_xml_str = get_bazel_query(&args.workspace, &args.target);
     let new_query = parse_bazel_xml(&new_xml_str).unwrap();
-    let new_graph = new_query.to_dep_graph(args.deps_only).unwrap();
+    let new_graph = new_query
+        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
+        .unwrap();
     let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 
