@@ -152,6 +152,11 @@ impl<'a> ReduceContext<'a> {
 
         if self.is_added_dep(dependent_node_id, node_id) {
             // If the edge was added by us, we can always remove it.
+            self.log(&format!(
+                "  Allow removing {} -> {} (added by us)\n",
+                dependent_label(),
+                label()
+            ));
             return true;
         }
 
