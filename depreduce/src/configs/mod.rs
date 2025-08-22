@@ -13,6 +13,7 @@ pub enum FilterType {
     Rule(RuleBasedFilter),
     FunctionCall(FunctionCallFilter),
     Alias(AliasLikeFilter),
+    AttrRule(AttrRuleBasedFilter),
 }
 
 #[derive(Debug, Deserialize)]
@@ -36,6 +37,7 @@ impl FilterType {
             FilterType::Rule(f) => f,
             FilterType::FunctionCall(f) => f,
             FilterType::Alias(f) => f,
+            FilterType::AttrRule(f) => f,
         }
     }
 }

@@ -61,10 +61,14 @@ impl<T: InternalFilterable> Filterable for T {
     }
 }
 
+mod executable_rules;
+
 mod alias_like_filter;
+mod attr_rule_based_filter;
 mod function_call_filter;
 mod rule_based_filter;
 
 pub use alias_like_filter::AliasLikeFilter;
+pub use attr_rule_based_filter::AttrRuleBasedFilter;
 pub use function_call_filter::FunctionCallFilter;
 pub use rule_based_filter::RuleBasedFilter;

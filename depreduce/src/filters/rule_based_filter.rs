@@ -4,13 +4,11 @@ use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
-    filters::{CommonFilterOptions, Filterable, InternalFilterable},
+    filters::{
+        CommonFilterOptions, Filterable, InternalFilterable, executable_rules::ExecutableRules,
+    },
     graph::{DependencyGraph, NodeId, bazel_xml_parser::Query},
 };
-struct ExecutableRules {
-    regexes: Vec<Regex>,
-    names: HashSet<String>,
-}
 
 struct ExecutableFilterRules {
     rule_class_rules: ExecutableRules,
@@ -37,39 +35,12 @@ pub struct RuleBasedFilter {
     pub options: CommonFilterOptions,
 }
 
-impl ExecutableRules {
-    fn parse(rules: &[String]) -> Self {
-        let mut regexes = Vec::new();
-        let mut names = HashSet::new();
-
-        for rule in rules {
-            if rule.starts_with("regex:") {
-                if let Ok(regex) = Regex::new(&rule["regex:".len()..]) {
-                    regexes.push(regex);
-                }
-            } else {
-                names.insert(rule.clone());
-            }
-        }
-
-        ExecutableRules { regexes, names }
-    }
-}
-
 impl ExecutableFilterRules {
     pub fn is_match(&self, rule_class: &str, target: &str) -> bool {
-        self.rule_class_rules.names.contains(rule_class)
-            || self.target_name_rules.names.contains(target)
-            || self
-                .rule_class_rules
-                .regexes
-                .iter()
-                .any(|rule| rule.is_match(rule_class))
-            || self
-                .target_name_rules
-                .regexes
-                .iter()
-                .any(|rule| rule.is_match(target))
+        self.rule_class_rules.is_match_names(rule_class)
+            || self.target_name_rules.is_match_names(target)
+            || self.rule_class_rules.is_match_regexes(rule_class)
+            || self.target_name_rules.is_match_regexes(target)
     }
 }
 

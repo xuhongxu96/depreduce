@@ -1,0 +1,45 @@
+readonly_deps_attrs = ["exports"]
+
+[[from.filters]]
+type = "Rule"
+allow.rule_classes = [
+    'ng_project',
+    'ts_project',
+]
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$', 'sass_library']
+scope = "Remove"
+
+[[to.filters]]
+type = "AttrRule"
+attrs = ['srcs']
+rules = [
+    'regex:\.d\.ts$',
+    'regex:\.api\.ts$',
+    'regex:\.extensions\.ts$',
+    'regex:\.init\.ts$',
+]
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"
