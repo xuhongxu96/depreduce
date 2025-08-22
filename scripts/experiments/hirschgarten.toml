@@ -1,4 +1,4 @@
-readonly_deps_attrs = ["exports", "associates"]
+readonly_deps_attrs = ["exports", "associates", "jars"]
 
 [[from.filters]]
 type = "Rule"
