@@ -23,6 +23,7 @@ pub struct ReduceSettings<'a> {
     pub disable_dependency_lifting: bool,
     pub disable_topological_sorting: bool,
     pub disable_optimization_if_transitive_deps_exists: bool,
+    pub timeout_seconds: u64,
 
     pub skip_from_node_ids_for_addition: HashSet<NodeId>,
     pub skip_to_node_ids_for_addition: HashSet<NodeId>,
@@ -409,6 +410,7 @@ impl<'a> ReduceContext<'a> {
             "  Running build command: {} (cwd: {})\n",
             self.settings.build_command, self.settings.cwd
         ));
+        let start_time = std::time::Instant::now();
         let mut process = Command::new("/bin/bash")
             .arg(&self.settings.build_command)
             .current_dir(&self.settings.cwd)
@@ -429,6 +431,61 @@ impl<'a> ReduceContext<'a> {
             }
             self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDOUT));
             self.log("\n");
+
+            let elapsed = start_time.elapsed();
+            if self.settings.timeout_seconds > 0
+                && elapsed.as_secs() >= self.settings.timeout_seconds
+            {
+                self.log("  Build is taking too long, killing the process...\n");
+                process.kill().ok();
+
+                let mut process = Command::new("bazel")
+                    .arg("shutdown")
+                    .current_dir(&self.settings.cwd)
+                    .stderr(Stdio::piped())
+                    .spawn()?;
+
+                let stderr = process.stderr.as_mut().unwrap();
+                let stderr_reader = BufReader::new(stderr);
+                let stderr_lines = stderr_reader.lines();
+
+                for line in stderr_lines {
+                    self.log(&indent_all_lines(
+                        &line
+                            .as_ref()
+                            .unwrap_or(&"<failed to read line>".to_string()),
+                        INDENT_SIZE_FOR_STDOUT,
+                    ));
+                    if line.as_ref().map_or(false, |l| {
+                        l.contains("Waiting for it to complete on the server (server_pid=")
+                    }) {
+                        let server_pid = line
+                            .unwrap()
+                            .split("server_pid=")
+                            .nth(1)
+                            .and_then(|s| s.split(')').next())
+                            .and_then(|s| s.parse::<i32>().ok());
+                        if let Some(pid) = server_pid {
+                            self.log(&format!(
+                                "  Killing bazel server process with PID {}\n",
+                                pid
+                            ));
+                            Command::new("kill")
+                                .arg("-9")
+                                .arg(pid.to_string())
+                                .output()
+                                .ok();
+                        }
+                    }
+                }
+
+                process.wait().ok();
+
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::TimedOut,
+                    "Build timed out",
+                ));
+            }
         }
 
         let exit = process.wait()?;
@@ -610,6 +667,7 @@ mod tests {
             cwd: ".".to_string(),
             save_build_log: false,
             deps_only: false,
+            timeout_seconds: 0,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,

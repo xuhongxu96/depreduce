@@ -1,0 +1,38 @@
+readonly_deps_attrs = ["exports", "jars"]
+timeout_seconds = 600
+
+[[from.filters]]
+type = "Rule"
+block.rule_classes = [
+    'regex:^javadoc_',
+    'regex:_import$',
+    'regex:^py_',
+    'regex:^js_',
+]
+block.target_names = ['regex:^//plugins']
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

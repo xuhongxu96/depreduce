@@ -29,6 +29,9 @@ pub struct ReduceConfig {
 
     #[serde(default = "HashSet::new")]
     pub readonly_deps_attrs: HashSet<String>,
+
+    #[serde(default)]
+    pub timeout_seconds: u64,
 }
 
 impl FilterType {

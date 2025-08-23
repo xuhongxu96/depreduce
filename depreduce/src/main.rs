@@ -164,6 +164,7 @@ fn run_reducer_test(
         disable_topological_sorting: args.disable_topological_sorting,
         disable_optimization_if_transitive_deps_exists: !args
             .enable_optimization_if_transitive_deps_exists,
+        timeout_seconds: config.timeout_seconds,
 
         skip_from_node_ids_for_removal: skip_from_node_labels
             .for_removal

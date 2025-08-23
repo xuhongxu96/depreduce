@@ -5,3 +5,4 @@ export RUST_BACKTRACE=1
     --deps-only \
     --config $PWD/scripts/experiments/angular.toml \
     --output angular-output > angular.stdout 2>angular.stderr
+# https://github.com/angular/angular/pull/63348

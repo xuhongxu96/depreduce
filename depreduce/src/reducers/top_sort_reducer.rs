@@ -434,6 +434,7 @@ pub(crate) mod tests {
             cwd: project_dir.clone(),
             save_build_log: false,
             deps_only,
+            timeout_seconds: 0,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
