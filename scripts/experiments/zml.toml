@@ -1,22 +1,12 @@
-readonly_deps_attrs = ["exports", "jars"]
-timeout_seconds = 600
-
 [[from.filters]]
 type = "Rule"
-block.rule_classes = [
-    'regex:^javadoc_',
-    'regex:_import$',
-    'regex:^py_',
-    'regex:^js_',
-    'rollup_bundle',
-]
-block.target_names = ['regex:^//plugins']
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
 scope = "Remove"
 
 [[from.filters]]
 type = "FunctionCall"
 func = "select"
-keys = ["deps", "defines", "srcs"]
+keys = ["deps", "defines"]
 scope = "Remove"
 
 [[from.filters]]
@@ -31,7 +21,7 @@ scope = "Remove"
 [[to.filters]]
 type = "FunctionCall"
 func = "select"
-keys = ["deps", "defines", "srcs"]
+keys = ["deps", "defines"]
 scope = "Remove"
 
 [[to.filters]]
