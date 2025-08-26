@@ -1,4 +1,4 @@
-readonly_deps_attrs = ["exports", "jars"]
+readonly_deps_attrs = ["exports", "associates", "jars"]
 timeout_seconds = 600
 
 [[from.filters]]
@@ -8,12 +8,6 @@ block.rule_classes = [
     'regex:_import$',
     'regex:^py_',
     'regex:^js_',
-    'rollup_bundle',
-]
-block.target_names = [
-    'regex:^//plugins',
-    '//java/com/google/gerrit/util/cli:protogen',
-    '//javatests/com/google/gerrit/entities/converter:proto_converter_tests',
 ]
 scope = "Remove"
 

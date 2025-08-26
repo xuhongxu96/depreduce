@@ -1,5 +1,4 @@
-readonly_deps_attrs = ["exports", "jars"]
-timeout_seconds = 600
+readonly_deps_attrs = ["exports", "associates", "jars"]
 
 [[from.filters]]
 type = "Rule"
@@ -8,13 +7,9 @@ block.rule_classes = [
     'regex:_import$',
     'regex:^py_',
     'regex:^js_',
-    'rollup_bundle',
+    'pkg_tar',
 ]
-block.target_names = [
-    'regex:^//plugins',
-    '//java/com/google/gerrit/util/cli:protogen',
-    '//javatests/com/google/gerrit/entities/converter:proto_converter_tests',
-]
+block.target_names = ['//function/tests:test_definition']
 scope = "Remove"
 
 [[from.filters]]
@@ -30,12 +25,19 @@ scope = "Remove"
 [[to.filters]]
 type = "Rule"
 block.rule_classes = ['regex:_import$']
+block.target_names = ['//util/test:test_utils']
 scope = "Remove"
 
 [[to.filters]]
 type = "FunctionCall"
 func = "select"
 keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "AttrRule"
+attrs = ['tags']
+rules = ['manual']
 scope = "Remove"
 
 [[to.filters]]
