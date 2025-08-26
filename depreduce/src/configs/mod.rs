@@ -1,43 +1,48 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
-use regex::Regex;
 use serde::Deserialize;
 
-pub struct ExecutableRules {
-    regexes: Vec<Regex>,
-    names: HashSet<String>,
-}
+use crate::{
+    filters::*,
+    graph::{DependencyGraph, bazel_xml_parser::Query},
+};
 
-pub struct ExecutableFilterRules {
-    rule_class_rules: ExecutableRules,
-    target_name_rules: ExecutableRules,
-}
-
-pub struct ExecutableFilter {
-    allow: Option<ExecutableFilterRules>,
-    block: Option<ExecutableFilterRules>,
-}
-
-#[derive(Debug, Deserialize, Default)]
-pub struct RuleSpecification {
-    #[serde(default)]
-    pub rule_classes: Vec<String>,
-    #[serde(default)]
-    pub target_names: Vec<String>,
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+pub enum FilterType {
+    Rule(RuleBasedFilter),
+    FunctionCall(FunctionCallFilter),
+    Alias(AliasLikeFilter),
+    AttrRule(AttrRuleBasedFilter),
 }
 
 #[derive(Debug, Deserialize)]
 pub struct FilterSpecification {
     #[serde(default)]
-    pub allow: RuleSpecification,
-    #[serde(default)]
-    pub block: RuleSpecification,
+    pub filters: Vec<FilterType>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ReduceConfig {
     pub from: FilterSpecification,
     pub to: FilterSpecification,
+
+    #[serde(default = "HashSet::new")]
+    pub readonly_deps_attrs: HashSet<String>,
+
+    #[serde(default)]
+    pub timeout_seconds: u64,
+}
+
+impl FilterType {
+    fn to_filterable<'a>(&'a self) -> &'a dyn Filterable {
+        match &self {
+            FilterType::Rule(f) => f,
+            FilterType::FunctionCall(f) => f,
+            FilterType::Alias(f) => f,
+            FilterType::AttrRule(f) => f,
+        }
+    }
 }
 
 impl ReduceConfig {
@@ -46,94 +51,46 @@ impl ReduceConfig {
     }
 }
 
-impl FilterSpecification {
-    pub fn to_executable_filter(&self) -> ExecutableFilter {
-        let allow = if !self.allow.rule_classes.is_empty() || !self.allow.target_names.is_empty() {
-            Some(ExecutableFilterRules {
-                rule_class_rules: ExecutableRules::parse(&self.allow.rule_classes),
-                target_name_rules: ExecutableRules::parse(&self.allow.target_names),
-            })
-        } else {
-            None
-        };
-
-        let block = if !self.block.rule_classes.is_empty() || !self.block.target_names.is_empty() {
-            Some(ExecutableFilterRules {
-                rule_class_rules: ExecutableRules::parse(&self.block.rule_classes),
-                target_name_rules: ExecutableRules::parse(&self.block.target_names),
-            })
-        } else {
-            None
-        };
-
-        ExecutableFilter { allow, block }
-    }
-}
-
-impl ExecutableRules {
-    fn parse(rules: &[String]) -> Self {
-        let mut regexes = Vec::new();
-        let mut names = HashSet::new();
-
-        for rule in rules {
-            if rule.starts_with("regex:") {
-                if let Ok(regex) = Regex::new(&rule["regex:".len()..]) {
-                    regexes.push(regex);
-                }
-            } else {
-                names.insert(rule.clone());
-            }
-        }
-
-        ExecutableRules { regexes, names }
-    }
-}
-
-impl ExecutableFilterRules {
-    pub fn is_match(&self, rule_class: &str, target: &str) -> bool {
-        self.rule_class_rules.names.contains(rule_class)
-            || self.target_name_rules.names.contains(target)
-            || self
-                .rule_class_rules
-                .regexes
-                .iter()
-                .any(|rule| rule.is_match(rule_class))
-            || self
-                .target_name_rules
-                .regexes
-                .iter()
-                .any(|rule| rule.is_match(target))
-    }
-}
-
 pub struct NodeInfo<'a, 'b> {
     pub rule_class: &'a str,
     pub target: &'b str,
 }
 
-impl ExecutableFilter {
-    pub fn get_skip_nodes<'a, 'b>(&self, nodes: &[NodeInfo<'a, 'b>]) -> HashSet<&'b str> {
-        let mut skip_nodes = HashSet::new();
+pub struct SkipNodes<'a> {
+    pub for_addition: HashSet<&'a str>,
+    pub for_removal: HashSet<&'a str>,
+}
 
-        if self.allow.is_none() && self.block.is_none() {
-            return skip_nodes;
-        }
+impl FilterSpecification {
+    pub fn get_skip_nodes<'a, 'b, 'c: 'b>(
+        &self,
+        graph: &'c DependencyGraph,
+        query: &Query,
+    ) -> SkipNodes<'b> {
+        let mut for_addition = HashSet::new();
+        let mut for_removal = HashSet::new();
 
-        for node in nodes {
-            if let Some(allow) = &self.allow {
-                if !allow.is_match(node.rule_class, node.target) {
-                    skip_nodes.insert(node.target);
+        for filter in &self.filters {
+            let filter = filter.to_filterable();
+            let nodes = filter.filter(graph, query);
+            match filter.get_op_type() {
+                FilterOperationScope::Add => {
+                    for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                }
+                FilterOperationScope::Remove => {
+                    for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                }
+                FilterOperationScope::All => {
+                    for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
+                    for_removal.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));
                 }
             }
-
-            if let Some(block) = &self.block {
-                if block.is_match(node.rule_class, node.target) {
-                    skip_nodes.insert(node.target);
-                }
-            }
         }
 
-        skip_nodes
+        SkipNodes {
+            for_addition,
+            for_removal,
+        }
     }
 }
 
@@ -144,37 +101,23 @@ mod tests {
     #[test]
     fn test_parse() {
         let content = r#"
-[from.block]
-rule_classes = ['regex:^javadoc_', 'py_library']
-target_names = ['regex:test$', '//test:a']
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps"]
 
-[to.block]
-rule_classes = ['regex:^javadoc_', 'py_library']
-target_names = ['regex:test$', '//test:a']
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["defines"]
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["defines"]
         "#;
-
         let cfg: ReduceConfig = toml::from_str(content).unwrap();
-        for filter in [&cfg.from, &cfg.to] {
-            let filter = filter.to_executable_filter();
-
-            let res = filter.get_skip_nodes(&[
-                NodeInfo {
-                    rule_class: "javadoc_library",
-                    target: "//test:a",
-                },
-                NodeInfo {
-                    rule_class: "py_library",
-                    target: "//test:b",
-                },
-                NodeInfo {
-                    rule_class: "java_library",
-                    target: "//test:c",
-                },
-            ]);
-
-            assert!(res.contains("//test:a"));
-            assert!(res.contains("//test:b"));
-            assert!(!res.contains("//test:c"));
-        }
+        assert_eq!(cfg.from.filters.len(), 2);
+        assert_eq!(cfg.to.filters.len(), 1);
     }
 }

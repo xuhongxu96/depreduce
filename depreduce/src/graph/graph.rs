@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Debug,
+};
 
 use serde::{Deserialize, Serialize};
 use std::fmt::Write;
@@ -46,8 +49,10 @@ pub struct Node {
     pub props: NodeProps,
 }
 
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
-pub struct EdgeProps {}
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EdgeProps {
+    pub unremovable: bool,
+}
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Edge {
@@ -172,6 +177,10 @@ impl DependencyGraph {
         }
 
         let edge = self.edges[edge_id].as_ref().unwrap();
+        if edge.props.unremovable {
+            return Err(format!("Edge with id {} is marked as unremovable", edge_id));
+        }
+
         if let Some(edges) = self.node2out_edges.get_mut(&edge.from) {
             edges.remove(&edge.to);
         }
@@ -282,6 +291,55 @@ impl DependencyGraph {
 
         result
     }
+
+    pub fn calculate_transitive_deps(&self) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
+        let mut transitive_deps = vec![HashSet::new(); self.nodes.len()];
+        let mut transitive_without_direct_deps = vec![HashSet::new(); self.nodes.len()];
+
+        let mut topsorted_nodes = self.topsort();
+        topsorted_nodes.reverse();
+
+        for node_id in topsorted_nodes {
+            let mut deps = HashSet::new();
+            let mut non_direct_deps = HashSet::new();
+            if let Some(out_edges) = self.node2out_edges.get(&node_id) {
+                for (&dep_node_id, _) in out_edges {
+                    // we do not consider the direct deps as transitive deps
+                    deps.insert(dep_node_id);
+                    deps.extend(&transitive_deps[dep_node_id]);
+                    non_direct_deps.extend(&transitive_deps[dep_node_id]);
+                }
+            }
+            transitive_deps[node_id] = deps;
+            transitive_without_direct_deps[node_id] = non_direct_deps;
+        }
+
+        (transitive_deps, transitive_without_direct_deps)
+    }
+
+    pub fn calculate_transitive_dependents(&self) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
+        let mut transitive_dependents = vec![HashSet::new(); self.nodes.len()];
+        let mut transitive_without_direct_dependents = vec![HashSet::new(); self.nodes.len()];
+
+        let topsorted_nodes = self.topsort();
+
+        for node_id in topsorted_nodes {
+            let mut dependents = HashSet::new();
+            let mut non_direct_dependents = HashSet::new();
+            if let Some(in_edges) = self.node2in_edges.get(&node_id) {
+                for (&dependent_node_id, _) in in_edges {
+                    // we do not consider the direct deps as transitive deps
+                    dependents.insert(dependent_node_id);
+                    dependents.extend(&transitive_dependents[dependent_node_id]);
+                    non_direct_dependents.extend(&transitive_dependents[dependent_node_id]);
+                }
+            }
+            transitive_dependents[node_id] = dependents;
+            transitive_without_direct_dependents[node_id] = non_direct_dependents;
+        }
+
+        (transitive_dependents, transitive_without_direct_dependents)
+    }
 }
 
 #[cfg(test)]
@@ -347,7 +405,7 @@ mod tests {
             )
             .unwrap();
         let edge_id = graph
-            .add_edge(id1, id2, EdgeProps {})
+            .add_edge(id1, id2, EdgeProps::default())
             .expect("Should add edge");
         assert_eq!(edge_id, 0);
         assert_eq!(graph.edges.len(), 1);
@@ -366,7 +424,7 @@ mod tests {
                 },
             )
             .unwrap();
-        let result = graph.add_edge(id, id, EdgeProps {});
+        let result = graph.add_edge(id, id, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -381,7 +439,7 @@ mod tests {
                 },
             )
             .unwrap();
-        let result = graph.add_edge(id, id + 1, EdgeProps {});
+        let result = graph.add_edge(id, id + 1, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -404,9 +462,9 @@ mod tests {
                 },
             )
             .unwrap();
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
         // Try to add the same edge again
-        let result = graph.add_edge(id1, id2, EdgeProps {});
+        let result = graph.add_edge(id1, id2, EdgeProps::default());
         assert!(result.is_err());
     }
 
@@ -446,7 +504,7 @@ mod tests {
                 },
             )
             .unwrap();
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
 
         // Simulate deserialization by clearing indices
         graph.name2node.clear();
@@ -501,9 +559,15 @@ mod tests {
             )
             .unwrap();
 
-        graph.add_edge(id_foo, id_bar, EdgeProps {}).unwrap();
-        graph.add_edge(id_bar, id_baz, EdgeProps {}).unwrap();
-        graph.add_edge(id_foo, id_baz, EdgeProps {}).unwrap();
+        graph
+            .add_edge(id_foo, id_bar, EdgeProps::default())
+            .unwrap();
+        graph
+            .add_edge(id_bar, id_baz, EdgeProps::default())
+            .unwrap();
+        graph
+            .add_edge(id_foo, id_baz, EdgeProps::default())
+            .unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -540,8 +604,8 @@ mod tests {
             )
             .unwrap();
 
-        graph.add_edge(id1, id2, EdgeProps {}).unwrap();
-        graph.add_edge(id2, id3, EdgeProps {}).unwrap();
+        graph.add_edge(id1, id2, EdgeProps::default()).unwrap();
+        graph.add_edge(id2, id3, EdgeProps::default()).unwrap();
 
         let order = graph.topsort();
         let pos = |id| order.iter().position(|&x| x == id).unwrap();
@@ -623,10 +687,10 @@ mod tests {
             .unwrap();
 
         // a -> b, a -> c, b -> d, c -> d
-        graph.add_edge(id_a, id_b, EdgeProps {}).unwrap();
-        graph.add_edge(id_a, id_c, EdgeProps {}).unwrap();
-        graph.add_edge(id_b, id_d, EdgeProps {}).unwrap();
-        graph.add_edge(id_c, id_d, EdgeProps {}).unwrap();
+        graph.add_edge(id_a, id_b, EdgeProps::default()).unwrap();
+        graph.add_edge(id_a, id_c, EdgeProps::default()).unwrap();
+        graph.add_edge(id_b, id_d, EdgeProps::default()).unwrap();
+        graph.add_edge(id_c, id_d, EdgeProps::default()).unwrap();
 
         let order = graph.topsort();
         let pos = |id| order.iter().position(|&x| x == id).unwrap();

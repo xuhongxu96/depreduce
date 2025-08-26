@@ -30,6 +30,14 @@ struct Args {
     #[arg(
         short,
         long,
+        default_value = "//...",
+        help = "Target to query dependencies for"
+    )]
+    target: String,
+
+    #[arg(
+        short,
+        long,
         default_value = "logs/",
         help = "Output directory for reduction attempts and dep graph"
     )]
@@ -91,53 +99,54 @@ fn run_reducer_test(
     println!("Build script: {}", build_script);
     println!("Args: {:#?}", args);
 
-    let xml_str = get_bazel_query(&args.workspace);
-    let query = parse_bazel_xml(&xml_str).unwrap();
-    let graph = query.to_dep_graph(args.deps_only).unwrap();
-    println!("Parsed dep graph");
-    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
-    println!("Original rebuild cost: {}", original_cost);
-
     let config = ReduceConfig::from_toml(
         &std::fs::read_to_string(&args.config).expect("Failed to read config file"),
     )
     .expect("Failed to parse config file");
 
-    let node_and_rule_class = query.to_node_and_rule_class();
+    let xml_str = get_bazel_query(&args.workspace, &args.target);
+    let query = parse_bazel_xml(&xml_str).unwrap();
+    let graph = query
+        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
+        .unwrap();
+    println!("Parsed dep graph");
+    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+    println!("Original rebuild cost: {}", original_cost);
 
-    let from_filter = config.from.to_executable_filter();
-    let skip_from_node_labels = from_filter.get_skip_nodes(
-        &node_and_rule_class
-            .iter()
-            .map(|(node, class)| NodeInfo {
-                rule_class: class.as_str(),
-                target: node.as_str(),
-            })
-            .collect::<Vec<_>>()[..],
+    let skip_from_node_labels = config.from.get_skip_nodes(&graph, &query);
+    let skip_to_node_labels = config.to.get_skip_nodes(&graph, &query);
+
+    println!(
+        "Skipping `from` nodes for removal ({}): {:#?}",
+        skip_from_node_labels.for_removal.len(),
+        skip_from_node_labels.for_removal
     );
-    let to_filter = config.to.to_executable_filter();
-    let skip_to_node_labels = to_filter.get_skip_nodes(
-        &node_and_rule_class
-            .iter()
-            .map(|(node, class)| NodeInfo {
-                rule_class: class.as_str(),
-                target: node.as_str(),
-            })
-            .collect::<Vec<_>>()[..],
+    println!(
+        "Skipping `to` nodes for removal ({}): {:#?}",
+        skip_to_node_labels.for_removal.len(),
+        skip_to_node_labels.for_removal
     );
 
-    println!("Skipping `from` nodes: {:#?}", skip_from_node_labels);
-    println!("Skipping `to` nodes: {:#?}", skip_to_node_labels);
+    println!(
+        "Skipping `from` nodes for addition ({}): {:#?}",
+        skip_from_node_labels.for_addition.len(),
+        skip_from_node_labels.for_addition
+    );
+    println!(
+        "Skipping `to` nodes for addition ({}): {:#?}",
+        skip_to_node_labels.for_addition.len(),
+        skip_to_node_labels.for_addition
+    );
 
     let editor = if args.deps_only {
         BazelDepEditor::new_with_custom_keywords(
             &query,
-            workspace_root.to_string(),
+            &workspace_root,
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
         )
     } else {
-        BazelDepEditor::new(&query, workspace_root.to_string())
+        BazelDepEditor::new(&query, &workspace_root)
     };
 
     let reducer = TopSortReducer {};
@@ -155,8 +164,10 @@ fn run_reducer_test(
         disable_topological_sorting: args.disable_topological_sorting,
         disable_optimization_if_transitive_deps_exists: !args
             .enable_optimization_if_transitive_deps_exists,
+        timeout_seconds: config.timeout_seconds,
 
-        skip_from_node_ids: skip_from_node_labels
+        skip_from_node_ids_for_removal: skip_from_node_labels
+            .for_removal
             .iter()
             .map(|label| {
                 graph
@@ -164,7 +175,26 @@ fn run_reducer_test(
                     .expect(&format!("Node {} not found in graph", label))
             })
             .collect(),
-        skip_to_node_ids: skip_to_node_labels
+        skip_to_node_ids_for_removal: skip_to_node_labels
+            .for_removal
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
+        skip_from_node_ids_for_addition: skip_from_node_labels
+            .for_addition
+            .iter()
+            .map(|label| {
+                graph
+                    .get_node_id(label)
+                    .expect(&format!("Node {} not found in graph", label))
+            })
+            .collect(),
+        skip_to_node_ids_for_addition: skip_to_node_labels
+            .for_addition
             .iter()
             .map(|label| {
                 graph
@@ -175,17 +205,21 @@ fn run_reducer_test(
     };
     let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
-    let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
-    postprocessor.process();
+    if !settings.disable_dependency_flattening_for_alias_targets {
+        let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
+        postprocessor.process();
+    }
 
     println!("End reduction test at {:?}", chrono::offset::Local::now());
 
     let attempts = ctx.get_attempts().to_vec();
 
     // Recalculate the rebuild cost after reduction
-    let new_xml_str = get_bazel_query(&args.workspace);
+    let new_xml_str = get_bazel_query(&args.workspace, &args.target);
     let new_query = parse_bazel_xml(&new_xml_str).unwrap();
-    let new_graph = new_query.to_dep_graph(args.deps_only).unwrap();
+    let new_graph = new_query
+        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
+        .unwrap();
     let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 

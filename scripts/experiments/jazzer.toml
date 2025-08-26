@@ -1,0 +1,41 @@
+[[from.filters]]
+type = "Rule"
+block.rule_classes = [
+    'regex:^javadoc_',
+    'regex:_import$',
+    'regex:^py_',
+    'sh_binary',
+    'cc_library',
+]
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+scope = "Remove"
+
+[[from.filters]]
+type = "AttrRule"
+attrs = ['deps']
+rules = ['regex:^//deploy:']
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

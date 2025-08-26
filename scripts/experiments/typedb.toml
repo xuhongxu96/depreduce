@@ -1,0 +1,45 @@
+readonly_deps_attrs = ["exports", "associates", "jars"]
+
+[[from.filters]]
+type = "Rule"
+block.rule_classes = [
+    'regex:^javadoc_',
+    'regex:_import$',
+    'regex:^py_',
+    'regex:^js_',
+    'pkg_tar',
+]
+block.target_names = ['//function/tests:test_definition']
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+block.target_names = ['//util/test:test_utils']
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "AttrRule"
+attrs = ['tags']
+rules = ['manual']
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

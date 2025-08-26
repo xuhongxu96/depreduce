@@ -1,0 +1,56 @@
+readonly_deps_attrs = ["exports"]
+
+[[from.filters]]
+type = "Rule"
+allow.rule_classes = ['ng_project', 'ts_project']
+block.target_names = [
+    '//adev/src/context:llms_lib',
+    '//packages/core/test/bundling/image-directive:image-directive',
+    '//packages/core/test/render3:domino',
+]
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[from.filters]]
+type = "AttrRule"
+attrs = ['srcs']
+rules = ['regex:\.mts$', 'regex:\.mjs$', 'regex:_spec\.ts$']
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$', 'sass_library']
+block.target_names = ['//:node_modules/@types']
+scope = "Remove"
+
+[[to.filters]]
+type = "AttrRule"
+attrs = ['srcs']
+rules = [
+    'regex:\.d\.ts$',
+    'regex:\.api\.ts$',
+    'regex:\.extensions\.ts$',
+    'regex:\.init\.ts$',
+    'regex:\.mts$',
+    'regex:\.mjs$',
+]
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

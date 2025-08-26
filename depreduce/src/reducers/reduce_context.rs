@@ -23,9 +23,12 @@ pub struct ReduceSettings<'a> {
     pub disable_dependency_lifting: bool,
     pub disable_topological_sorting: bool,
     pub disable_optimization_if_transitive_deps_exists: bool,
+    pub timeout_seconds: u64,
 
-    pub skip_from_node_ids: HashSet<NodeId>,
-    pub skip_to_node_ids: HashSet<NodeId>,
+    pub skip_from_node_ids_for_addition: HashSet<NodeId>,
+    pub skip_to_node_ids_for_addition: HashSet<NodeId>,
+    pub skip_from_node_ids_for_removal: HashSet<NodeId>,
+    pub skip_to_node_ids_for_removal: HashSet<NodeId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -101,7 +104,7 @@ pub struct ReduceContext<'a> {
     history: HashMap<String, String>,
     transitive_deps: Vec<HashSet<NodeId>>,
     transitive_without_direct_deps: Vec<HashSet<NodeId>>,
-    added_deps: HashSet<(NodeId, NodeId)>, // src -> dep
+    original_deps: HashSet<(NodeId, NodeId)>, // src -> dep
 
     current_node_id: Option<NodeId>,
     dependent_candidates: BinaryHeap<(usize, NodeId)>,
@@ -110,37 +113,19 @@ pub struct ReduceContext<'a> {
     node2topsort_index: Vec<usize>,
 }
 
-fn calculate_transitive_deps(
-    graph: &DependencyGraph,
-) -> (Vec<HashSet<NodeId>>, Vec<HashSet<NodeId>>) {
-    let mut transitive_deps = vec![HashSet::new(); graph.nodes.len()];
-    let mut transitive_without_direct_deps = vec![HashSet::new(); graph.nodes.len()];
-
-    let mut topsorted_nodes = graph.topsort();
-    topsorted_nodes.reverse();
-
-    for node_id in topsorted_nodes {
-        let mut deps = HashSet::new();
-        let mut non_direct_deps = HashSet::new();
-        if let Some(out_edges) = graph.node2out_edges.get(&node_id) {
-            for (&dep_node_id, _) in out_edges {
-                // we do not consider the direct deps as transitive deps
-                deps.insert(dep_node_id);
-                deps.extend(&transitive_deps[dep_node_id]);
-                non_direct_deps.extend(&transitive_deps[dep_node_id]);
-            }
-        }
-        transitive_deps[node_id] = deps;
-        transitive_without_direct_deps[node_id] = non_direct_deps;
-    }
-
-    (transitive_deps, transitive_without_direct_deps)
-}
-
 impl<'a> ReduceContext<'a> {
     pub fn new(graph: DependencyGraph, settings: &'a ReduceSettings<'a>) -> Self {
         let graph_node_len = graph.nodes.len();
-        let (transitive_deps, transitive_without_direct_deps) = calculate_transitive_deps(&graph);
+        let (transitive_deps, transitive_without_direct_deps) = graph.calculate_transitive_deps();
+        let original_deps = graph
+            .node2in_edges
+            .iter()
+            .flat_map(|(node_id, edges)| {
+                edges
+                    .iter()
+                    .map(move |(dependent_node_id, _)| (*dependent_node_id, *node_id))
+            })
+            .collect::<HashSet<_>>();
 
         Self {
             graph,
@@ -148,7 +133,7 @@ impl<'a> ReduceContext<'a> {
             history: HashMap::new(),
             transitive_deps,
             transitive_without_direct_deps,
-            added_deps: HashSet::new(),
+            original_deps,
             current_node_id: None,
             dependent_candidates: BinaryHeap::new(),
             attempts: Vec::new(),
@@ -166,9 +151,19 @@ impl<'a> ReduceContext<'a> {
         let label = || self.graph.nodes[node_id].label.clone();
         let dependent_label = || self.graph.nodes[dependent_node_id].label.clone();
 
+        if self.is_added_dep(dependent_node_id, node_id) {
+            // If the edge was added by us, we can always remove it.
+            self.log(&format!(
+                "  Allow removing {} -> {} (added by us)\n",
+                dependent_label(),
+                label()
+            ));
+            return true;
+        }
+
         if self
             .settings
-            .skip_from_node_ids
+            .skip_from_node_ids_for_removal
             .contains(&dependent_node_id)
         {
             self.log(&format!(
@@ -179,7 +174,11 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        if self.settings.skip_to_node_ids.contains(&node_id) {
+        if self
+            .settings
+            .skip_to_node_ids_for_removal
+            .contains(&node_id)
+        {
             self.log(&format!(
                 "  Skipping removing {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
@@ -188,17 +187,20 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        if self.graph.nodes[dependent_node_id]
-            .props
-            .t
-            .is_alias_target()
-        {
-            self.log(&format!(
-                "  Skipping removing {} -> {} (alias target)\n",
-                dependent_label(),
-                label()
-            ));
-            return false;
+        if let Some(edge_id) = self.graph.get_edge_id(dependent_node_id, node_id) {
+            if self.graph.edges[edge_id]
+                .as_ref()
+                .unwrap()
+                .props
+                .unremovable
+            {
+                self.log(&format!(
+                    "  Skipping removing {} -> {} (edge is unremovable)\n",
+                    dependent_label(),
+                    label()
+                ));
+                return false;
+            }
         }
 
         true
@@ -221,7 +223,7 @@ impl<'a> ReduceContext<'a> {
 
         if self
             .settings
-            .skip_from_node_ids
+            .skip_from_node_ids_for_addition
             .contains(&dependent_node_id)
         {
             self.log(&format!(
@@ -232,7 +234,11 @@ impl<'a> ReduceContext<'a> {
             return false;
         }
 
-        if self.settings.skip_to_node_ids.contains(&node_id) {
+        if self
+            .settings
+            .skip_to_node_ids_for_addition
+            .contains(&node_id)
+        {
             self.log(&format!(
                 "  Skipping adding {} -> {} (skipped by `to` rules in config)\n",
                 dependent_label(),
@@ -279,11 +285,10 @@ impl<'a> ReduceContext<'a> {
         }
 
         self.graph
-            .add_edge(dependent_node_id, node_id, EdgeProps {})
+            .add_edge(dependent_node_id, node_id, EdgeProps::default())
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
-            calculate_transitive_deps(&self.graph);
-        self.added_deps.insert((dependent_node_id, node_id));
+            self.graph.calculate_transitive_deps();
 
         self.log(
             format!(
@@ -317,8 +322,7 @@ impl<'a> ReduceContext<'a> {
             .remove_edge(self.graph.get_edge_id(dependent_node_id, node_id).unwrap())
             .unwrap();
         (self.transitive_deps, self.transitive_without_direct_deps) =
-            calculate_transitive_deps(&self.graph);
-        self.added_deps.remove(&(dependent_node_id, node_id));
+            self.graph.calculate_transitive_deps();
 
         self.log(
             format!(
@@ -343,8 +347,13 @@ impl<'a> ReduceContext<'a> {
             .node2in_edges
             .get(&node_id)
             .map(|edges| {
-                edges.iter().filter(|(src_node_id, _)| {
-                    !self.graph.nodes[**src_node_id].props.t.is_alias_target()
+                edges.iter().filter(|&(src_node_id, edge_id)| {
+                    !self.graph.nodes[*src_node_id].props.t.is_alias_target()
+                        && !self.graph.edges[*edge_id]
+                            .as_ref()
+                            .unwrap()
+                            .props
+                            .unremovable
                 })
             })
             .map_or(0, |edges| edges.count().try_into().unwrap())
@@ -401,6 +410,7 @@ impl<'a> ReduceContext<'a> {
             "  Running build command: {} (cwd: {})\n",
             self.settings.build_command, self.settings.cwd
         ));
+        let start_time = std::time::Instant::now();
         let mut process = Command::new("/bin/bash")
             .arg(&self.settings.build_command)
             .current_dir(&self.settings.cwd)
@@ -421,6 +431,61 @@ impl<'a> ReduceContext<'a> {
             }
             self.log(&indent_all_lines(&line, INDENT_SIZE_FOR_STDOUT));
             self.log("\n");
+
+            let elapsed = start_time.elapsed();
+            if self.settings.timeout_seconds > 0
+                && elapsed.as_secs() >= self.settings.timeout_seconds
+            {
+                self.log("  Build is taking too long, killing the process...\n");
+                process.kill().ok();
+
+                let mut process = Command::new("bazel")
+                    .arg("shutdown")
+                    .current_dir(&self.settings.cwd)
+                    .stderr(Stdio::piped())
+                    .spawn()?;
+
+                let stderr = process.stderr.as_mut().unwrap();
+                let stderr_reader = BufReader::new(stderr);
+                let stderr_lines = stderr_reader.lines();
+
+                for line in stderr_lines {
+                    self.log(&indent_all_lines(
+                        &line
+                            .as_ref()
+                            .unwrap_or(&"<failed to read line>".to_string()),
+                        INDENT_SIZE_FOR_STDOUT,
+                    ));
+                    if line.as_ref().map_or(false, |l| {
+                        l.contains("Waiting for it to complete on the server (server_pid=")
+                    }) {
+                        let server_pid = line
+                            .unwrap()
+                            .split("server_pid=")
+                            .nth(1)
+                            .and_then(|s| s.split(')').next())
+                            .and_then(|s| s.parse::<i32>().ok());
+                        if let Some(pid) = server_pid {
+                            self.log(&format!(
+                                "  Killing bazel server process with PID {}\n",
+                                pid
+                            ));
+                            Command::new("kill")
+                                .arg("-9")
+                                .arg(pid.to_string())
+                                .output()
+                                .ok();
+                        }
+                    }
+                }
+
+                process.wait().ok();
+
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::TimedOut,
+                    "Build timed out",
+                ));
+            }
         }
 
         let exit = process.wait()?;
@@ -526,13 +591,23 @@ impl<'a> ReduceContext<'a> {
         self.current_node_id = Some(node_id);
 
         if let Some(dependents) = self.graph.node2in_edges.get(&node_id) {
-            self.dependent_candidates
-                .extend(dependents.iter().map(|(dependent_node_id, _)| {
-                    (
-                        self.node2topsort_index[*dependent_node_id],
-                        *dependent_node_id,
-                    )
-                }))
+            self.dependent_candidates.extend(
+                dependents
+                    .iter()
+                    .filter(|&(_, edge_id)| {
+                        !self.graph.edges[*edge_id]
+                            .as_ref()
+                            .unwrap()
+                            .props
+                            .unremovable
+                    })
+                    .map(|(dependent_node_id, _)| {
+                        (
+                            self.node2topsort_index[*dependent_node_id],
+                            *dependent_node_id,
+                        )
+                    }),
+            )
         }
     }
 
@@ -547,7 +622,7 @@ impl<'a> ReduceContext<'a> {
     }
 
     pub fn is_added_dep(&self, dependent_node_id: NodeId, node_id: NodeId) -> bool {
-        self.added_deps.contains(&(dependent_node_id, node_id))
+        !self.original_deps.contains(&(dependent_node_id, node_id))
     }
 
     pub fn has_transitive_deps(
@@ -566,7 +641,10 @@ impl<'a> ReduceContext<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
+    use crate::{
+        editors::BazelDepEditor,
+        graph::bazel_xml_parser::{Query, parse_bazel_xml},
+    };
 
     use super::*;
     use utils::*;
@@ -575,21 +653,30 @@ mod tests {
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false).unwrap();
-        let editor = BazelDepEditor::new(&query, "".to_string());
+        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let editor = BazelDepEditor::new(
+            &Query {
+                values: vec![],
+                version: 0,
+            },
+            "",
+        );
         let settings = ReduceSettings {
             editor: &editor,
             build_command: "bazel build //...".to_string(),
             cwd: ".".to_string(),
             save_build_log: false,
             deps_only: false,
+            timeout_seconds: 0,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
             disable_dependency_lifting: false,
             disable_topological_sorting: false,
             disable_optimization_if_transitive_deps_exists: false,
-            skip_from_node_ids: HashSet::new(),
-            skip_to_node_ids: HashSet::new(),
+            skip_from_node_ids_for_removal: HashSet::new(),
+            skip_to_node_ids_for_removal: HashSet::new(),
+            skip_from_node_ids_for_addition: HashSet::new(),
+            skip_to_node_ids_for_addition: HashSet::new(),
         };
 
         let ctx = ReduceContext::new(graph, &settings);

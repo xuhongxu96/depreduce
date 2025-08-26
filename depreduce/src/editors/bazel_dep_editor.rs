@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
+use normalize_path::NormalizePath;
 use rustpython_parser::Parse;
 use rustpython_parser::ast::Ranged;
 use serde::{Deserialize, Serialize};
@@ -16,10 +17,10 @@ pub struct BazelDepEditor {
 }
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
-struct BazelLabel {
-    name: String,
-    package: String,
-    repo: String,
+pub struct BazelLabel {
+    pub name: String,
+    pub package: String,
+    pub repo: String,
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
@@ -39,7 +40,7 @@ impl Interval {
 }
 
 impl BazelLabel {
-    fn parse(label: &str) -> BazelLabel {
+    pub fn parse(label: &str) -> BazelLabel {
         let mut res = BazelLabel {
             name: String::new(),
             package: String::new(),
@@ -85,7 +86,7 @@ impl std::fmt::Debug for BazelLabel {
     }
 }
 
-fn split_location(location: &str) -> (String, usize, usize) {
+pub fn split_location(location: &str) -> (String, usize, usize) {
     let parts: Vec<&str> = location.split(':').collect();
     assert_eq!(parts.len(), 3, "Invalid location format: {}", location);
 
@@ -124,6 +125,41 @@ fn get_list_insert_pos(
         }
         _ => {}
     }
+    None
+}
+
+pub fn get_fn_name_and_rule_name(expr: &rustpython_parser::ast::Expr) -> Option<(String, String)> {
+    use rustpython_parser::ast;
+
+    let mut name = None;
+    let mut rule = None;
+
+    match expr {
+        ast::Expr::Call(e) => {
+            if let Some(n) = e.func.as_name_expr().map(|n| n.id.as_str()) {
+                rule = Some(n.to_string());
+            }
+
+            name = e.keywords.iter().find_map(|kw| {
+                if let Some(ident) = &kw.arg {
+                    if ident == "name" {
+                        if let ast::Expr::Constant(c) = &kw.value {
+                            return Some(c.value.as_str().cloned().unwrap_or_default());
+                        }
+                    }
+                }
+                None
+            });
+        }
+        _ => {}
+    };
+
+    if let Some(name) = name {
+        if let Some(rule) = rule {
+            return Some((name, rule));
+        }
+    }
+
     None
 }
 
@@ -180,7 +216,7 @@ fn extract_list_items(
 }
 
 impl BazelDepEditor {
-    pub fn new(query: &Query, workspace_root: String) -> Self {
+    pub fn new(query: &Query, workspace_root: &str) -> Self {
         let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
         let keywords_for_deps_removal =
             HashSet::from(["deps".to_string(), "srcs".to_string(), "hdrs".to_string()]);
@@ -195,7 +231,7 @@ impl BazelDepEditor {
 
     pub fn new_with_custom_keywords(
         query: &Query,
-        workspace_root: String,
+        workspace_root: &str,
         keywords_for_deps_insertion: HashSet<String>,
         keywords_for_deps_removal: HashSet<String>,
     ) -> Self {
@@ -217,7 +253,11 @@ impl BazelDepEditor {
         }
         Self {
             label2location,
-            workspace_root,
+            workspace_root: Path::new(workspace_root)
+                .normalize()
+                .to_str()
+                .unwrap()
+                .to_string(),
             keywords_for_deps: keywords_for_deps_insertion,
             keywords_for_deps_and_srcs: keywords_for_deps_removal,
         }
@@ -246,6 +286,7 @@ impl BazelDepEditor {
 
     fn get_insertion_pos(
         &self,
+        label: &str,
         path: &str,
         build_content: &str,
         start_line: usize,
@@ -268,7 +309,11 @@ impl BazelDepEditor {
             }
             match stmt {
                 ast::Stmt::Expr(e) => {
-                    res = get_list_insert_pos(&e.value, keywords);
+                    if let Some((label_name, _)) = get_fn_name_and_rule_name(&e.value) {
+                        if BazelLabel::parse(label).name == label_name {
+                            res = get_list_insert_pos(&e.value, keywords);
+                        }
+                    }
                 }
                 _ => {}
             }
@@ -285,6 +330,7 @@ impl BazelDepEditor {
 
     fn extract_all_labels(
         &self,
+        label: &str,
         path: &str,
         build_content: &str,
         start_line: usize,
@@ -305,8 +351,15 @@ impl BazelDepEditor {
             if stmt.range().start().to_usize() < start_offset {
                 continue;
             }
+
             match stmt {
-                ast::Stmt::Expr(e) => res.extend(extract_list_items(&e.value, keywords)),
+                ast::Stmt::Expr(e) => {
+                    if let Some((label_name, _)) = get_fn_name_and_rule_name(&e.value) {
+                        if BazelLabel::parse(label).name == label_name {
+                            res = extract_list_items(&e.value, keywords);
+                        }
+                    }
+                }
                 _ => {}
             }
             break;
@@ -346,7 +399,10 @@ impl DepEditor for BazelDepEditor {
     fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
-            if !Path::new(&path).starts_with(Path::new(&self.workspace_root)) {
+            if !Path::new(&path)
+                .normalize()
+                .starts_with(Path::new(&self.workspace_root))
+            {
                 return Err(format!(
                     "Path '{}' is not within the workspace root '{}'",
                     path, self.workspace_root
@@ -357,7 +413,7 @@ impl DepEditor for BazelDepEditor {
 
             let build = std::fs::read_to_string(&path).unwrap();
             if let Some(pos) =
-                self.get_insertion_pos(&path, &build, start_line, &self.keywords_for_deps)
+                self.get_insertion_pos(label, &path, &build, start_line, &self.keywords_for_deps)
             {
                 Ok(FileEdit {
                     path: path,
@@ -388,7 +444,10 @@ impl DepEditor for BazelDepEditor {
     ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
-            if !Path::new(&path).starts_with(Path::new(&self.workspace_root)) {
+            if !Path::new(&path)
+                .normalize()
+                .starts_with(Path::new(&self.workspace_root))
+            {
                 return Err(format!(
                     "Path '{}' is not within the workspace root '{}'",
                     path, self.workspace_root
@@ -396,6 +455,7 @@ impl DepEditor for BazelDepEditor {
             }
             let mut build = std::fs::read_to_string(&path).unwrap();
             let candidate_labels = self.extract_all_labels(
+                &label,
                 &path,
                 &build,
                 start_line,
@@ -413,10 +473,8 @@ impl DepEditor for BazelDepEditor {
                 // replace interval of build as spaces with the same length of the interval, but keep \n as \n
                 let mut replacement = String::new();
                 for c in build[interval.to_range()].chars() {
-                    if c == '\n' {
-                        replacement.push('\n');
-                    } else {
-                        replacement.push(' ');
+                    if c.is_whitespace() {
+                        replacement.push(c);
                     }
                 }
                 build.replace_range(interval.to_range(), &replacement);
@@ -445,8 +503,7 @@ mod tests {
 
     fn get_test_workspace_root() -> String {
         get_test_data_path!("../../../examples/simple-cxx-project")
-            .canonicalize()
-            .unwrap()
+            .normalize()
             .to_str()
             .unwrap()
             .to_string()
@@ -528,7 +585,7 @@ mod tests {
     fn test_normalize_label(fake_query: &Query) {
         let editor = BazelDepEditor::new(
             fake_query,
-            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project".to_string(),
+            "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
         );
 
         let label = BazelLabel::parse("//main");
@@ -548,10 +605,11 @@ mod tests {
 
     #[rstest]
     fn test_extract_all_labels(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
+        let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
 
         let path = format!("{}/main/BUILD", get_test_workspace_root());
         let labels = editor.extract_all_labels(
+            "main",
             &path,
             &std::fs::read_to_string(&path).unwrap(),
             3,
@@ -566,11 +624,9 @@ mod tests {
 
     #[rstest]
     fn test_extract_all_labels_2(fake_query: &Query) {
-        let editor = BazelDepEditor::new(
-            fake_query,
-            get_test_data_path!("").to_string_lossy().to_string(),
-        );
+        let editor = BazelDepEditor::new(fake_query, get_test_data_path!("").to_str().unwrap());
         let labels = editor.extract_all_labels(
+            "main",
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
@@ -585,11 +641,9 @@ mod tests {
 
     #[rstest]
     fn test_get_insertion_pos(fake_query: &Query) {
-        let editor = BazelDepEditor::new(
-            fake_query,
-            get_test_data_path!("").to_string_lossy().to_string(),
-        );
+        let editor = BazelDepEditor::new(fake_query, get_test_data_path!("").to_str().unwrap());
         let pos = editor.get_insertion_pos(
+            "main",
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
@@ -600,7 +654,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
+        let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
         let edit = editor.remove("//main:main", "//liba:liba", false).unwrap();
         assert_eq!(
             edit.path,
@@ -617,7 +671,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_remove_cpp(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
+        let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
         let edit = editor
             .remove("//main:main", "//main:main.cpp", false)
             .unwrap();
@@ -636,7 +690,7 @@ mod tests {
 
     #[rstest]
     fn test_bazel_dep_editor_add(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(cxx_query, get_test_workspace_root());
+        let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
         let edit = editor.add("//main:main", "//libc:libc").unwrap();
         assert_eq!(
             edit.path,

@@ -33,7 +33,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "visibility",
+                                name: Some(
+                                    "visibility",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -80,7 +82,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "srcs",
+                                name: Some(
+                                    "srcs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -97,7 +101,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "includes",
+                                name: Some(
+                                    "includes",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -114,7 +120,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "hdrs",
+                                name: Some(
+                                    "hdrs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -167,7 +175,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "visibility",
+                                name: Some(
+                                    "visibility",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -214,7 +224,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "srcs",
+                                name: Some(
+                                    "srcs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -231,7 +243,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "includes",
+                                name: Some(
+                                    "includes",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -248,7 +262,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "hdrs",
+                                name: Some(
+                                    "hdrs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -301,7 +317,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "visibility",
+                                name: Some(
+                                    "visibility",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -348,7 +366,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "srcs",
+                                name: Some(
+                                    "srcs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -365,7 +385,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "includes",
+                                name: Some(
+                                    "includes",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -382,7 +404,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "hdrs",
+                                name: Some(
+                                    "hdrs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -504,7 +528,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "srcs",
+                                name: Some(
+                                    "srcs",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -521,7 +547,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "deps",
+                                name: Some(
+                                    "deps",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -707,7 +735,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "tags",
+                                name: Some(
+                                    "tags",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -750,7 +780,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "tags",
+                                name: Some(
+                                    "tags",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -767,7 +799,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "deps",
+                                name: Some(
+                                    "deps",
+                                ),
                                 items: Some(
                                     [
                                         Label(
@@ -851,7 +885,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "tags",
+                                name: Some(
+                                    "tags",
+                                ),
                                 items: Some(
                                     [
                                         String(
@@ -1166,7 +1202,9 @@ Query {
                         ),
                         List(
                             ListProp {
-                                name: "deps",
+                                name: Some(
+                                    "deps",
+                                ),
                                 items: Some(
                                     [
                                         Label(

@@ -1,0 +1,34 @@
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ['regex:^javadoc_', 'regex:_import$', 'regex:^py_']
+block.target_names = [
+    "//trpc/transport/client/fiber/testing:thread_model_op",
+    "//trpc/filter:filter_controller",
+]
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+transitive_level = 1
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+block.target_names = [
+    'regex:_raw$',
+    '@com_google_protobuf//:protobuf',
+    '//trpc/server:server_context',
+    "//trpc/filter:client_filter_controller",
+]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"
