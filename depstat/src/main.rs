@@ -38,7 +38,8 @@ fn main() {
     if args.commands.is_some() {
         match args.commands.unwrap() {
             Commands::Parse { log_dir } => {
-                parse_logs(&log_dir);
+                let res = parse_logs(&log_dir);
+                println!("{:#?}", res);
             }
         }
         return;
