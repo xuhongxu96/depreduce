@@ -31,6 +31,7 @@ pub struct AnalysisResult {
 
     pub n_targets: usize,
     pub n_edges: usize,
+    pub n_considered_edges: usize,
     pub n_builds: usize,
 }
 
@@ -152,6 +153,7 @@ impl AnalysisResult {
                 .collect::<HashSet<_>>()
                 .len(),
             n_edges: attempts.len(),
+            n_considered_edges: attempts.iter().filter(|a| !a.ops.is_empty()).count(),
             n_builds: attempts
                 .iter()
                 .map(|a| {
