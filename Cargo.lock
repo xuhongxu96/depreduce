@@ -290,6 +290,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "depreduce",
+ "serde",
+ "serde_json",
  "utils",
 ]
 

@@ -51,6 +51,7 @@ pub struct Node {
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EdgeProps {
+    #[serde(default)]
     pub unremovable: bool,
 }
 

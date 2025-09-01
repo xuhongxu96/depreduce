@@ -1,26 +1,50 @@
 use std::collections::HashSet;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use depreduce::{
     graph::bazel_xml_parser::parse_bazel_xml, stats::rebuild_cost::RebuildCostCalculator,
 };
+use depstat::parse_logs;
 use utils::get_bazel_query;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
 struct Args {
-    #[arg(short, long)]
+    #[arg(short, long, default_value = ".")]
     workspace: String,
 
     #[arg(short, long, default_value = "//...")]
     target: String,
 
-    #[arg(short, long)]
+    #[arg(short, long, default_value = "true")]
     deps_only: bool,
+
+    #[command(subcommand)]
+    commands: Option<Commands>,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Parse depreduce logs to collect statistics.
+    Parse {
+        #[arg(short, long)]
+        log_dir: String,
+    },
 }
 
 fn main() {
     let args = Args::parse();
+
+    if args.commands.is_some() {
+        match args.commands.unwrap() {
+            Commands::Parse { log_dir } => {
+                let res = parse_logs(&log_dir);
+                println!("{:#?}", res);
+            }
+        }
+        return;
+    }
+
     let xml_str = get_bazel_query(&args.workspace, &args.target);
     if let Ok(query) = parse_bazel_xml(&xml_str) {
         let graph = query.to_dep_graph(args.deps_only, &HashSet::new()).unwrap();
