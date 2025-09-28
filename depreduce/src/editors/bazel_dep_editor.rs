@@ -218,8 +218,7 @@ fn extract_list_items(
 impl BazelDepEditor {
     pub fn new(query: &Query, workspace_root: &str) -> Self {
         let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
-        let keywords_for_deps_removal =
-            HashSet::from(["deps".to_string(), "srcs".to_string(), "hdrs".to_string()]);
+        let keywords_for_deps_removal = HashSet::from(["deps".to_string()]);
 
         Self::new_with_custom_keywords(
             query,
@@ -664,25 +663,6 @@ mod tests {
             edit.content,
             read_or_create_test_data!(
                 "dep_editors/bazel_dep_editor/remove_main_liba.BUILD",
-                edit.content
-            )
-        );
-    }
-
-    #[rstest]
-    fn test_bazel_dep_editor_remove_cpp(cxx_query: &Query) {
-        let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
-        let edit = editor
-            .remove("//main:main", "//main:main.cpp", false)
-            .unwrap();
-        assert_eq!(
-            edit.path,
-            format!("{}/main/BUILD", get_test_workspace_root())
-        );
-        assert_eq!(
-            edit.content,
-            read_or_create_test_data!(
-                "dep_editors/bazel_dep_editor/remove_main_cpp.BUILD",
                 edit.content
             )
         );

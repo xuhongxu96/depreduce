@@ -16,9 +16,6 @@ struct Args {
     #[arg(short, long, default_value = "//...")]
     target: String,
 
-    #[arg(short, long, default_value = "true")]
-    deps_only: bool,
-
     #[command(subcommand)]
     commands: Option<Commands>,
 }
@@ -47,7 +44,7 @@ fn main() {
 
     let xml_str = get_bazel_query(&args.workspace, &args.target);
     if let Ok(query) = parse_bazel_xml(&xml_str) {
-        let graph = query.to_dep_graph(args.deps_only, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
         println!("Rebuild cost: {}", original_cost);
     } else {

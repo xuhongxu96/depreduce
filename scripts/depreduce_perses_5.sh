@@ -1,1 +1,7 @@
-nohup ./target/release/depreduce -w /data/h445xu/repo/perses-5 -c scripts/build_perses.sh --disable-topological-sorting --disable-dependency-lifting --disable-dependency-flattening --deps-only --output perses-5-output > perses-5-stdout.log 2>perses-5-stderr.log &
+nohup ./target/release/depreduce \
+  -w /data/h445xu/repo/perses-5 \
+  -c scripts/build_perses.sh \
+  --disable-topological-sorting \
+  --disable-dependency-lifting \
+  --disable-dependency-flattening \
+  --output perses-5-output > perses-5-stdout.log 2>perses-5-stderr.log &

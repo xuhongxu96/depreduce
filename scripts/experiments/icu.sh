@@ -2,7 +2,6 @@ export RUST_BACKTRACE=1
 ./target/release/depreduce \
     -w /data/h445xu/repo/bazel-repos/cloned_repos/unicode-org__icu \
     -c $PWD/scripts/build.sh \
-    --deps-only \
     --disable-dependency-lifting \
     --config $PWD/scripts/experiments/icu.toml \
     --output icu-output > icu.stdout 2>icu.stderr

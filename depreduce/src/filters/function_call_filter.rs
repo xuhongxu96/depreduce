@@ -234,7 +234,7 @@ mod tests {
                 .unwrap(),
         );
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let filter = FunctionCallFilter {
             func: "select".to_string(),

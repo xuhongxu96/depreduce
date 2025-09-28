@@ -214,7 +214,6 @@ impl Query {
 
     pub fn to_dep_graph(
         &self,
-        deps_only: bool,
         readonly_deps_attrs: &HashSet<String>,
     ) -> Result<DependencyGraph, String> {
         let mut graph = DependencyGraph::new();
@@ -256,49 +255,45 @@ impl Query {
                 SkyValue::Rule(rule) => {
                     let node_id = graph.get_node_id(&rule.name).unwrap();
                     if let Some(props) = &rule.props {
-                        if deps_only {
-                            // deps from exports are unremovable because we only consider `deps` for removal
-                            // but they still need to be in the graph as we analyze the transitive dependencies
-                            for prop in props {
-                                match prop {
-                                    VariantProp::List(list)
-                                        if list.name.as_ref().map_or(false, |name| {
-                                            readonly_deps_attrs.contains(name)
-                                        }) =>
-                                    {
-                                        if let Some(items) = &list.items {
-                                            for item in items {
-                                                if let VariantProp::Label(label) = item {
-                                                    let dep_name = label.value.as_ref().unwrap();
-                                                    let dep_node_id = graph
-                                                        .get_node_id(dep_name)
-                                                        .unwrap_or_else(|| {
-                                                            graph
-                                                                .add_node(
-                                                                    dep_name.clone(),
-                                                                    NodeProps {
-                                                                        t: NodeType::Unknown,
-                                                                    },
-                                                                )
-                                                                .unwrap()
-                                                        });
+                        // deps from exports are unremovable because we only consider `deps` for removal
+                        // but they still need to be in the graph as we analyze the transitive dependencies
+                        for prop in props {
+                            match prop {
+                                VariantProp::List(list)
+                                    if list.name.as_ref().map_or(false, |name| {
+                                        readonly_deps_attrs.contains(name)
+                                    }) =>
+                                {
+                                    if let Some(items) = &list.items {
+                                        for item in items {
+                                            if let VariantProp::Label(label) = item {
+                                                let dep_name = label.value.as_ref().unwrap();
+                                                let dep_node_id = graph
+                                                    .get_node_id(dep_name)
+                                                    .unwrap_or_else(|| {
+                                                        graph
+                                                            .add_node(
+                                                                dep_name.clone(),
+                                                                NodeProps {
+                                                                    t: NodeType::Unknown,
+                                                                },
+                                                            )
+                                                            .unwrap()
+                                                    });
 
-                                                    if graph
-                                                        .get_edge_id(node_id, dep_node_id)
-                                                        .is_none()
-                                                    {
-                                                        graph.add_edge(
-                                                            node_id,
-                                                            dep_node_id,
-                                                            EdgeProps { unremovable: true },
-                                                        )?;
-                                                    }
+                                                if graph.get_edge_id(node_id, dep_node_id).is_none()
+                                                {
+                                                    graph.add_edge(
+                                                        node_id,
+                                                        dep_node_id,
+                                                        EdgeProps { unremovable: true },
+                                                    )?;
                                                 }
                                             }
                                         }
                                     }
-                                    _ => {}
                                 }
+                                _ => {}
                             }
                         }
                         for prop in props {
@@ -306,9 +301,6 @@ impl Query {
                                 VariantProp::List(list)
                                     if list.name.as_ref().map_or(false, |name| name == "deps") =>
                                 {
-                                    if !deps_only {
-                                        continue;
-                                    }
                                     if let Some(items) = &list.items {
                                         for item in items {
                                             if let VariantProp::Label(label) = item {
@@ -336,48 +328,6 @@ impl Query {
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                                VariantProp::RuleInput(rule_io) => {
-                                    if deps_only {
-                                        continue;
-                                    }
-
-                                    let tgt =
-                                        graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
-                                            graph
-                                                .add_node(
-                                                    rule_io.name.clone(),
-                                                    NodeProps {
-                                                        t: NodeType::Unknown,
-                                                    },
-                                                )
-                                                .unwrap()
-                                        });
-
-                                    if graph.get_edge_id(node_id, tgt).is_none() {
-                                        graph.add_edge(node_id, tgt, EdgeProps::default())?;
-                                    }
-                                }
-                                VariantProp::RuleOutput(rule_io) => {
-                                    if deps_only {
-                                        continue;
-                                    }
-
-                                    let src =
-                                        graph.get_node_id(&rule_io.name).unwrap_or_else(|| {
-                                            graph
-                                                .add_node(
-                                                    rule_io.name.clone(),
-                                                    NodeProps {
-                                                        t: NodeType::Unknown,
-                                                    },
-                                                )
-                                                .unwrap()
-                                        });
-
-                                    if graph.get_edge_id(src, node_id).is_none() {
-                                        graph.add_edge(src, node_id, EdgeProps::default())?;
                                     }
                                 }
                                 _ => {}
@@ -447,7 +397,7 @@ mod tests {
     fn test_convert_query_to_dep_graph_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let res = graph.to_dot();
         assert_eq!(
@@ -457,23 +407,10 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_query_to_dep_graph_cxx_deps_only() {
-        let xml = read_test_data!("cxx-deps.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(true, &HashSet::new()).unwrap();
-
-        let res = graph.to_dot();
-        assert_eq!(
-            res,
-            read_or_create_test_data!("dep_graph/bazel_xml_parser/cxx_graph_deps_only.out", res)
-        );
-    }
-
-    #[test]
     fn test_convert_query_to_dep_graph_perses() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let res = to_json_lines(&graph.to_dependency_map().to_sorted_vec());
         assert_eq!(

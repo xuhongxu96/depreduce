@@ -43,9 +43,6 @@ struct Args {
     )]
     output: String,
 
-    #[arg(short, long)]
-    deps_only: bool,
-
     #[arg(long, default_value = "depreduce.toml")]
     config: String,
 
@@ -106,9 +103,7 @@ fn run_reducer_test(
 
     let xml_str = get_bazel_query(&args.workspace, &args.target);
     let query = parse_bazel_xml(&xml_str).unwrap();
-    let graph = query
-        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
-        .unwrap();
+    let graph = query.to_dep_graph(&config.readonly_deps_attrs).unwrap();
     println!("Parsed dep graph");
     let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
     println!("Original rebuild cost: {}", original_cost);
@@ -138,16 +133,7 @@ fn run_reducer_test(
         skip_to_node_labels.for_addition
     );
 
-    let editor = if args.deps_only {
-        BazelDepEditor::new_with_custom_keywords(
-            &query,
-            &workspace_root,
-            HashSet::from(["deps".to_string()]),
-            HashSet::from(["deps".to_string()]),
-        )
-    } else {
-        BazelDepEditor::new(&query, &workspace_root)
-    };
+    let editor = BazelDepEditor::new(&query, &workspace_root);
 
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
@@ -156,7 +142,6 @@ fn run_reducer_test(
         cwd: workspace_root,
         save_build_log: true,
 
-        deps_only: args.deps_only,
         disable_dependency_flattening: args.disable_dependency_flattening,
         disable_dependency_flattening_for_alias_targets: !args
             .enable_dependency_flattening_for_alias_targets,
@@ -217,9 +202,7 @@ fn run_reducer_test(
     // Recalculate the rebuild cost after reduction
     let new_xml_str = get_bazel_query(&args.workspace, &args.target);
     let new_query = parse_bazel_xml(&new_xml_str).unwrap();
-    let new_graph = new_query
-        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
-        .unwrap();
+    let new_graph = new_query.to_dep_graph(&config.readonly_deps_attrs).unwrap();
     let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 

@@ -1,29 +1,7 @@
-{"candidates":{"node_id":9,"dependent":20},"ops":[]}
-{"candidates":{"node_id":9,"dependent":21},"ops":[]}
-{"candidates":{"node_id":9,"dependent":22},"ops":[]}
-{"candidates":{"node_id":9,"dependent":23},"ops":[]}
-{"candidates":{"node_id":9,"dependent":24},"ops":[]}
-{"candidates":{"node_id":11,"dependent":9},"ops":[]}
-{"candidates":{"node_id":10,"dependent":9},"ops":[]}
-{"candidates":{"node_id":10,"dependent":25},"ops":[]}
-{"candidates":{"node_id":10,"dependent":26},"ops":[]}
-{"candidates":{"node_id":8,"dependent":10},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//main:Main.kt' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
 {"candidates":{"node_id":7,"dependent":10},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libd:libd' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Add dependency '//libb:libb' to label '//main:main_lib'"}}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Add dependency '//libc:libc' to label '//main:main_lib'"}}},{"Build":{"exit_code":0,"stdout":"","stderr":""}},{"Add":{"node_id":3,"dependent_node_id":10}},{"Add":{"node_id":5,"dependent_node_id":10}},{"Remove":{"node_id":7,"dependent_node_id":10}},{"Commit":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":7,"dependent":18},"ops":[]}
-{"candidates":{"node_id":7,"dependent":19},"ops":[]}
-{"candidates":{"node_id":6,"dependent":7},"ops":[{"Backup":{"path":"<workspace>/libd/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libd/BUILD","desp":"Remove dependency '//libd:ClassD.kt' from label '//libd:libd'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libd/BUILD"]}}]}
 {"candidates":{"node_id":5,"dependent":7},"ops":[{"Backup":{"path":"<workspace>/libd/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libd/BUILD","desp":"Remove dependency '//libc:libc' from label '//libd:libd'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libd/BUILD"]}}]}
 {"candidates":{"node_id":5,"dependent":10},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libc:libc' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":5,"dependent":16},"ops":[]}
-{"candidates":{"node_id":5,"dependent":17},"ops":[]}
-{"candidates":{"node_id":4,"dependent":5},"ops":[{"Backup":{"path":"<workspace>/libc/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libc/BUILD","desp":"Remove dependency '//libc:ClassC.kt' from label '//libc:libc'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libc/BUILD"]}}]}
 {"candidates":{"node_id":3,"dependent":7},"ops":[{"Backup":{"path":"<workspace>/libd/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libd/BUILD","desp":"Remove dependency '//libb:libb' from label '//libd:libd'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libd/BUILD"]}}]}
 {"candidates":{"node_id":3,"dependent":10},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libb:libb' from label '//main:main_lib'"}}},{"Build":{"exit_code":0,"stdout":"","stderr":""}},{"Remove":{"node_id":3,"dependent_node_id":10}},{"Commit":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":3,"dependent":14},"ops":[]}
-{"candidates":{"node_id":3,"dependent":15},"ops":[]}
-{"candidates":{"node_id":2,"dependent":3},"ops":[{"Backup":{"path":"<workspace>/libb/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libb/BUILD","desp":"Remove dependency '//libb:ClassB.kt' from label '//libb:libb'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libb/BUILD"]}}]}
 {"candidates":{"node_id":1,"dependent":7},"ops":[{"Backup":{"path":"<workspace>/libd/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libd/BUILD","desp":"Remove dependency '//liba:liba' from label '//libd:libd'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libd/BUILD"]}}]}
 {"candidates":{"node_id":1,"dependent":10},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//liba:liba' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":1,"dependent":12},"ops":[]}
-{"candidates":{"node_id":1,"dependent":13},"ops":[]}
-{"candidates":{"node_id":0,"dependent":1},"ops":[{"Backup":{"path":"<workspace>/liba/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/liba/BUILD","desp":"Remove dependency '//liba:ClassA.kt' from label '//liba:liba'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/liba/BUILD"]}}]}

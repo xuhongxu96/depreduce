@@ -1,12 +1,5 @@
-{"candidates":{"node_id":6,"dependent":10},"ops":[]}
-{"candidates":{"node_id":6,"dependent":11},"ops":[]}
 {"candidates":{"node_id":8,"dependent":6},"ops":[]}
 {"candidates":{"node_id":9,"dependent":8},"ops":[]}
-{"candidates":{"node_id":7,"dependent":6},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//main:main.cpp' from label '//main:main'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
 {"candidates":{"node_id":5,"dependent":6},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libb:libb' from label '//main:main'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":4,"dependent":5},"ops":[{"Backup":{"path":"<workspace>/libb/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libb/BUILD","desp":"Remove dependency '//libb:b.h' from label '//libb:libb'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libb/BUILD"]}}]}
-{"candidates":{"node_id":3,"dependent":5},"ops":[{"Backup":{"path":"<workspace>/libb/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libb/BUILD","desp":"Remove dependency '//libb:b.cpp' from label '//libb:libb'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libb/BUILD"]}}]}
 {"candidates":{"node_id":2,"dependent":5},"ops":[{"Backup":{"path":"<workspace>/libb/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/libb/BUILD","desp":"Remove dependency '//liba:liba' from label '//libb:libb'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/libb/BUILD"]}}]}
 {"candidates":{"node_id":2,"dependent":6},"ops":[]}
-{"candidates":{"node_id":1,"dependent":2},"ops":[{"Backup":{"path":"<workspace>/liba/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/liba/BUILD","desp":"Remove dependency '//liba:a.h' from label '//liba:liba'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/liba/BUILD"]}}]}
-{"candidates":{"node_id":0,"dependent":2},"ops":[{"Backup":{"path":"<workspace>/liba/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/liba/BUILD","desp":"Remove dependency '//liba:a.cpp' from label '//liba:liba'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/liba/BUILD"]}}]}

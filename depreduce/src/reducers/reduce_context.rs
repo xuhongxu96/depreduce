@@ -17,7 +17,6 @@ pub struct ReduceSettings<'a> {
     pub save_build_log: bool,
 
     // settings
-    pub deps_only: bool,
     pub disable_dependency_flattening: bool,
     pub disable_dependency_flattening_for_alias_targets: bool,
     pub disable_dependency_lifting: bool,
@@ -653,7 +652,7 @@ mod tests {
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let editor = BazelDepEditor::new(
             &Query {
                 values: vec![],
@@ -666,7 +665,6 @@ mod tests {
             build_command: "bazel build //...".to_string(),
             cwd: ".".to_string(),
             save_build_log: false,
-            deps_only: false,
             timeout_seconds: 0,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
