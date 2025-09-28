@@ -18,22 +18,12 @@ pub struct TargetType {
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub enum NodeType {
     Unknown,
-    Source,
     Target(TargetType),
-    GeneratedFile,
 }
 
 impl NodeType {
     pub fn is_alias_target(&self) -> bool {
         matches!(self, NodeType::Target(TargetType { is_alias: true }))
-    }
-
-    pub fn is_source(&self) -> bool {
-        matches!(self, NodeType::Source)
-    }
-
-    pub fn is_generated_file(&self) -> bool {
-        matches!(self, NodeType::GeneratedFile)
     }
 }
 
@@ -354,16 +344,19 @@ mod tests {
         let mut graph = DependencyGraph::new();
         let id = graph
             .add_node(
-                "src/main.rs".to_string(),
+                "src/main".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Target(TargetType { is_alias: false }),
                 },
             )
             .unwrap();
         assert_eq!(id, 0);
         assert_eq!(graph.nodes.len(), 1);
-        assert_eq!(graph.nodes[0].label, "src/main.rs");
-        assert_eq!(graph.nodes[0].props.t, NodeType::Source);
+        assert_eq!(graph.nodes[0].label, "src/main");
+        assert_eq!(
+            graph.nodes[0].props.t,
+            NodeType::Target(TargetType { is_alias: false })
+        );
     }
 
     #[test]
@@ -373,14 +366,14 @@ mod tests {
             .add_node(
                 "src/lib.rs".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
         let result = graph.add_node(
             "src/lib.rs".to_string(),
             NodeProps {
-                t: NodeType::Target(TargetType { is_alias: false }),
+                t: NodeType::Unknown,
             },
         );
         assert!(result.is_err());
@@ -393,7 +386,7 @@ mod tests {
             .add_node(
                 "a".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -401,7 +394,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -421,7 +414,7 @@ mod tests {
             .add_node(
                 "self".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -436,7 +429,7 @@ mod tests {
             .add_node(
                 "only".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -451,7 +444,7 @@ mod tests {
             .add_node(
                 "a".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -459,7 +452,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -476,7 +469,7 @@ mod tests {
             .add_node(
                 "foo".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -493,7 +486,7 @@ mod tests {
             .add_node(
                 "x".into(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -501,7 +494,7 @@ mod tests {
             .add_node(
                 "y".into(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -539,7 +532,7 @@ mod tests {
             .add_node(
                 "foo".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -555,7 +548,7 @@ mod tests {
             .add_node(
                 "baz".to_string(),
                 NodeProps {
-                    t: NodeType::GeneratedFile,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -584,7 +577,7 @@ mod tests {
             .add_node(
                 "n1".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -592,7 +585,7 @@ mod tests {
             .add_node(
                 "n2".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -600,7 +593,7 @@ mod tests {
             .add_node(
                 "n3".to_string(),
                 NodeProps {
-                    t: NodeType::GeneratedFile,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -622,7 +615,7 @@ mod tests {
             .add_node(
                 "a".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -630,7 +623,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -638,7 +631,7 @@ mod tests {
             .add_node(
                 "c".to_string(),
                 NodeProps {
-                    t: NodeType::GeneratedFile,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -658,7 +651,7 @@ mod tests {
             .add_node(
                 "a".to_string(),
                 NodeProps {
-                    t: NodeType::Source,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -666,7 +659,7 @@ mod tests {
             .add_node(
                 "b".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -674,7 +667,7 @@ mod tests {
             .add_node(
                 "c".to_string(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();
@@ -682,7 +675,7 @@ mod tests {
             .add_node(
                 "d".to_string(),
                 NodeProps {
-                    t: NodeType::GeneratedFile,
+                    t: NodeType::Unknown,
                 },
             )
             .unwrap();

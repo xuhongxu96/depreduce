@@ -339,15 +339,6 @@ impl TopSortReducer {
             }
         }
 
-        sorted_nodes = sorted_nodes
-            .iter()
-            .filter(|&&node_id| {
-                !ctx.graph.nodes[node_id].props.t.is_source()
-                    && !ctx.graph.nodes[node_id].props.t.is_generated_file()
-            })
-            .cloned()
-            .collect();
-
         for (i, &node_id) in sorted_nodes.iter().enumerate() {
             ctx.log(&format!(
                 "Processing node: {} ({}/{})\n",

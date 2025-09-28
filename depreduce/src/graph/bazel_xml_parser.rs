@@ -220,14 +220,6 @@ impl Query {
 
         for value in &self.values {
             match value {
-                SkyValue::SourceFile(source_file) => {
-                    graph.add_node(
-                        source_file.name.clone(),
-                        NodeProps {
-                            t: NodeType::Source,
-                        },
-                    )?;
-                }
                 SkyValue::Rule(rule) => {
                     graph.add_node(
                         rule.name.clone(),
@@ -238,15 +230,7 @@ impl Query {
                         },
                     )?;
                 }
-                SkyValue::GeneratedFile(generated_file) => {
-                    graph.add_node(
-                        generated_file.name.clone(),
-                        NodeProps {
-                            t: NodeType::GeneratedFile,
-                        },
-                    )?;
-                }
-                SkyValue::PackageGroup(_package_group) => {}
+                _ => {}
             }
         }
 
