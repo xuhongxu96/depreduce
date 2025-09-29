@@ -16,13 +16,13 @@ pub enum FilterType {
     AttrRule(AttrRuleBasedFilter),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub struct FilterSpecification {
     #[serde(default)]
     pub filters: Vec<FilterType>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub struct ReduceConfig {
     pub from: FilterSpecification,
     pub to: FilterSpecification,
