@@ -2,10 +2,7 @@ use std::collections::HashSet;
 
 use serde::Deserialize;
 
-use crate::{
-    filters::*,
-    graph::{DependencyGraph, bazel_xml_parser::Query},
-};
+use crate::{filters::*, graph::DependencyGraph};
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]

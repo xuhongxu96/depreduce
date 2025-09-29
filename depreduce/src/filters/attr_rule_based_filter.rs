@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::{
     filters::{
-        BuildSystemSpecificInfo, CommonFilterOptions, Filterable, InternalFilterable,
+        BuildSystemSpecificInfo, CommonFilterOptions, InternalFilterable,
         executable_rules::ExecutableRules,
     },
     graph::{
@@ -83,7 +83,7 @@ impl InternalFilterable for AttrRuleBasedFilter {
 
 #[cfg(test)]
 mod tests {
-    use crate::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml};
 
     use super::*;
 

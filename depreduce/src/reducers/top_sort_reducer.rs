@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use crate::editors::DepEditor;
 use crate::graph::{DependencyGraph, NodeId};
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 

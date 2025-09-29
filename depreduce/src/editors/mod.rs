@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-type CheckpointId = usize;
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FileEdit {
     pub path: String,

@@ -1,14 +1,13 @@
 use std::collections::HashSet;
 
-use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
     filters::{
-        BuildSystemSpecificInfo, CommonFilterOptions, Filterable, InternalFilterable,
+        BuildSystemSpecificInfo, CommonFilterOptions, InternalFilterable,
         executable_rules::ExecutableRules,
     },
-    graph::{DependencyGraph, NodeId, bazel_xml_parser::Query},
+    graph::{DependencyGraph, NodeId},
 };
 
 struct ExecutableFilterRules {
@@ -114,7 +113,7 @@ impl InternalFilterable for RuleBasedFilter {
 
 #[cfg(test)]
 mod tests {
-    use crate::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml};
 
     use super::*;
 
