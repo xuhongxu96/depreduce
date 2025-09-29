@@ -1,22 +1,19 @@
-use std::{collections::HashSet, path::Path, process::exit};
+use std::{path::Path, process::exit};
 
 use clap::Parser;
 
 use depreduce::{
-    configs::{NodeInfo, ReduceConfig},
-    editors::BazelDepEditor,
-    graph::{
-        DependencyGraph, NodeId,
-        bazel_xml_parser::{Query, parse_bazel_xml},
-    },
+    configs::ReduceConfig,
+    graph::DependencyGraph,
     postprocessors::AliasTargetPostprocessor,
     reducers::{
         reduce_context::{ReduceSettings, ReductionAttempt},
         top_sort_reducer::TopSortReducer,
     },
     stats::rebuild_cost::RebuildCostCalculator,
+    supports::{BazelSupport, BuildSystemSupport},
 };
-use utils::{get_bazel_query, to_json_lines};
+use utils::to_json_lines;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -42,9 +39,6 @@ struct Args {
         help = "Output directory for reduction attempts and dep graph"
     )]
     output: String,
-
-    #[arg(short, long)]
-    deps_only: bool,
 
     #[arg(long, default_value = "depreduce.toml")]
     config: String,
@@ -86,8 +80,8 @@ struct Args {
 }
 
 fn run_reducer_test(
-    workspace_root: String,
-    build_script: String,
+    workspace_root: &str,
+    build_script: &str,
     args: &Args,
 ) -> (DependencyGraph, Vec<ReductionAttempt>) {
     println!(
@@ -104,17 +98,17 @@ fn run_reducer_test(
     )
     .expect("Failed to parse config file");
 
-    let xml_str = get_bazel_query(&args.workspace, &args.target);
-    let query = parse_bazel_xml(&xml_str).unwrap();
-    let graph = query
-        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
-        .unwrap();
+    let mut support: Box<dyn BuildSystemSupport> =
+        Box::new(BazelSupport::new(&workspace_root, &args.target, &config));
+    let editor = support.create_editor(&workspace_root);
+
     println!("Parsed dep graph");
-    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+    let original_cost =
+        RebuildCostCalculator::new(support.get_graph()).calculate_rebuild_cost_sum();
     println!("Original rebuild cost: {}", original_cost);
 
-    let skip_from_node_labels = config.from.get_skip_nodes(&graph, &query);
-    let skip_to_node_labels = config.to.get_skip_nodes(&graph, &query);
+    let skip_from_node_labels = support.skip_from_node_labels(&config);
+    let skip_to_node_labels = support.skip_to_node_labels(&config);
 
     println!(
         "Skipping `from` nodes for removal ({}): {:#?}",
@@ -138,25 +132,13 @@ fn run_reducer_test(
         skip_to_node_labels.for_addition
     );
 
-    let editor = if args.deps_only {
-        BazelDepEditor::new_with_custom_keywords(
-            &query,
-            &workspace_root,
-            HashSet::from(["deps".to_string()]),
-            HashSet::from(["deps".to_string()]),
-        )
-    } else {
-        BazelDepEditor::new(&query, &workspace_root)
-    };
-
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
-        editor: &editor,
-        build_command: build_script,
-        cwd: workspace_root,
+        editor: editor.as_ref(),
+        build_command: build_script.to_string(),
+        cwd: workspace_root.to_string(),
         save_build_log: true,
 
-        deps_only: args.deps_only,
         disable_dependency_flattening: args.disable_dependency_flattening,
         disable_dependency_flattening_for_alias_targets: !args
             .enable_dependency_flattening_for_alias_targets,
@@ -170,7 +152,8 @@ fn run_reducer_test(
             .for_removal
             .iter()
             .map(|label| {
-                graph
+                support
+                    .get_graph()
                     .get_node_id(label)
                     .expect(&format!("Node {} not found in graph", label))
             })
@@ -179,7 +162,8 @@ fn run_reducer_test(
             .for_removal
             .iter()
             .map(|label| {
-                graph
+                support
+                    .get_graph()
                     .get_node_id(label)
                     .expect(&format!("Node {} not found in graph", label))
             })
@@ -188,7 +172,8 @@ fn run_reducer_test(
             .for_addition
             .iter()
             .map(|label| {
-                graph
+                support
+                    .get_graph()
                     .get_node_id(label)
                     .expect(&format!("Node {} not found in graph", label))
             })
@@ -197,12 +182,15 @@ fn run_reducer_test(
             .for_addition
             .iter()
             .map(|label| {
-                graph
+                support
+                    .get_graph()
                     .get_node_id(label)
                     .expect(&format!("Node {} not found in graph", label))
             })
             .collect(),
     };
+    let mut graph = DependencyGraph::new();
+    support.swap_graph(&mut graph);
     let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
     if !settings.disable_dependency_flattening_for_alias_targets {
@@ -215,12 +203,8 @@ fn run_reducer_test(
     let attempts = ctx.get_attempts().to_vec();
 
     // Recalculate the rebuild cost after reduction
-    let new_xml_str = get_bazel_query(&args.workspace, &args.target);
-    let new_query = parse_bazel_xml(&new_xml_str).unwrap();
-    let new_graph = new_query
-        .to_dep_graph(args.deps_only, &config.readonly_deps_attrs)
-        .unwrap();
-    let new_cost = RebuildCostCalculator::new(&new_graph).calculate_rebuild_cost_sum();
+    let new_support = BazelSupport::new(&workspace_root, &args.target, &config);
+    let new_cost = RebuildCostCalculator::new(new_support.get_graph()).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 
     // But we still want to return the original graph,
@@ -253,13 +237,13 @@ fn main() {
         Path::new(&args.workspace)
             .canonicalize()
             .unwrap()
-            .to_string_lossy()
-            .to_string(),
+            .to_str()
+            .unwrap(),
         Path::new(&command)
             .canonicalize()
             .unwrap()
-            .to_string_lossy()
-            .to_string(),
+            .to_str()
+            .unwrap(),
         &args,
     );
 

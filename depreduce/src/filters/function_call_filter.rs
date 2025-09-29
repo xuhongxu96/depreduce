@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 use crate::{
     editors::{BazelLabel, get_fn_name_and_rule_name, split_location},
-    filters::{CommonFilterOptions, InternalFilterable},
+    filters::{BuildSystemSpecificInfo, CommonFilterOptions, InternalFilterable},
     graph::{
         DependencyGraph, NodeId,
         bazel_xml_parser::{Query, SkyValue},
@@ -25,7 +25,15 @@ pub struct FunctionCallFilter {
 }
 
 impl InternalFilterable for FunctionCallFilter {
-    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
+    fn internal_filter(
+        &self,
+        graph: &DependencyGraph,
+        info: &BuildSystemSpecificInfo,
+    ) -> HashSet<NodeId> {
+        let query = match info {
+            &BuildSystemSpecificInfo::Bazel(q) => q,
+            _ => panic!("FunctionCallFilter only supports Bazel"),
+        };
         self.get_targets_containing_select(query, graph)
     }
 
@@ -234,7 +242,7 @@ mod tests {
                 .unwrap(),
         );
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let filter = FunctionCallFilter {
             func: "select".to_string(),
@@ -244,7 +252,8 @@ mod tests {
                 transitive_level: 0,
             },
         };
-        let res = filter.filter(&graph, &query);
+        let info = BuildSystemSpecificInfo::Bazel(&query);
+        let res = filter.filter(&graph, &info);
         assert_eq!(res.len(), 1);
         assert_eq!(
             graph.nodes[*res.iter().next().unwrap()].label,
@@ -259,7 +268,7 @@ mod tests {
                 transitive_level: 1,
             },
         };
-        let res = filter.filter(&graph, &query);
+        let res = filter.filter(&graph, &info);
         let mut res = res
             .iter()
             .map(|id| graph.nodes[*id].label.clone())
@@ -279,7 +288,7 @@ mod tests {
                 transitive_level: 0,
             },
         };
-        let res = filter.filter(&graph, &query);
+        let res = filter.filter(&graph, &info);
         assert_eq!(res.len(), 0);
     }
 }

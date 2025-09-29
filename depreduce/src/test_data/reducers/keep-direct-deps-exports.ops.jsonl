@@ -1,2 +1,2 @@
-{"candidates":{"node_id":3,"dependent":6},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libb:libb' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
-{"candidates":{"node_id":1,"dependent":6},"ops":[]}
+{"candidates":{"node_id":1,"dependent":3},"ops":[{"Backup":{"path":"<workspace>/main/BUILD"}},{"Apply":{"edit":{"path":"<workspace>/main/BUILD","desp":"Remove dependency '//libb:libb' from label '//main:main_lib'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":""}},{"Restore":{"paths":["<workspace>/main/BUILD"]}}]}
+{"candidates":{"node_id":0,"dependent":3},"ops":[]}

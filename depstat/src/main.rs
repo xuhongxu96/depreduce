@@ -1,11 +1,10 @@
-use std::collections::HashSet;
-
 use clap::{Parser, Subcommand};
 use depreduce::{
-    graph::bazel_xml_parser::parse_bazel_xml, stats::rebuild_cost::RebuildCostCalculator,
+    configs::ReduceConfig,
+    stats::rebuild_cost::RebuildCostCalculator,
+    supports::{BazelSupport, BuildSystemSupport},
 };
 use depstat::parse_logs;
-use utils::get_bazel_query;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -15,9 +14,6 @@ struct Args {
 
     #[arg(short, long, default_value = "//...")]
     target: String,
-
-    #[arg(short, long, default_value = "true")]
-    deps_only: bool,
 
     #[command(subcommand)]
     commands: Option<Commands>,
@@ -45,13 +41,13 @@ fn main() {
         return;
     }
 
-    let xml_str = get_bazel_query(&args.workspace, &args.target);
-    if let Ok(query) = parse_bazel_xml(&xml_str) {
-        let graph = query.to_dep_graph(args.deps_only, &HashSet::new()).unwrap();
-        let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
-        println!("Rebuild cost: {}", original_cost);
-    } else {
-        eprintln!("Failed to parse bazel query xml.");
-        eprintln!("{}", xml_str);
-    }
+    let support: Box<dyn BuildSystemSupport> = Box::new(BazelSupport::new(
+        &args.workspace,
+        &args.target,
+        &ReduceConfig::default(),
+    ));
+
+    let graph = support.get_graph();
+    let original_cost = RebuildCostCalculator::new(&graph).calculate_rebuild_cost_sum();
+    println!("Rebuild cost: {}", original_cost);
 }

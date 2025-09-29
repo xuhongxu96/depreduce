@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use crate::editors::DepEditor;
 use crate::graph::{DependencyGraph, NodeId};
 use crate::reducers::reduce_context::{ReduceContext, ReduceSettings};
 
@@ -221,11 +220,7 @@ impl TopSortReducer {
             return false;
         }
 
-        match ctx.settings.editor.remove(
-            &dependent_label,
-            &label,
-            ctx.get_indegree(dependent_node_id) <= 0,
-        ) {
+        match ctx.settings.editor.remove(&dependent_label, &label) {
             Ok(edit) => {
                 removed = true;
                 ctx.backup(&edit);
@@ -297,7 +292,7 @@ impl TopSortReducer {
 
         let mut ctx = ReduceContext::new(graph, settings);
 
-        let mut sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
+        let sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
             ctx.graph.topsort()
         } else {
             ctx.log("Topological sorting is disabled, using original order.\n");
@@ -337,17 +332,6 @@ impl TopSortReducer {
                 ctx.log(&format!("  Triage build failed: {}\n", e));
                 return Err(format!("Triage build failed: {}\n", e));
             }
-        }
-
-        if ctx.settings.deps_only {
-            sorted_nodes = sorted_nodes
-                .iter()
-                .filter(|&&node_id| {
-                    !ctx.graph.nodes[node_id].props.t.is_source()
-                        && !ctx.graph.nodes[node_id].props.t.is_generated_file()
-                })
-                .cloned()
-                .collect();
         }
 
         for (i, &node_id) in sorted_nodes.iter().enumerate() {
@@ -396,7 +380,6 @@ pub(crate) mod tests {
             expected_out,
             additional_actions,
             additional_settings,
-            false,
             &HashSet::new(),
         );
     }
@@ -409,7 +392,6 @@ pub(crate) mod tests {
         expected_out: &str,
         additional_actions: impl Fn(&mut ReduceContext) -> (),
         additional_settings: impl Fn(&mut ReduceSettings) -> (),
-        deps_only: bool,
         readonly_deps_attrs: &HashSet<String>,
     ) {
         let project_dir = Path::new(get_test_data_path!(project_dir).to_str().unwrap())
@@ -422,7 +404,7 @@ pub(crate) mod tests {
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(deps_only, readonly_deps_attrs).unwrap();
+        let graph = query.to_dep_graph(readonly_deps_attrs).unwrap();
         let editor = BazelDepEditor::new(&query, &project_dir);
 
         let reducer = TopSortReducer {};
@@ -433,7 +415,6 @@ pub(crate) mod tests {
                 .to_string(),
             cwd: project_dir.clone(),
             save_build_log: false,
-            deps_only,
             timeout_seconds: 0,
             disable_dependency_flattening: false,
             disable_dependency_flattening_for_alias_targets: false,
@@ -562,7 +543,6 @@ pub(crate) mod tests {
             |settings| {
                 settings.disable_optimization_if_transitive_deps_exists = true;
             },
-            true,
             &HashSet::from(["exports".to_string()]),
         );
     }

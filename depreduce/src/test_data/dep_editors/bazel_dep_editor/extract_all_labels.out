@@ -1,12 +1,5 @@
 [
     (
-        //main:main.cpp,
-        Interval {
-            start: 101,
-            end: 117,
-        },
-    ),
-    (
         //liba:liba,
         Interval {
             start: 141,

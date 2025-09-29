@@ -2,10 +2,7 @@ use std::collections::HashSet;
 
 use serde::Deserialize;
 
-use crate::{
-    filters::*,
-    graph::{DependencyGraph, bazel_xml_parser::Query},
-};
+use crate::{filters::*, graph::DependencyGraph};
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]
@@ -16,13 +13,13 @@ pub enum FilterType {
     AttrRule(AttrRuleBasedFilter),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub struct FilterSpecification {
     #[serde(default)]
     pub filters: Vec<FilterType>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub struct ReduceConfig {
     pub from: FilterSpecification,
     pub to: FilterSpecification,
@@ -65,14 +62,14 @@ impl FilterSpecification {
     pub fn get_skip_nodes<'a, 'b, 'c: 'b>(
         &self,
         graph: &'c DependencyGraph,
-        query: &Query,
+        info: &BuildSystemSpecificInfo,
     ) -> SkipNodes<'b> {
         let mut for_addition = HashSet::new();
         let mut for_removal = HashSet::new();
 
         for filter in &self.filters {
             let filter = filter.to_filterable();
-            let nodes = filter.filter(graph, query);
+            let nodes = filter.filter(graph, info);
             match filter.get_op_type() {
                 FilterOperationScope::Add => {
                     for_addition.extend(nodes.iter().map(|&id| graph.nodes[id].label.as_str()));

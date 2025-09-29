@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use crate::graph::{DependencyGraph, NodeId};
 
@@ -65,10 +65,10 @@ mod tests {
     fn test_rebuild_cost_calculator_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
-        let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
-        assert_eq!(5, calculator.calculate_rebuild_cost(a_cpp_node_id));
+        let a_cpp_node_id = graph.get_node_id("//liba:liba").unwrap();
+        assert_eq!(2, calculator.calculate_rebuild_cost(a_cpp_node_id));
 
         let mut rebuild_nodes: Vec<_> = calculator.nodes_to_rebuild_cache[a_cpp_node_id]
             .as_ref()
@@ -78,26 +78,23 @@ mod tests {
             .collect();
         rebuild_nodes.sort();
         let mut expected_nodes = vec![
-            graph.get_node_id("//liba:liba").unwrap(),
             graph.get_node_id("//libb:libb").unwrap(),
             graph.get_node_id("//main:main").unwrap(),
-            graph.get_node_id("//main:main.stripped").unwrap(),
-            graph.get_node_id("//main:main.dwp").unwrap(),
         ];
         expected_nodes.sort();
         assert_eq!(rebuild_nodes, expected_nodes);
 
-        assert_eq!(37, calculator.calculate_rebuild_cost_sum());
+        assert_eq!(6, calculator.calculate_rebuild_cost_sum());
     }
 
     #[test]
     fn test_rebuild_cost_calculator_cxx_optimized() {
         let xml = read_test_data!("cxx-deps-optimized.xml");
         let query = parse_bazel_xml(&xml).unwrap();
-        let graph = query.to_dep_graph(false, &HashSet::new()).unwrap();
+        let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
-        let a_cpp_node_id = graph.get_node_id("//liba:a.cpp").unwrap();
-        assert_eq!(4, calculator.calculate_rebuild_cost(a_cpp_node_id));
+        let a_cpp_node_id = graph.get_node_id("//liba:liba").unwrap();
+        assert_eq!(1, calculator.calculate_rebuild_cost(a_cpp_node_id));
 
         let mut rebuild_nodes: Vec<_> = calculator.nodes_to_rebuild_cache[a_cpp_node_id]
             .as_ref()
@@ -106,15 +103,10 @@ mod tests {
             .copied()
             .collect();
         rebuild_nodes.sort();
-        let mut expected_nodes = vec![
-            graph.get_node_id("//liba:liba").unwrap(),
-            graph.get_node_id("//main:main").unwrap(),
-            graph.get_node_id("//main:main.stripped").unwrap(),
-            graph.get_node_id("//main:main.dwp").unwrap(),
-        ];
+        let mut expected_nodes = vec![graph.get_node_id("//main:main").unwrap()];
         expected_nodes.sort();
         assert_eq!(rebuild_nodes, expected_nodes);
 
-        assert_eq!(25, calculator.calculate_rebuild_cost_sum());
+        assert_eq!(4, calculator.calculate_rebuild_cost_sum());
     }
 }

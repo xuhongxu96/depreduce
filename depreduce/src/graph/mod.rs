@@ -1,4 +1,4 @@
 pub mod bazel_xml_parser;
-pub mod graph;
+mod graph;
 
 pub use graph::*;

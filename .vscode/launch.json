@@ -7,6 +7,28 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug executable 'depstat'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=depstat",
+                    "--package=depstat"
+                ],
+                "filter": {
+                    "name": "depstat",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "parse",
+                "-l",
+                "${workspaceFolder}/hirschgarten-output/"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug executable 'depreduce'",
             "cargo": {
                 "args": [
@@ -22,13 +44,17 @@
             "args": [
                 "--workspace",
                 // "/data/h445xu/repo/perses-private/",
-                "/data/h445xu/repo/flogger",
+                // "/data/h445xu/repo/flogger",
+                // "/data/h445xu/repo/trpc-cpp",
+                "/data/h445xu/repo/bazel-repos/cloned_repos/JetBrains__hirschgarten",
                 "--command",
                 // "${workspaceFolder}/scripts/build_perses.sh"
-                "${workspaceFolder}/scripts/build.sh",
-                "--deps-only",
+                // "${workspaceFolder}/scripts/experiments/trpc-cpp-build.sh",
+                "${workspaceFolder}/scripts/experiments/hirschgarten-build.sh",
+                "--config",
+                "${workspaceFolder}/scripts/experiments/hirschgarten.toml",
                 "--output",
-                "flogger-output"
+                "hir-output"
             ],
             "cwd": "${workspaceFolder}"
         },

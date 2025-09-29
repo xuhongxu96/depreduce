@@ -12,7 +12,7 @@ pub enum FilterOperationScope {
 }
 
 #[derive(Debug, Deserialize, Default)]
-struct CommonFilterOptions {
+pub struct CommonFilterOptions {
     #[serde(default)]
     pub scope: FilterOperationScope,
 
@@ -20,13 +20,23 @@ struct CommonFilterOptions {
     pub transitive_level: i32,
 }
 
+pub enum BuildSystemSpecificInfo<'a> {
+    Bazel(&'a Query),
+    Buck(),
+    Cargo(),
+}
+
 trait InternalFilterable {
-    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId>;
+    fn internal_filter(
+        &self,
+        graph: &DependencyGraph,
+        info: &BuildSystemSpecificInfo,
+    ) -> HashSet<NodeId>;
     fn options(&self) -> &CommonFilterOptions;
 }
 
 pub trait Filterable {
-    fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId>;
+    fn filter(&self, graph: &DependencyGraph, info: &BuildSystemSpecificInfo) -> HashSet<NodeId>;
     fn get_op_type(&self) -> &FilterOperationScope;
 }
 
@@ -35,8 +45,8 @@ impl<T: InternalFilterable> Filterable for T {
         &self.options().scope
     }
 
-    fn filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
-        let mut nodes = self::InternalFilterable::internal_filter(self, graph, query);
+    fn filter(&self, graph: &DependencyGraph, info: &BuildSystemSpecificInfo) -> HashSet<NodeId> {
+        let mut nodes = self::InternalFilterable::internal_filter(self, graph, info);
 
         if self.options().transitive_level > 0 {
             let mut visited = HashSet::new();
