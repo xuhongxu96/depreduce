@@ -221,11 +221,7 @@ impl TopSortReducer {
             return false;
         }
 
-        match ctx.settings.editor.remove(
-            &dependent_label,
-            &label,
-            ctx.get_indegree(dependent_node_id) <= 0,
-        ) {
+        match ctx.settings.editor.remove(&dependent_label, &label) {
             Ok(edit) => {
                 removed = true;
                 ctx.backup(&edit);
@@ -297,7 +293,7 @@ impl TopSortReducer {
 
         let mut ctx = ReduceContext::new(graph, settings);
 
-        let mut sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
+        let sorted_nodes: Vec<NodeId> = if !settings.disable_topological_sorting {
             ctx.graph.topsort()
         } else {
             ctx.log("Topological sorting is disabled, using original order.\n");

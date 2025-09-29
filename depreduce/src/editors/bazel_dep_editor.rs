@@ -12,8 +12,8 @@ use crate::graph::bazel_xml_parser::{Query, SkyValue};
 pub struct BazelDepEditor {
     label2location: HashMap<String, String>,
     workspace_root: String,
-    keywords_for_deps: HashSet<String>,
-    keywords_for_deps_and_srcs: HashSet<String>,
+    keywords_for_deps_removal: HashSet<String>,
+    keywords_for_deps_insertion: HashSet<String>,
 }
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
@@ -257,8 +257,8 @@ impl BazelDepEditor {
                 .to_str()
                 .unwrap()
                 .to_string(),
-            keywords_for_deps: keywords_for_deps_insertion,
-            keywords_for_deps_and_srcs: keywords_for_deps_removal,
+            keywords_for_deps_insertion,
+            keywords_for_deps_removal,
         }
     }
 
@@ -411,9 +411,13 @@ impl DepEditor for BazelDepEditor {
             let simplified_label = self.simplify_label(dep_label, &path);
 
             let build = std::fs::read_to_string(&path).unwrap();
-            if let Some(pos) =
-                self.get_insertion_pos(label, &path, &build, start_line, &self.keywords_for_deps)
-            {
+            if let Some(pos) = self.get_insertion_pos(
+                label,
+                &path,
+                &build,
+                start_line,
+                &self.keywords_for_deps_insertion,
+            ) {
                 Ok(FileEdit {
                     path: path,
                     content: format!(
@@ -435,12 +439,7 @@ impl DepEditor for BazelDepEditor {
         }
     }
 
-    fn remove(
-        &self,
-        label: &str,
-        dep_label: &str,
-        only_remove_deps: bool,
-    ) -> Result<FileEdit, String> {
+    fn remove(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = split_location(location);
             if !Path::new(&path)
@@ -458,11 +457,7 @@ impl DepEditor for BazelDepEditor {
                 &path,
                 &build,
                 start_line,
-                if only_remove_deps {
-                    &self.keywords_for_deps
-                } else {
-                    &self.keywords_for_deps_and_srcs
-                },
+                &self.keywords_for_deps_removal,
             );
 
             if let Some((_label, interval)) = candidate_labels
@@ -612,7 +607,7 @@ mod tests {
             &path,
             &std::fs::read_to_string(&path).unwrap(),
             3,
-            &editor.keywords_for_deps_and_srcs,
+            &editor.keywords_for_deps_removal,
         );
         let res = format!("{:#?}", labels);
         assert_eq!(
@@ -629,7 +624,7 @@ mod tests {
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
-            &editor.keywords_for_deps_and_srcs,
+            &editor.keywords_for_deps_removal,
         );
         let res = format!("{:#?}", labels);
         assert_eq!(
@@ -646,7 +641,7 @@ mod tests {
             get_test_data_path!("test.BUILD").to_str().unwrap(),
             &read_test_data!("test.BUILD"),
             3,
-            &editor.keywords_for_deps,
+            &editor.keywords_for_deps_removal,
         );
         assert_eq!(pos, Some(119));
     }
@@ -654,7 +649,7 @@ mod tests {
     #[rstest]
     fn test_bazel_dep_editor_remove(cxx_query: &Query) {
         let editor = BazelDepEditor::new(cxx_query, &get_test_workspace_root());
-        let edit = editor.remove("//main:main", "//liba:liba", false).unwrap();
+        let edit = editor.remove("//main:main", "//liba:liba").unwrap();
         assert_eq!(
             edit.path,
             format!("{}/main/BUILD", get_test_workspace_root())

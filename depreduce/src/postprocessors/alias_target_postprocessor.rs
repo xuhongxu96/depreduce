@@ -83,7 +83,7 @@ impl<'a, 'b> AliasTargetPostprocessor<'a, 'b> {
             let node_label = self.ctx.graph.nodes[candidate.node_id].label.clone();
             for dep_node_id in &candidate.added_deps {
                 let dep_label = self.ctx.graph.nodes[*dep_node_id].label.clone();
-                if let Ok(edit) = editor.remove(&node_label, &dep_label, true) {
+                if let Ok(edit) = editor.remove(&node_label, &dep_label) {
                     self.ctx.backup(&edit);
                     self.ctx.apply(edit);
                 } else {

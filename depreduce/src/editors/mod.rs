@@ -14,13 +14,7 @@ pub struct FileEdit {
 
 pub trait DepEditor {
     fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
-
-    fn remove(
-        &self,
-        label: &str,
-        dep_label: &str,
-        only_remove_deps: bool,
-    ) -> Result<FileEdit, String>;
+    fn remove(&self, label: &str, dep_label: &str) -> Result<FileEdit, String>;
 }
 
 mod bazel_dep_editor;
