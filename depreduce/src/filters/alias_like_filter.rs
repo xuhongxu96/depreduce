@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use serde::Deserialize;
 
 use crate::{
-    filters::{CommonFilterOptions, InternalFilterable},
-    graph::{DependencyGraph, NodeId, bazel_xml_parser::Query},
+    filters::{BuildSystemSpecificInfo, CommonFilterOptions, InternalFilterable},
+    graph::{DependencyGraph, NodeId},
 };
 
 #[derive(Debug, Deserialize, Default)]
@@ -14,7 +14,11 @@ pub struct AliasLikeFilter {
 }
 
 impl InternalFilterable for AliasLikeFilter {
-    fn internal_filter(&self, graph: &DependencyGraph, _: &Query) -> HashSet<NodeId> {
+    fn internal_filter(
+        &self,
+        graph: &DependencyGraph,
+        _: &BuildSystemSpecificInfo,
+    ) -> HashSet<NodeId> {
         let mut res = HashSet::new();
         for node in &graph.nodes {
             if node.props.t.is_alias_target() {

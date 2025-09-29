@@ -1,15 +1,15 @@
 use std::collections::HashSet;
 
-use regex::Regex;
 use serde::Deserialize;
 
 use crate::{
     filters::{
-        CommonFilterOptions, Filterable, InternalFilterable, executable_rules::ExecutableRules,
+        BuildSystemSpecificInfo, CommonFilterOptions, Filterable, InternalFilterable,
+        executable_rules::ExecutableRules,
     },
     graph::{
         DependencyGraph, NodeId,
-        bazel_xml_parser::{Query, SkyValue, VariantProp},
+        bazel_xml_parser::{SkyValue, VariantProp},
     },
 };
 
@@ -26,9 +26,18 @@ pub struct AttrRuleBasedFilter {
 }
 
 impl InternalFilterable for AttrRuleBasedFilter {
-    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
+    fn internal_filter(
+        &self,
+        graph: &DependencyGraph,
+        info: &BuildSystemSpecificInfo,
+    ) -> HashSet<NodeId> {
         let mut res = HashSet::new();
         let rules = ExecutableRules::parse(&self.rules);
+
+        let query = match info {
+            &BuildSystemSpecificInfo::Bazel(q) => q,
+            _ => panic!("AttrRuleBasedFilter only supports Bazel"),
+        };
 
         'outer_loop: for value in &query.values {
             match value {
@@ -106,7 +115,7 @@ mod tests {
         let query = parse_bazel_xml(xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
-        let res = filter.filter(&graph, &query);
+        let res = filter.filter(&graph, &BuildSystemSpecificInfo::Bazel(&query));
 
         assert!(!res.contains(&graph.get_node_id("//a").unwrap()));
         assert!(res.contains(&graph.get_node_id("//a_type").unwrap()));

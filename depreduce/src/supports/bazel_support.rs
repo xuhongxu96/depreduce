@@ -3,6 +3,7 @@ use utils::get_bazel_query;
 use crate::{
     configs::{ReduceConfig, SkipNodes},
     editors::{BazelDepEditor, DepEditor},
+    filters::BuildSystemSpecificInfo,
     graph::{
         DependencyGraph,
         bazel_xml_parser::{Query, parse_bazel_xml},
@@ -23,6 +24,10 @@ impl BazelSupport {
 
         BazelSupport { query, graph }
     }
+
+    fn get_info(&self) -> BuildSystemSpecificInfo {
+        BuildSystemSpecificInfo::Bazel(&self.query)
+    }
 }
 
 impl BuildSystemSupport for BazelSupport {
@@ -35,11 +40,11 @@ impl BuildSystemSupport for BazelSupport {
     }
 
     fn skip_from_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
-        config.from.get_skip_nodes(&self.graph, &self.query)
+        config.from.get_skip_nodes(&self.graph, &self.get_info())
     }
 
     fn skip_to_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
-        config.to.get_skip_nodes(&self.graph, &self.query)
+        config.to.get_skip_nodes(&self.graph, &self.get_info())
     }
 
     fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor> {

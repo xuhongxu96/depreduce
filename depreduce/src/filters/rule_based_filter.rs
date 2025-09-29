@@ -5,7 +5,8 @@ use serde::Deserialize;
 
 use crate::{
     filters::{
-        CommonFilterOptions, Filterable, InternalFilterable, executable_rules::ExecutableRules,
+        BuildSystemSpecificInfo, CommonFilterOptions, Filterable, InternalFilterable,
+        executable_rules::ExecutableRules,
     },
     graph::{DependencyGraph, NodeId, bazel_xml_parser::Query},
 };
@@ -71,7 +72,15 @@ impl RuleBasedFilter {
 }
 
 impl InternalFilterable for RuleBasedFilter {
-    fn internal_filter(&self, graph: &DependencyGraph, query: &Query) -> HashSet<NodeId> {
+    fn internal_filter(
+        &self,
+        graph: &DependencyGraph,
+        info: &BuildSystemSpecificInfo,
+    ) -> HashSet<NodeId> {
+        let query = match info {
+            &BuildSystemSpecificInfo::Bazel(q) => q,
+            _ => panic!("RuleBasedFilter only supports Bazel"),
+        };
         let node_and_rule_class = query.to_node_and_rule_class();
         let (allow, block) = self.to_executable_filter();
 
@@ -131,7 +140,8 @@ mod tests {
         let query = parse_bazel_xml(xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
-        let res = filter.filter(&graph, &query);
+        let info = BuildSystemSpecificInfo::Bazel(&query);
+        let res = filter.filter(&graph, &info);
 
         assert!(res.contains(&graph.get_node_id("//test:a").unwrap()));
         assert!(res.contains(&graph.get_node_id("//test:b").unwrap()));
