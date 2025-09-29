@@ -2,11 +2,12 @@ use utils::get_bazel_query;
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
-    editors::BazelDepEditor,
+    editors::{BazelDepEditor, DepEditor},
     graph::{
         DependencyGraph,
         bazel_xml_parser::{Query, parse_bazel_xml},
     },
+    supports::BuildSystemSupport,
 };
 
 pub struct BazelSupport {
@@ -22,28 +23,26 @@ impl BazelSupport {
 
         BazelSupport { query, graph }
     }
+}
 
-    pub fn get_query(&self) -> &Query {
-        &self.query
-    }
-
-    pub fn get_graph(&self) -> &DependencyGraph {
+impl BuildSystemSupport for BazelSupport {
+    fn get_graph(&self) -> &DependencyGraph {
         &self.graph
     }
 
-    pub fn move_out_graph(self) -> DependencyGraph {
-        self.graph
+    fn swap_graph(&mut self, out_graph: &mut DependencyGraph) {
+        std::mem::swap(&mut self.graph, out_graph);
     }
 
-    pub fn skip_from_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
+    fn skip_from_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
         config.from.get_skip_nodes(&self.graph, &self.query)
     }
 
-    pub fn skip_to_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
+    fn skip_to_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
         config.to.get_skip_nodes(&self.graph, &self.query)
     }
 
-    pub fn create_editor(&self, workspace_root: &str) -> BazelDepEditor {
-        BazelDepEditor::new(&self.query, workspace_root)
+    fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor> {
+        Box::new(BazelDepEditor::new(&self.query, workspace_root))
     }
 }

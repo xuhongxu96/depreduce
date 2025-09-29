@@ -11,7 +11,7 @@ use depreduce::{
         top_sort_reducer::TopSortReducer,
     },
     stats::rebuild_cost::RebuildCostCalculator,
-    supports::BazelSupport,
+    supports::{BazelSupport, BuildSystemSupport},
 };
 use utils::to_json_lines;
 
@@ -98,7 +98,8 @@ fn run_reducer_test(
     )
     .expect("Failed to parse config file");
 
-    let support = BazelSupport::new(&workspace_root, &args.target, &config);
+    let mut support: Box<dyn BuildSystemSupport> =
+        Box::new(BazelSupport::new(&workspace_root, &args.target, &config));
     let editor = support.create_editor(&workspace_root);
 
     println!("Parsed dep graph");
@@ -133,7 +134,7 @@ fn run_reducer_test(
 
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
-        editor: &editor,
+        editor: editor.as_ref(),
         build_command: build_script.to_string(),
         cwd: workspace_root.to_string(),
         save_build_log: true,
@@ -188,7 +189,9 @@ fn run_reducer_test(
             })
             .collect(),
     };
-    let mut ctx = reducer.reduce(support.move_out_graph(), &settings).unwrap();
+    let mut graph = DependencyGraph::new();
+    support.swap_graph(&mut graph);
+    let mut ctx = reducer.reduce(graph, &settings).unwrap();
 
     if !settings.disable_dependency_flattening_for_alias_targets {
         let mut postprocessor = AliasTargetPostprocessor::new(&mut ctx);
