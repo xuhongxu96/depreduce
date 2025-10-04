@@ -13,4 +13,6 @@ pub trait BuildSystemSupport {
 }
 
 mod bazel_support;
+mod buck_support;
+
 pub use bazel_support::BazelSupport;
