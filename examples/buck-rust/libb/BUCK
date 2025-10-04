@@ -1,0 +1,6 @@
+rust_library(
+  name = "libb",
+  srcs = ["libb.rs"],
+  deps = ["//liba:liba"],
+  visibility = ["PUBLIC"]
+)

@@ -1,0 +1,8 @@
+rust_binary(
+  name = "main",
+  srcs = ["main.rs"],
+  deps = [
+    "//liba:liba",
+    "//libb:libb",
+  ]
+)
