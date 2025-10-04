@@ -3,6 +3,7 @@ rust_binary(
   srcs = ["main.rs"],
   deps = [
     "//liba:liba",
-    "//libb:libb",
+    "//libbc:libb",
+    "//libbc:libc",
   ]
 )

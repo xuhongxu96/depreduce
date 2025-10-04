@@ -1,39 +1,21 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     io::{BufRead, BufReader},
     process::Command,
 };
-
-use serde::Deserialize;
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
     editors::{BazelDepEditor, DepEditor},
     filters::BuildSystemSpecificInfo,
-    graph::DependencyGraph,
+    graph::{
+        DependencyGraph,
+        buck_json_parser::{BuckQuery, parse_buck_json_query},
+    },
     supports::BuildSystemSupport,
 };
 
-#[derive(Deserialize, Debug)]
-struct BuckQueryOutput {
-    #[serde(rename = "buck.type")]
-    type_name: String,
-
-    #[serde(rename = "buck.package")]
-    package: String,
-
-    #[serde(default)]
-    srcs: Vec<String>,
-
-    #[serde(default)]
-    deps: Vec<String>,
-}
-
-fn get_buck_query(
-    buck_path: &str,
-    workspace: &str,
-    target: &str,
-) -> HashMap<String, BuckQueryOutput> {
+fn get_buck_query(buck_path: &str, workspace: &str, target: &str) -> BuckQuery {
     let mut p = Command::new(buck_path)
         .arg("query")
         .arg(target)
@@ -62,20 +44,22 @@ fn get_buck_query(
 
     p.wait().expect("Buck query did not finish successfully");
 
-    let map: HashMap<String, BuckQueryOutput> =
-        serde_json::from_str(&query_res).expect("Failed to parse buck query output as JSON");
-    map
+    parse_buck_json_query(&query_res)
 }
 
 pub struct BuckSupport {
+    query: BuckQuery,
     graph: DependencyGraph,
 }
 
 impl BuckSupport {
     pub fn new(workspace: &str, target: &str, config: &ReduceConfig) -> Self {
-        Self {
-            graph: todo!("Implement BuckSupport::new"),
-        }
+        let query = get_buck_query("buck2", workspace, target);
+        let graph = query
+            .to_dep_graph()
+            .expect("Failed to convert buck query to graph");
+
+        Self { query, graph }
     }
 
     fn get_info(&self) -> BuildSystemSpecificInfo {
@@ -104,11 +88,12 @@ impl BuildSystemSupport for BuckSupport {
         let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
         let keywords_for_deps_removal = HashSet::from(["deps".to_string()]);
 
-        Box::new(BazelDepEditor::new_with_label2location(
+        Box::new(BazelDepEditor::new_with_buck_mode(
             todo!(),
             workspace_root,
             keywords_for_deps_insertion,
             keywords_for_deps_removal,
+            true,
         ))
     }
 }

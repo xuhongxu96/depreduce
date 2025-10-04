@@ -1,15 +1,16 @@
 use std::{
+    collections::{HashMap, HashSet},
     io::{BufRead, BufReader},
     process::Command,
 };
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
-    editors::{BazelDepEditor, DepEditor},
+    editors::{BazelDepEditor, DepEditor, generate_label2location_for_bazel},
     filters::BuildSystemSpecificInfo,
     graph::{
         DependencyGraph,
-        bazel_xml_parser::{Query, parse_bazel_xml},
+        bazel_xml_parser::{BazelQuery, SkyValue, parse_bazel_xml_query},
     },
     supports::BuildSystemSupport,
 };
@@ -51,14 +52,14 @@ fn get_bazel_query(workspace: &str, target: &str) -> String {
 }
 
 pub struct BazelSupport {
-    query: Query,
+    query: BazelQuery,
     graph: DependencyGraph,
 }
 
 impl BazelSupport {
     pub fn new(workspace: &str, target: &str, config: &ReduceConfig) -> Self {
         let query_xml = get_bazel_query(workspace, target);
-        let query = parse_bazel_xml(&query_xml).unwrap();
+        let query = parse_bazel_xml_query(&query_xml).unwrap();
         let graph = query.to_dep_graph(&config.readonly_deps_attrs).unwrap();
 
         BazelSupport { query, graph }
@@ -87,6 +88,14 @@ impl BuildSystemSupport for BazelSupport {
     }
 
     fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor> {
-        Box::new(BazelDepEditor::new(&self.query, workspace_root))
+        let keywords_for_deps_insertion = HashSet::from(["deps".to_string()]);
+        let keywords_for_deps_removal = HashSet::from(["deps".to_string()]);
+
+        Box::new(BazelDepEditor::new(
+            generate_label2location_for_bazel(&self.query),
+            workspace_root,
+            keywords_for_deps_insertion,
+            keywords_for_deps_removal,
+        ))
     }
 }

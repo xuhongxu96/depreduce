@@ -1,4 +1,4 @@
-Query {
+BazelQuery {
     version: 2,
     values: [
         SourceFile(

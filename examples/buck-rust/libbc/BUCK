@@ -4,3 +4,10 @@ rust_library(
   deps = ["//liba:liba"],
   visibility = ["PUBLIC"]
 )
+
+rust_library(
+  name = "libc",
+  srcs = ["libc.rs"],
+  deps = [":libb"],
+  visibility = ["PUBLIC"]
+)
