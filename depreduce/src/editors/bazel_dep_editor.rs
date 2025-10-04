@@ -250,6 +250,20 @@ impl BazelDepEditor {
                 SkyValue::PackageGroup(_package_group) => {}
             }
         }
+        Self::new_with_label2location(
+            label2location,
+            workspace_root,
+            keywords_for_deps_insertion,
+            keywords_for_deps_removal,
+        )
+    }
+
+    pub fn new_with_label2location(
+        label2location: HashMap<String, String>,
+        workspace_root: &str,
+        keywords_for_deps_insertion: HashSet<String>,
+        keywords_for_deps_removal: HashSet<String>,
+    ) -> Self {
         Self {
             label2location,
             workspace_root: Path::new(workspace_root)
