@@ -481,7 +481,11 @@ impl DepEditor for BazelDepEditor {
                 ));
             }
 
-            let simplified_label = self.simplify_label(dep_label, &path);
+            let simplified_label = if self.buck_mode {
+                None
+            } else {
+                self.simplify_label(dep_label, &path)
+            };
 
             let build = std::fs::read_to_string(&path).unwrap();
             if let Some(pos) = self.get_insertion_pos(
@@ -536,8 +540,6 @@ impl DepEditor for BazelDepEditor {
                 start_line,
                 &self.keywords_for_deps_removal,
             );
-
-            println!("Candidate labels: {:?}", candidate_labels);
 
             if let Some((_label, interval)) = candidate_labels
                 .iter()

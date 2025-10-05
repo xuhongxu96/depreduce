@@ -20,7 +20,7 @@ fn get_buck_query(buck_path: &str, workspace: &str, target: &str) -> BuckQuery {
         .arg("uquery")
         .arg(target)
         .arg("--output-attribute")
-        .arg("^(deps|srcs|buck.type|buck.package)$")
+        .arg("^(deps|exported_deps|srcs|buck.type|buck.package)$")
         .arg("--output-format")
         .arg("json")
         .current_dir(workspace)
