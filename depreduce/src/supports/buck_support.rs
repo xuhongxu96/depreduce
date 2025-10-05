@@ -17,7 +17,7 @@ use crate::{
 
 fn get_buck_query(buck_path: &str, workspace: &str, target: &str) -> BuckQuery {
     let mut p = Command::new(buck_path)
-        .arg("query")
+        .arg("uquery")
         .arg(target)
         .arg("--output-attribute")
         .arg("^(deps|srcs|buck.type|buck.package)$")
