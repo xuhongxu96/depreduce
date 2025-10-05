@@ -17,6 +17,15 @@ impl Default for BuckListOrMap {
     }
 }
 
+impl BuckListOrMap {
+    fn is_empty(&self) -> bool {
+        match self {
+            BuckListOrMap::List(list) => list.is_empty(),
+            BuckListOrMap::Map(map) => map.as_object().map_or(true, |m| m.is_empty()),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BuckQueryTarget {
     #[serde(rename = "buck.type")]
@@ -90,6 +99,13 @@ impl BuckQueryTarget {
 }
 
 impl BuckQuery {
+    pub fn to_node_and_rule_class(&self) -> Vec<(String, String)> {
+        self.query
+            .iter()
+            .map(|(name, target)| (name.clone(), target.type_name.clone()))
+            .collect()
+    }
+
     pub fn to_dep_graph(&self) -> Result<DependencyGraph, String> {
         let mut res = DependencyGraph::new();
         for (name, target) in &self.query {
@@ -97,7 +113,7 @@ impl BuckQuery {
                 name.clone(),
                 NodeProps {
                     t: NodeType::Target(TargetType {
-                        is_alias: target.get_src_list().is_empty(),
+                        is_alias: target.srcs.is_empty(),
                     }),
                 },
             )?;

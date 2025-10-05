@@ -76,11 +76,11 @@ impl InternalFilterable for RuleBasedFilter {
         graph: &DependencyGraph,
         info: &BuildSystemSpecificInfo,
     ) -> HashSet<NodeId> {
-        let query = match info {
-            &BuildSystemSpecificInfo::Bazel(q) => q,
+        let node_and_rule_class = match info {
+            &BuildSystemSpecificInfo::Bazel(q) => q.to_node_and_rule_class(),
+            &BuildSystemSpecificInfo::Buck(q) => q.to_node_and_rule_class(),
             _ => panic!("RuleBasedFilter only supports Bazel"),
         };
-        let node_and_rule_class = query.to_node_and_rule_class();
         let (allow, block) = self.to_executable_filter();
 
         let mut res = HashSet::new();

@@ -55,6 +55,12 @@ pub struct BuckSupport {
 
 impl BuckSupport {
     pub fn new(workspace: &str, target: &str, config: &ReduceConfig) -> Self {
+        if !config.readonly_deps_attrs.is_empty() {
+            eprintln!(
+                "Warning: readonly_deps_attrs is currently not supported for Buck. Ignoring it."
+            );
+        }
+
         let query = get_buck_query("buck2", workspace, target);
         let graph = query
             .to_dep_graph()
@@ -64,7 +70,7 @@ impl BuckSupport {
     }
 
     fn get_info(&self) -> BuildSystemSpecificInfo {
-        BuildSystemSpecificInfo::Buck()
+        BuildSystemSpecificInfo::Buck(&self.query)
     }
 }
 
