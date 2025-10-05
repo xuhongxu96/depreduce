@@ -58,13 +58,13 @@ impl<'a> RebuildCostCalculator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph::bazel_xml_parser::parse_bazel_xml;
+    use crate::graph::bazel_xml_parser::parse_bazel_xml_query;
     use utils::*;
 
     #[test]
     fn test_rebuild_cost_calculator_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
         let a_cpp_node_id = graph.get_node_id("//liba:liba").unwrap();
@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn test_rebuild_cost_calculator_cxx_optimized() {
         let xml = read_test_data!("cxx-deps-optimized.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let mut calculator = RebuildCostCalculator::new(&graph);
         let a_cpp_node_id = graph.get_node_id("//liba:liba").unwrap();

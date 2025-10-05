@@ -83,7 +83,7 @@ impl InternalFilterable for AttrRuleBasedFilter {
 
 #[cfg(test)]
 mod tests {
-    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml};
+    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml_query};
 
     use super::*;
 
@@ -112,7 +112,7 @@ mod tests {
         </query>
         "#;
 
-        let query = parse_bazel_xml(xml).unwrap();
+        let query = parse_bazel_xml_query(xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let res = filter.filter(&graph, &BuildSystemSpecificInfo::Bazel(&query));

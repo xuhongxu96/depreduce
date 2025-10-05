@@ -11,7 +11,7 @@ use crate::{
     filters::{BuildSystemSpecificInfo, CommonFilterOptions, InternalFilterable},
     graph::{
         DependencyGraph, NodeId,
-        bazel_xml_parser::{Query, SkyValue},
+        bazel_xml_parser::{BazelQuery, SkyValue},
     },
 };
 
@@ -45,7 +45,7 @@ impl InternalFilterable for FunctionCallFilter {
 impl FunctionCallFilter {
     fn get_targets_containing_select(
         &self,
-        query: &Query,
+        query: &BazelQuery,
         graph: &DependencyGraph,
     ) -> HashSet<NodeId> {
         let mut res = HashSet::new();
@@ -227,7 +227,7 @@ mod tests {
 
     use crate::{
         filters::{FilterOperationScope, Filterable},
-        graph::bazel_xml_parser::parse_bazel_xml,
+        graph::bazel_xml_parser::parse_bazel_xml_query,
     };
 
     use super::*;
@@ -241,7 +241,7 @@ mod tests {
                 .to_str()
                 .unwrap(),
         );
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let filter = FunctionCallFilter {

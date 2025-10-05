@@ -359,7 +359,10 @@ pub(crate) mod tests {
 
     use utils::*;
 
-    use crate::{editors::BazelDepEditor, graph::bazel_xml_parser::parse_bazel_xml};
+    use crate::{
+        editors::{BazelDepEditor, generate_label2location_for_bazel},
+        graph::bazel_xml_parser::parse_bazel_xml_query,
+    };
 
     use super::*;
 
@@ -403,9 +406,14 @@ pub(crate) mod tests {
 
         let xml = read_test_data!(xml_file);
         let xml = xml.replace(original_workspace_root, &project_dir);
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(readonly_deps_attrs).unwrap();
-        let editor = BazelDepEditor::new(&query, &project_dir);
+        let editor = BazelDepEditor::new(
+            generate_label2location_for_bazel(&query),
+            &project_dir,
+            HashSet::from(["deps".to_string()]),
+            HashSet::from(["deps".to_string()]),
+        );
 
         let reducer = TopSortReducer {};
         let mut settings = ReduceSettings {

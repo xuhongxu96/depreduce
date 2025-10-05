@@ -21,7 +21,10 @@ pub struct FilterSpecification {
 
 #[derive(Debug, Deserialize, Default)]
 pub struct ReduceConfig {
+    #[serde(default)]
     pub from: FilterSpecification,
+
+    #[serde(default)]
     pub to: FilterSpecification,
 
     #[serde(default = "HashSet::new")]

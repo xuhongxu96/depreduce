@@ -4,3 +4,5 @@ target/
 /*-output/
 /*stdout*
 /*stderr*
+
+buck-out/

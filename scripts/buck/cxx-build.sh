@@ -1,0 +1,3 @@
+set -e
+
+buck2 build //...

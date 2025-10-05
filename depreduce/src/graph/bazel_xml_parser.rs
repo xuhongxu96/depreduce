@@ -167,7 +167,7 @@ pub enum SkyValue {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Query {
+pub struct BazelQuery {
     #[serde(rename = "@version")]
     pub version: i32,
 
@@ -175,7 +175,7 @@ pub struct Query {
     pub values: Vec<SkyValue>,
 }
 
-pub fn parse_bazel_xml(xml: &str) -> Result<Query, quick_xml::de::DeError> {
+pub fn parse_bazel_xml_query(xml: &str) -> Result<BazelQuery, quick_xml::de::DeError> {
     quick_xml::de::from_str(xml)
 }
 
@@ -201,7 +201,7 @@ fn is_alias_like_target(rule: &crate::graph::bazel_xml_parser::Rule) -> bool {
     true
 }
 
-impl Query {
+impl BazelQuery {
     pub fn to_node_and_rule_class(&self) -> Vec<(String, String)> {
         self.values
             .iter()
@@ -335,7 +335,7 @@ mod tests {
     fn run_parse_test(input_path: &str, output_path: &str) {
         let xml = read_test_data!(input_path);
 
-        let value: Query = parse_bazel_xml(&xml).unwrap();
+        let value: BazelQuery = parse_bazel_xml_query(&xml).unwrap();
         let res = format!("{:#?}", value);
 
         assert_eq!(res, read_or_create_test_data!(output_path, res));
@@ -380,7 +380,7 @@ mod tests {
     #[test]
     fn test_convert_query_to_dep_graph_cxx() {
         let xml = read_test_data!("cxx-deps.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let res = graph.to_dot();
@@ -393,7 +393,7 @@ mod tests {
     #[test]
     fn test_convert_query_to_dep_graph_perses() {
         let xml = read_test_data!("perses.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
         let res = to_json_lines(&graph.to_dependency_map().to_sorted_vec());

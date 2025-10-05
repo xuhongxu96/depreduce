@@ -641,8 +641,8 @@ impl<'a> ReduceContext<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        editors::BazelDepEditor,
-        graph::bazel_xml_parser::{Query, parse_bazel_xml},
+        editors::{BazelDepEditor, generate_label2location_for_bazel},
+        graph::bazel_xml_parser::{BazelQuery, parse_bazel_xml_query},
     };
 
     use super::*;
@@ -651,14 +651,16 @@ mod tests {
     #[test]
     fn test_calculate_in_degrees() {
         let xml = read_test_data!("perses.xml");
-        let query = parse_bazel_xml(&xml).unwrap();
+        let query = parse_bazel_xml_query(&xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
         let editor = BazelDepEditor::new(
-            &Query {
+            generate_label2location_for_bazel(&BazelQuery {
                 values: vec![],
                 version: 0,
-            },
+            }),
             "",
+            HashSet::from(["deps".to_string()]),
+            HashSet::from(["deps".to_string()]),
         );
         let settings = ReduceSettings {
             editor: &editor,
