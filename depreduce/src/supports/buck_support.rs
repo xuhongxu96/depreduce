@@ -6,7 +6,7 @@ use std::{
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
-    editors::{BazelDepEditor, DepEditor},
+    editors::{BazelDepEditor, DepEditor, generate_label2location_for_buck},
     filters::BuildSystemSpecificInfo,
     graph::{
         DependencyGraph,
@@ -37,6 +37,7 @@ fn get_buck_query(buck_path: &str, workspace: &str, target: &str) -> BuckQuery {
         let line = line.expect("Failed to read line from buck query output");
 
         query_res.push_str(&line);
+        query_res.push('\n');
         if i % 1000 == 0 {
             eprintln!("Read {} lines from buck query output...", i);
         }
@@ -89,7 +90,7 @@ impl BuildSystemSupport for BuckSupport {
         let keywords_for_deps_removal = HashSet::from(["deps".to_string()]);
 
         Box::new(BazelDepEditor::new_with_buck_mode(
-            todo!(),
+            generate_label2location_for_buck(&self.query, workspace_root),
             workspace_root,
             keywords_for_deps_insertion,
             keywords_for_deps_removal,

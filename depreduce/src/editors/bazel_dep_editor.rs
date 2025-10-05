@@ -1,3 +1,5 @@
+// Also supports Buck
+
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
@@ -80,10 +82,19 @@ fn buck_target_to_bazel_label(target: &str) -> BazelLabel {
     let mut repo = "root".to_string();
 
     let remaining;
-    if !target.starts_with("//") {
+    if !target.contains("//") {
+        assert!(target.starts_with(':'));
+        return BazelLabel {
+            name: target.strip_prefix(':').unwrap().to_string(),
+            package: "".to_string(),
+            repo: "root".to_string(),
+        };
+    } else if !target.starts_with("//") {
         let mut parts = target.split("//");
         repo = parts.next().unwrap().to_string();
-        remaining = parts.next().unwrap();
+        remaining = parts
+            .next()
+            .expect(&format!("Failed to get remaining path from {}", target));
     } else {
         remaining = &target[2..];
     }
@@ -94,7 +105,7 @@ fn buck_target_to_bazel_label(target: &str) -> BazelLabel {
 
     BazelLabel {
         name,
-        package,
+        package: format!("//{}", package),
         repo,
     }
 }
@@ -308,11 +319,15 @@ impl BazelDepEditor {
         use rustpython_parser::ast;
 
         // convert start_line and end_line to char offsets
-        let start_offset = build_content
-            .lines()
-            .take(start_line - 1)
-            .map(|s| s.len() + 1)
-            .sum::<usize>();
+        let start_offset = if self.buck_mode {
+            0
+        } else {
+            build_content
+                .lines()
+                .take(start_line - 1)
+                .map(|s| s.len() + 1)
+                .sum::<usize>()
+        };
 
         let mut res = None;
         let ast = rustpython_parser::ast::Suite::parse(&build_content, path).unwrap();
@@ -335,7 +350,12 @@ impl BazelDepEditor {
                 }
                 _ => {}
             }
-            break;
+            if self.buck_mode && res.is_none() {
+                // as there is no start_line for buck mode,
+                // we need to check all statements to find the target
+            } else {
+                break;
+            }
         }
 
         if let Some(pos) = res {
@@ -357,13 +377,17 @@ impl BazelDepEditor {
         use rustpython_parser::ast;
 
         // convert start_line and end_line to char offsets
-        let start_offset = build_content
-            .lines()
-            .take(start_line - 1)
-            .map(|s| s.len() + 1)
-            .sum::<usize>();
+        let start_offset = if self.buck_mode {
+            0
+        } else {
+            build_content
+                .lines()
+                .take(start_line - 1)
+                .map(|s| s.len() + 1)
+                .sum::<usize>()
+        };
 
-        let mut res = vec![];
+        let mut res: Option<Vec<(String, Interval)>> = None;
         let ast = rustpython_parser::ast::Suite::parse(&build_content, path).unwrap();
         for stmt in ast {
             if stmt.range().start().to_usize() < start_offset {
@@ -379,16 +403,23 @@ impl BazelDepEditor {
                             BazelLabel::parse(label)
                         };
                         if label.name == label_name {
-                            res = extract_list_items(&e.value, keywords);
+                            res = Some(extract_list_items(&e.value, keywords));
                         }
                     }
                 }
                 _ => {}
             }
-            break;
+
+            if self.buck_mode && res.is_none() {
+                // as there is no start_line for buck mode,
+                // we need to check all statements to find the target
+            } else {
+                break;
+            }
         }
 
-        res.iter()
+        res.unwrap_or(vec![])
+            .iter()
             .map(|(label, interval)| {
                 let label = if self.buck_mode {
                     buck_target_to_bazel_label(label)
@@ -404,7 +435,11 @@ impl BazelDepEditor {
     fn simplify_label(&self, dep_label: &str, path: &str) -> Option<String> {
         let mut simplified_label = None;
         if let Some(dep_location) = self.label2location.get(dep_label) {
-            let (dep_path, _dep_start_line, _dep_end_col) = split_location(dep_location);
+            let (dep_path, _dep_start_line, _dep_end_col) = if self.buck_mode {
+                (dep_location.clone(), 0, 0)
+            } else {
+                split_location(dep_location)
+            };
             if dep_path == path {
                 let dep_label = if self.buck_mode {
                     buck_target_to_bazel_label(dep_label)
@@ -431,7 +466,11 @@ impl BazelDepEditor {
 impl DepEditor for BazelDepEditor {
     fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
-            let (path, start_line, _end_col) = split_location(location);
+            let (path, start_line, _end_col) = if self.buck_mode {
+                (location.clone(), 0, 0)
+            } else {
+                split_location(location)
+            };
             if !Path::new(&path)
                 .normalize()
                 .starts_with(Path::new(&self.workspace_root))
@@ -475,7 +514,11 @@ impl DepEditor for BazelDepEditor {
 
     fn remove(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
-            let (path, start_line, _end_col) = split_location(location);
+            let (path, start_line, _end_col) = if self.buck_mode {
+                (location.clone(), 0, 0)
+            } else {
+                split_location(location)
+            };
             if !Path::new(&path)
                 .normalize()
                 .starts_with(Path::new(&self.workspace_root))
@@ -493,6 +536,8 @@ impl DepEditor for BazelDepEditor {
                 start_line,
                 &self.keywords_for_deps_removal,
             );
+
+            println!("Candidate labels: {:?}", candidate_labels);
 
             if let Some((_label, interval)) = candidate_labels
                 .iter()
@@ -539,9 +584,17 @@ pub fn generate_label2location_for_bazel(query: &BazelQuery) -> HashMap<String, 
     label2location
 }
 
-pub fn generate_label2location_for_buck(query: &BuckQuery) -> HashMap<String, String> {
+pub fn generate_label2location_for_buck(
+    query: &BuckQuery,
+    workspace: &str,
+) -> HashMap<String, String> {
     let mut label2location = HashMap::new();
-    todo!();
+    for (name, target) in &query.query {
+        label2location.insert(
+            name.clone(),
+            format!("{}/{}", workspace, target.to_buck_path().unwrap()),
+        );
+    }
     label2location
 }
 
@@ -773,7 +826,7 @@ mod tests {
                 "root//liba:liba",
                 BazelLabel {
                     name: "liba".to_string(),
-                    package: "liba".to_string(),
+                    package: "//liba".to_string(),
                     repo: "root".to_string(),
                 },
             ),
@@ -781,7 +834,7 @@ mod tests {
                 "//main:main",
                 BazelLabel {
                     name: "main".to_string(),
-                    package: "main".to_string(),
+                    package: "//main".to_string(),
                     repo: "root".to_string(),
                 },
             ),
@@ -789,7 +842,7 @@ mod tests {
                 "prelude//pkg/pkg:target",
                 BazelLabel {
                     name: "target".to_string(),
-                    package: "pkg/pkg".to_string(),
+                    package: "//pkg/pkg".to_string(),
                     repo: "prelude".to_string(),
                 },
             ),

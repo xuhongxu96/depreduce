@@ -28,6 +28,12 @@ jobs:
 
     - name: Rust Cache
       uses: Swatinem/rust-cache@v2.8.0
+    
+    - name: Install Buck2
+      run: |
+        rustup install nightly-2025-08-01
+        cargo +nightly-2025-08-01 install --git https://github.com/facebook/buck2.git buck2
+        echo "PATH=$HOME/.cargo/bin:$PATH" >> $GITHUB_ENV
           
     - name: Build
       run: cargo build -r --verbose

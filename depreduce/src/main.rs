@@ -11,7 +11,7 @@ use depreduce::{
         top_sort_reducer::TopSortReducer,
     },
     stats::rebuild_cost::RebuildCostCalculator,
-    supports::{BazelSupport, BuildSystemSupport},
+    supports::{BazelSupport, BuckSupport, BuildSystemSupport},
 };
 use utils::to_json_lines;
 
@@ -39,6 +39,14 @@ struct Args {
         help = "Output directory for reduction attempts and dep graph"
     )]
     output: String,
+
+    #[arg(
+        short,
+        long,
+        default_value = "bazel",
+        help = "Build system to use (currently supports: bazel, buck)"
+    )]
+    build_system: String,
 
     #[arg(long, default_value = "depreduce.toml")]
     config: String,
@@ -79,18 +87,44 @@ struct Args {
     enable_optimization_if_transitive_deps_exists: bool,
 }
 
-fn run_reducer_test(
-    workspace_root: &str,
-    build_script: &str,
-    args: &Args,
-) -> (DependencyGraph, Vec<ReductionAttempt>) {
+fn create_support(
+    build_system: &str,
+    workspace: &str,
+    target: &str,
+    config: &ReduceConfig,
+) -> Box<dyn BuildSystemSupport> {
+    match build_system {
+        "buck" => Box::new(BuckSupport::new(workspace, target, config)),
+        "bazel" => Box::new(BazelSupport::new(workspace, target, config)),
+        _ => {
+            eprintln!("Unsupported build system: {}", build_system);
+            exit(1);
+        }
+    }
+}
+
+fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>) {
+    let command = args.command.replace("${workspace}", &args.workspace);
+
+    if !check_if_multiline_bash_has_flag_e(&command) {
+        eprintln!(
+            "The script {} is multiline and does not have 'set -e' or 'set -o errexit'.",
+            command
+        );
+        eprintln!("This may lead to false positives in the depreduce log.");
+        exit(1);
+    }
+
+    let workspace_root = Path::new(&args.workspace).canonicalize().unwrap();
+    let build_script = Path::new(&command).canonicalize().unwrap();
+
     println!(
         "Starting reduction test at {:?}",
         chrono::offset::Local::now()
     );
 
-    println!("Workspace root: {}", workspace_root);
-    println!("Build script: {}", build_script);
+    println!("Workspace root: {:?}", workspace_root);
+    println!("Build script: {:?}", build_script);
     println!("Args: {:#?}", args);
 
     let config = ReduceConfig::from_toml(
@@ -98,9 +132,13 @@ fn run_reducer_test(
     )
     .expect("Failed to parse config file");
 
-    let mut support: Box<dyn BuildSystemSupport> =
-        Box::new(BazelSupport::new(&workspace_root, &args.target, &config));
-    let editor = support.create_editor(&workspace_root);
+    let mut support: Box<dyn BuildSystemSupport> = create_support(
+        &args.build_system,
+        workspace_root.to_str().unwrap(),
+        &args.target,
+        &config,
+    );
+    let editor = support.create_editor(workspace_root.to_str().unwrap());
 
     println!("Parsed dep graph");
     let original_cost =
@@ -135,8 +173,8 @@ fn run_reducer_test(
     let reducer = TopSortReducer {};
     let settings = ReduceSettings {
         editor: editor.as_ref(),
-        build_command: build_script.to_string(),
-        cwd: workspace_root.to_string(),
+        build_command: build_script.to_str().unwrap().to_string(),
+        cwd: workspace_root.to_str().unwrap().to_string(),
         save_build_log: true,
 
         disable_dependency_flattening: args.disable_dependency_flattening,
@@ -203,7 +241,12 @@ fn run_reducer_test(
     let attempts = ctx.get_attempts().to_vec();
 
     // Recalculate the rebuild cost after reduction
-    let new_support = BazelSupport::new(&workspace_root, &args.target, &config);
+    let new_support = create_support(
+        &args.build_system,
+        workspace_root.to_str().unwrap(),
+        &args.target,
+        &config,
+    );
     let new_cost = RebuildCostCalculator::new(new_support.get_graph()).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 
@@ -222,30 +265,7 @@ fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {
 fn main() {
     let args = Args::parse();
 
-    let command = args.command.replace("${workspace}", &args.workspace);
-
-    if !check_if_multiline_bash_has_flag_e(&command) {
-        eprintln!(
-            "The script {} is multiline and does not have 'set -e' or 'set -o errexit'.",
-            command
-        );
-        eprintln!("This may lead to false positives in the depreduce log.");
-        exit(1);
-    }
-
-    let (graph, attempts) = run_reducer_test(
-        Path::new(&args.workspace)
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap(),
-        Path::new(&command)
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap(),
-        &args,
-    );
+    let (graph, attempts) = run_reducer_test(&args);
 
     std::fs::create_dir_all(&args.output).expect("Failed to create output directory");
 
@@ -258,4 +278,34 @@ fn main() {
     let attempt_json_lines = to_json_lines(&attempts);
     std::fs::write(attempt_json_path, attempt_json_lines)
         .expect("Failed to write attempts to file");
+}
+
+#[cfg(test)]
+mod tests {
+    use utils::get_test_data_path;
+
+    use super::*;
+
+    #[test]
+    fn test_buck_e2e() {
+        let workspace_root = get_test_data_path!("../../../examples/buck-rust");
+        let build_sh = get_test_data_path!("build-buck.sh");
+
+        run_reducer_test(&Args {
+            workspace: workspace_root.to_str().unwrap().to_string(),
+            command: build_sh.to_str().unwrap().to_string(),
+            target: "//...".to_string(),
+            output: "logs/".to_string(),
+            build_system: "buck".to_string(),
+            config: get_test_data_path!("empty-config.toml")
+                .to_str()
+                .unwrap()
+                .to_string(),
+            disable_dependency_flattening: false,
+            enable_dependency_flattening_for_alias_targets: false,
+            disable_dependency_lifting: false,
+            disable_topological_sorting: false,
+            enable_optimization_if_transitive_deps_exists: false,
+        });
+    }
 }

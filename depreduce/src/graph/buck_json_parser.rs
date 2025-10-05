@@ -5,28 +5,67 @@ use serde::{Deserialize, Serialize};
 use crate::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType, TargetType};
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum BuckDeps {
+    List(Vec<String>),
+    Map(serde_json::Value),
+}
+
+impl Default for BuckDeps {
+    fn default() -> Self {
+        BuckDeps::List(vec![])
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct BuckQueryTarget {
     #[serde(rename = "buck.type")]
-    type_name: String,
+    pub type_name: String,
 
     #[serde(rename = "buck.package")]
-    package: String,
+    pub package: String,
 
     #[serde(default)]
-    srcs: Vec<String>,
+    pub srcs: Vec<String>,
 
     #[serde(default)]
-    deps: Vec<String>,
+    pub deps: BuckDeps,
 }
 
 #[derive(Serialize, Debug)]
 pub struct BuckQuery {
-    query: HashMap<String, BuckQueryTarget>,
+    pub query: HashMap<String, BuckQueryTarget>,
 }
 
 pub fn parse_buck_json_query(s: &str) -> BuckQuery {
     BuckQuery {
         query: serde_json::from_str(s).expect("Failed to parse buck query output as JSON"),
+    }
+}
+
+impl BuckQueryTarget {
+    pub fn to_buck_path(&self) -> Result<String, String> {
+        if !self.package.starts_with("root//") {
+            return Err(format!(
+                "Unexpected package format (Should start with root//): {}",
+                self.package
+            ));
+        }
+        let res = self.package.trim_start_matches("root//").replace(":", "/");
+        if res.is_empty() {
+            return Err("Empty package after trimming root//".to_string());
+        }
+
+        return Ok(res);
+    }
+
+    pub fn get_target_list(&self) -> Vec<String> {
+        match &self.deps {
+            BuckDeps::List(list) => list.clone(),
+            BuckDeps::Map(_) => {
+                vec![]
+            }
+        }
     }
 }
 
@@ -47,7 +86,7 @@ impl BuckQuery {
         for (name, target) in &self.query {
             let from = res.get_node_id(name).unwrap();
 
-            for dep in &target.deps {
+            for dep in &target.get_target_list() {
                 let to = match res.get_node_id(dep) {
                     Some(id) => id,
                     None => {
@@ -99,7 +138,19 @@ mod tests {
         let bar_id = graph.get_node_id("//foo:bar").unwrap();
         let baz_id = graph.get_node_id("//foo:baz").unwrap();
         assert_eq!(graph.edges.len(), 1);
-        assert_eq!(graph.edges[bar_id].as_ref().unwrap().from, bar_id);
-        assert_eq!(graph.edges[bar_id].as_ref().unwrap().to, baz_id);
+        assert_eq!(graph.edges[0].as_ref().unwrap().from, bar_id);
+        assert_eq!(graph.edges[0].as_ref().unwrap().to, baz_id);
+    }
+
+    #[test]
+    fn test_to_buck_path() {
+        let target = BuckQueryTarget {
+            type_name: "java_library".to_string(),
+            package: "root//foo:bar".to_string(),
+            srcs: vec!["Bar.java".to_string()],
+            deps: BuckDeps::List(vec!["//foo:baz".to_string()]),
+        };
+        let path = target.to_buck_path().unwrap();
+        assert_eq!(path, "foo/bar");
     }
 }
