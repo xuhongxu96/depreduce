@@ -103,7 +103,7 @@ fn create_support(
     }
 }
 
-fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>) {
+fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>, usize) {
     let command = args.command.replace("${workspace}", &args.workspace);
 
     if !check_if_multiline_bash_has_flag_e(&command) {
@@ -252,7 +252,7 @@ fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>) {
 
     // But we still want to return the original graph,
     // because the reduction attempts are based on the original graph.
-    (ctx.graph, attempts)
+    (ctx.graph, attempts, new_cost)
 }
 
 fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {
@@ -265,7 +265,7 @@ fn check_if_multiline_bash_has_flag_e(path: &str) -> bool {
 fn main() {
     let args = Args::parse();
 
-    let (graph, attempts) = run_reducer_test(&args);
+    let (graph, attempts, _) = run_reducer_test(&args);
 
     std::fs::create_dir_all(&args.output).expect("Failed to create output directory");
 
@@ -291,7 +291,7 @@ mod tests {
         let workspace_root = get_test_data_path!("../../../examples/buck-rust");
         let build_sh = get_test_data_path!("build-buck.sh");
 
-        run_reducer_test(&Args {
+        let (_, _, new_cost) = run_reducer_test(&Args {
             workspace: workspace_root.to_str().unwrap().to_string(),
             command: build_sh.to_str().unwrap().to_string(),
             target: "//...".to_string(),
@@ -307,5 +307,7 @@ mod tests {
             disable_topological_sorting: false,
             enable_optimization_if_transitive_deps_exists: false,
         });
+
+        assert!(new_cost == 2);
     }
 }
