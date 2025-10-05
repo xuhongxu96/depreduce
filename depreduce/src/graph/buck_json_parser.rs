@@ -6,14 +6,23 @@ use crate::graph::{DependencyGraph, EdgeProps, NodeProps, NodeType, TargetType};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
-pub enum BuckDeps {
+pub enum BuckListOrMap {
     List(Vec<String>),
     Map(serde_json::Value),
 }
 
-impl Default for BuckDeps {
+impl Default for BuckListOrMap {
     fn default() -> Self {
-        BuckDeps::List(vec![])
+        BuckListOrMap::List(vec![])
+    }
+}
+
+impl BuckListOrMap {
+    fn is_empty(&self) -> bool {
+        match self {
+            BuckListOrMap::List(list) => list.is_empty(),
+            BuckListOrMap::Map(map) => map.as_object().map_or(true, |m| m.is_empty()),
+        }
     }
 }
 
@@ -26,10 +35,13 @@ pub struct BuckQueryTarget {
     pub package: String,
 
     #[serde(default)]
-    pub srcs: Vec<String>,
+    pub srcs: BuckListOrMap,
 
     #[serde(default)]
-    pub deps: BuckDeps,
+    pub deps: BuckListOrMap,
+
+    #[serde(default)]
+    pub exported_deps: BuckListOrMap,
 }
 
 #[derive(Serialize, Debug)]
@@ -59,10 +71,27 @@ impl BuckQueryTarget {
         return Ok(res);
     }
 
+    pub fn get_src_list(&self) -> Vec<String> {
+        match &self.srcs {
+            BuckListOrMap::List(list) => list.clone(),
+            BuckListOrMap::Map(_) => {
+                vec![]
+            }
+        }
+    }
+
     pub fn get_target_list(&self) -> Vec<String> {
         match &self.deps {
-            BuckDeps::List(list) => list.clone(),
-            BuckDeps::Map(_) => {
+            BuckListOrMap::List(list) => list.clone(),
+            BuckListOrMap::Map(_) => {
+                vec![]
+            }
+        }
+    }
+    pub fn get_exported_target_list(&self) -> Vec<String> {
+        match &self.exported_deps {
+            BuckListOrMap::List(list) => list.clone(),
+            BuckListOrMap::Map(_) => {
                 vec![]
             }
         }
@@ -70,6 +99,13 @@ impl BuckQueryTarget {
 }
 
 impl BuckQuery {
+    pub fn to_node_and_rule_class(&self) -> Vec<(String, String)> {
+        self.query
+            .iter()
+            .map(|(name, target)| (name.clone(), target.type_name.clone()))
+            .collect()
+    }
+
     pub fn to_dep_graph(&self) -> Result<DependencyGraph, String> {
         let mut res = DependencyGraph::new();
         for (name, target) in &self.query {
@@ -97,7 +133,41 @@ impl BuckQuery {
                         continue;
                     }
                 };
-                res.add_edge(from, to, EdgeProps { unremovable: false })?;
+                if res
+                    .add_edge(from, to, EdgeProps { unremovable: false })
+                    .is_err()
+                {
+                    eprintln!(
+                        "Warning: failed to add exported dependency {} of target {} (may be duplicate)",
+                        dep, name
+                    );
+                }
+            }
+        }
+
+        for (name, target) in &self.query {
+            let from = res.get_node_id(name).unwrap();
+
+            for dep in &target.get_exported_target_list() {
+                let to = match res.get_node_id(dep) {
+                    Some(id) => id,
+                    None => {
+                        eprintln!(
+                            "Warning: dependency {} of target {} not found in graph",
+                            dep, name
+                        );
+                        continue;
+                    }
+                };
+                if res
+                    .add_edge(from, to, EdgeProps { unremovable: true })
+                    .is_err()
+                {
+                    eprintln!(
+                        "Warning: failed to add exported dependency {} of target {} (may be duplicate)",
+                        dep, name
+                    );
+                }
             }
         }
 
@@ -147,8 +217,9 @@ mod tests {
         let target = BuckQueryTarget {
             type_name: "java_library".to_string(),
             package: "root//foo:bar".to_string(),
-            srcs: vec!["Bar.java".to_string()],
-            deps: BuckDeps::List(vec!["//foo:baz".to_string()]),
+            srcs: BuckListOrMap::List(vec!["Bar.java".to_string()]),
+            deps: BuckListOrMap::List(vec!["//foo:baz".to_string()]),
+            exported_deps: BuckListOrMap::List(vec![]),
         };
         let path = target.to_buck_path().unwrap();
         assert_eq!(path, "foo/bar");

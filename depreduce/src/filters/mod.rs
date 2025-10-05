@@ -1,7 +1,9 @@
 use serde::Deserialize;
 use std::collections::HashSet;
 
-use crate::graph::{DependencyGraph, NodeId, bazel_xml_parser::BazelQuery};
+use crate::graph::{
+    DependencyGraph, NodeId, bazel_xml_parser::BazelQuery, buck_json_parser::BuckQuery,
+};
 
 #[derive(Debug, Deserialize, Default)]
 pub enum FilterOperationScope {
@@ -22,7 +24,7 @@ pub struct CommonFilterOptions {
 
 pub enum BuildSystemSpecificInfo<'a> {
     Bazel(&'a BazelQuery),
-    Buck(),
+    Buck(&'a BuckQuery),
     Cargo(),
 }
 

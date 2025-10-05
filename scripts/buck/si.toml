@@ -1,0 +1,4 @@
+[[from.filters]]
+type = "Rule"
+allow.rule_classes = ["regex:^rust_"]
+scope = "Remove"
