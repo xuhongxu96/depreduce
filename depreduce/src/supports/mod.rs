@@ -18,3 +18,4 @@ mod cargo_support;
 
 pub use bazel_support::BazelSupport;
 pub use buck_support::BuckSupport;
+pub use cargo_support::CargoSupport;

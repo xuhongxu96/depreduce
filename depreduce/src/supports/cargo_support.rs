@@ -1,15 +1,17 @@
+use std::rc::Rc;
+
 use cargo_metadata::{Metadata, MetadataCommand};
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
-    editors::DepEditor,
+    editors::{CargoDepEditor, DepEditor},
     filters::BuildSystemSpecificInfo,
     graph::{DependencyGraph, EdgeProps, NodeProps, NodeType, TargetType},
     supports::BuildSystemSupport,
 };
 
 pub struct CargoSupport {
-    metadata: Metadata,
+    metadata: Rc<Metadata>,
     graph: DependencyGraph,
 }
 
@@ -49,7 +51,7 @@ fn get_metadata(workspace: &str) -> (Metadata, DependencyGraph) {
 }
 
 impl CargoSupport {
-    pub fn new(workspace: &str, target: &str, config: &ReduceConfig) -> Self {
+    pub fn new(workspace: &str, _target: &str, config: &ReduceConfig) -> Self {
         if !config.readonly_deps_attrs.is_empty() {
             eprintln!(
                 "Warning: readonly_deps_attrs is currently not supported for Cargo. Ignoring it."
@@ -58,11 +60,14 @@ impl CargoSupport {
 
         let (metadata, graph) = get_metadata(workspace);
 
-        Self { metadata, graph }
+        Self {
+            metadata: Rc::new(metadata),
+            graph,
+        }
     }
 
     fn get_info(&self) -> BuildSystemSpecificInfo {
-        BuildSystemSpecificInfo::Cargo()
+        BuildSystemSpecificInfo::Cargo(self.metadata.clone())
     }
 }
 
@@ -83,8 +88,8 @@ impl BuildSystemSupport for CargoSupport {
         config.to.get_skip_nodes(&self.graph, &self.get_info())
     }
 
-    fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor> {
-        todo!()
+    fn create_editor(&self, _workspace_root: &str) -> Box<dyn DepEditor> {
+        Box::new(CargoDepEditor::new(self.metadata.clone()))
     }
 }
 
@@ -105,6 +110,7 @@ mod tests {
 
         metadata.packages.iter().for_each(|pkg| {
             name2id.insert(pkg.name.clone(), pkg.id.repr.clone());
+            println!("Package: {:#?}", pkg);
         });
 
         assert_eq!(graph.nodes.len(), 3);
