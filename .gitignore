@@ -4,5 +4,6 @@ target/
 /*-output/
 /*stdout*
 /*stderr*
+nohup.out
 
 buck-out/

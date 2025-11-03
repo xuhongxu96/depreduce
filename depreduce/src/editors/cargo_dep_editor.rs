@@ -5,7 +5,6 @@ use normalize_path::NormalizePath;
 use toml_edit::DocumentMut;
 
 use crate::{
-    configs::ReduceConfig,
     editors::{DepEditor, FileEdit},
 };
 

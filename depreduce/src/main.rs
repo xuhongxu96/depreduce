@@ -96,7 +96,7 @@ fn create_support(
     match build_system {
         "buck" => Box::new(BuckSupport::new(workspace, target, config)),
         "bazel" => Box::new(BazelSupport::new(workspace, target, config)),
-        "rust" => Box::new(CargoSupport::new(workspace, target, config)),
+        "rust" | "cargo" => Box::new(CargoSupport::new(workspace, target, config)),
         _ => {
             eprintln!("Unsupported build system: {}", build_system);
             exit(1);
