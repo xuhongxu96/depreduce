@@ -1,0 +1,11 @@
+reduce_dev_deps = false
+
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ["uv-bench"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ["anyhow"]
+scope = "Remove"

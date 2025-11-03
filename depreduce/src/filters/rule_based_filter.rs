@@ -79,7 +79,11 @@ impl InternalFilterable for RuleBasedFilter {
         let node_and_rule_class = match info {
             &BuildSystemSpecificInfo::Bazel(q) => q.to_node_and_rule_class(),
             &BuildSystemSpecificInfo::Buck(q) => q.to_node_and_rule_class(),
-            _ => panic!("RuleBasedFilter only supports Bazel"),
+            &BuildSystemSpecificInfo::Cargo(ref m) => m
+                .packages
+                .iter()
+                .map(|p| (p.id.repr.to_string(), p.name.to_string()))
+                .collect::<Vec<_>>(),
         };
         let (allow, block) = self.to_executable_filter();
 

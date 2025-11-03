@@ -39,11 +39,11 @@ impl TopSortReducer {
                     continue;
                 }
 
-                match ctx
-                    .settings
-                    .editor
-                    .add(&dependent_of_dependent_label, &label)
-                {
+                match ctx.settings.editor.add(
+                    &dependent_of_dependent_label,
+                    &label,
+                    &dependent_label,
+                ) {
                     Ok(edit) => {
                         lifted_edges.push((dependent_of_dependent, node_id));
                         ctx.backup(&edit);
@@ -135,7 +135,7 @@ impl TopSortReducer {
             match ctx
                 .settings
                 .editor
-                .add(&dependent_label, transitive_dep_label)
+                .add(&dependent_label, transitive_dep_label, &label)
             {
                 Ok(edit) => {
                     ctx.backup(&edit);

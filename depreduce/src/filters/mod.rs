@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashSet;
+use std::{collections::HashSet, rc::Rc};
 
 use crate::graph::{
     DependencyGraph, NodeId, bazel_xml_parser::BazelQuery, buck_json_parser::BuckQuery,
@@ -25,7 +25,7 @@ pub struct CommonFilterOptions {
 pub enum BuildSystemSpecificInfo<'a> {
     Bazel(&'a BazelQuery),
     Buck(&'a BuckQuery),
-    Cargo(),
+    Cargo(Rc<cargo_metadata::Metadata>),
 }
 
 trait InternalFilterable {

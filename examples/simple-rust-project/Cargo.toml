@@ -1,0 +1,6 @@
+[workspace]
+resolver = "3"
+members = ["crates/liba", "crates/libb", "crates/main"]
+
+[workspace.dependencies]
+liba = { path = "crates/liba" }

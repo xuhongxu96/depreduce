@@ -464,7 +464,12 @@ impl BazelDepEditor {
 }
 
 impl DepEditor for BazelDepEditor {
-    fn add(&self, label: &str, dep_label: &str) -> Result<FileEdit, String> {
+    fn add(
+        &self,
+        label: &str,
+        dep_label: &str,
+        _original_dependent_label: &str,
+    ) -> Result<FileEdit, String> {
         if let Some(location) = self.label2location.get(label) {
             let (path, start_line, _end_col) = if self.buck_mode {
                 (location.clone(), 0, 0)
@@ -807,7 +812,7 @@ mod tests {
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
         );
-        let edit = editor.add("//main:main", "//libc:libc").unwrap();
+        let edit = editor.add("//main:main", "//libc:libc", "unused").unwrap();
         assert_eq!(
             edit.path,
             format!("{}/main/BUILD", get_test_workspace_root())

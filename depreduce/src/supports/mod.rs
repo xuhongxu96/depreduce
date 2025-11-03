@@ -14,6 +14,8 @@ pub trait BuildSystemSupport {
 
 mod bazel_support;
 mod buck_support;
+mod cargo_support;
 
 pub use bazel_support::BazelSupport;
 pub use buck_support::BuckSupport;
+pub use cargo_support::CargoSupport;

@@ -11,7 +11,7 @@ use depreduce::{
         top_sort_reducer::TopSortReducer,
     },
     stats::rebuild_cost::RebuildCostCalculator,
-    supports::{BazelSupport, BuckSupport, BuildSystemSupport},
+    supports::{BazelSupport, BuckSupport, BuildSystemSupport, CargoSupport},
 };
 use utils::to_json_lines;
 
@@ -96,6 +96,7 @@ fn create_support(
     match build_system {
         "buck" => Box::new(BuckSupport::new(workspace, target, config)),
         "bazel" => Box::new(BazelSupport::new(workspace, target, config)),
+        "rust" | "cargo" => Box::new(CargoSupport::new(workspace, target, config)),
         _ => {
             eprintln!("Unsupported build system: {}", build_system);
             exit(1);
@@ -309,5 +310,30 @@ mod tests {
         });
 
         assert!(new_cost == 2);
+    }
+
+    #[test]
+    fn test_rust_e2e() {
+        let workspace_root = get_test_data_path!("../../../examples/simple-rust-project");
+        let build_sh = get_test_data_path!("build-rust.sh");
+
+        let (_, _, new_cost) = run_reducer_test(&Args {
+            workspace: workspace_root.to_str().unwrap().to_string(),
+            command: build_sh.to_str().unwrap().to_string(),
+            target: String::new(),
+            output: "logs/".to_string(),
+            build_system: "rust".to_string(),
+            config: get_test_data_path!("empty-config.toml")
+                .to_str()
+                .unwrap()
+                .to_string(),
+            disable_dependency_flattening: false,
+            enable_dependency_flattening_for_alias_targets: false,
+            disable_dependency_lifting: false,
+            disable_topological_sorting: false,
+            enable_optimization_if_transitive_deps_exists: false,
+        });
+
+        assert!(new_cost == 1);
     }
 }
