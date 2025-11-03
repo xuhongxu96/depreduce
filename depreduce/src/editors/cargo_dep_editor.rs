@@ -1,16 +1,40 @@
-use std::{process::Command, rc::Rc};
+use std::{collections::HashMap, fs::read_to_string, process::Command, rc::Rc};
 
 use cargo_metadata::PackageId;
+use toml_edit::DocumentMut;
 
 use crate::editors::{DepEditor, FileEdit};
 
 pub struct CargoDepEditor {
     metadata: Rc<cargo_metadata::Metadata>,
+    target_dep_items: HashMap<String, toml_edit::Item>,
+    target_dev_dep_items: HashMap<String, toml_edit::Item>,
 }
 
 impl CargoDepEditor {
     pub fn new(metadata: Rc<cargo_metadata::Metadata>) -> Self {
-        Self { metadata }
+        let mut target_dep_items = HashMap::new();
+        let mut target_dev_dep_items = HashMap::new();
+
+        for pkg in &metadata.packages {
+            let id = pkg.id.repr.clone();
+            let cargo_toml = read_to_string(pkg.manifest_path.as_str()).unwrap();
+            let doc = cargo_toml.parse::<DocumentMut>().unwrap();
+
+            if let Some(deps_table) = doc.get("dependencies").and_then(|d| d.as_table()) {
+                target_dep_items.insert(id.clone(), deps_table.clone().into());
+            }
+
+            if let Some(dev_deps_table) = doc.get("dev-dependencies").and_then(|d| d.as_table()) {
+                target_dev_dep_items.insert(id, dev_deps_table.clone().into());
+            }
+        }
+
+        Self {
+            metadata,
+            target_dep_items,
+            target_dev_dep_items,
+        }
     }
 }
 
@@ -34,95 +58,30 @@ impl DepEditor for CargoDepEditor {
         let src_pkg = &self.metadata[&src_pkg_id];
         let dep_pkg = &self.metadata[&dep_pkg_id];
         let original_dep_pkg = &self.metadata[&original_dep_pkg_id];
+        let original_content = read_to_string(src_pkg.manifest_path.as_str()).unwrap();
 
-        let possible_deps = original_dep_pkg
-            .dependencies
-            .iter()
-            .filter(|d| &d.name == dep_pkg.name.as_str() && d.req.matches(&dep_pkg.version))
-            .collect::<Vec<_>>();
+        let mut doc = original_content.parse::<DocumentMut>().map_err(|e| {
+            format!(
+                "Failed to parse TOML document {}: {:?}",
+                src_pkg.manifest_path.as_str(),
+                e
+            )
+        })?;
 
-        if possible_deps.is_empty() {
-            return Err(format!(
-                "Dependency {}@{} not found in original dependent package {}",
-                dep_pkg.name, dep_pkg.version, original_dep_pkg.name
-            ));
-        } else if possible_deps.len() > 1 {
-            return Err(format!(
-                "Multiple dependencies {:?} found in original dependent package {} match {}@{}. Ambiguous which one to add.",
-                possible_deps
-                    .iter()
-                    .map(|d| format!("{}@{}", &d.name, &d.req)),
-                original_dep_pkg.name,
-                dep_pkg.name,
-                dep_pkg.version
-            ));
-        }
-
-        let dep_info = possible_deps.first().unwrap();
-
-        let features = dep_info.features.join(",");
-
-        let mut cmd = Command::new("cargo");
-
-        let version_req = dep_info.req.to_string();
-        let dep_name = if version_req.is_empty() {
-            dep_pkg.name.to_string()
+        if let Some(item) = self.target_dep_items.get(&original_dep_pkg.id.repr) {
+            doc["dependencies"][dep_pkg.name.as_str()] = item.clone();
+        } else if let Some(item) = self.target_dev_dep_items.get(&original_dep_pkg.id.repr) {
+            doc["dependencies"][dep_pkg.name.as_str()] = item.clone();
         } else {
-            format!("{}@{}", dep_pkg.name, version_req)
+            return Err(format!(
+                "Dependency {} not found in target package {}",
+                original_dep_pkg.name, original_dependent_label
+            ));
         };
-        cmd.arg("add")
-            .arg(dep_name.as_str())
-            .arg("--manifest-path")
-            .arg(src_pkg.manifest_path.as_str());
-
-        if dep_info.optional {
-            cmd.arg("--optional");
-        }
-
-        if let Some(rename) = &dep_info.rename {
-            cmd.arg("--rename").arg(rename.as_str());
-        }
-
-        if !dep_info.uses_default_features {
-            cmd.arg("--features").arg(features.as_str());
-        }
-
-        if let Some(path) = &dep_info.path {
-            cmd.arg("--path").arg(path.as_str());
-        }
-
-        if let Some(registry) = &dep_info.registry {
-            cmd.arg("--registry").arg(registry.as_str());
-        }
-
-        match dep_info.kind {
-            cargo_metadata::DependencyKind::Development => {
-                cmd.arg("--dev");
-            }
-            cargo_metadata::DependencyKind::Build => {
-                cmd.arg("--build");
-            }
-            _ => {}
-        }
-
-        if let Some(platform) = &dep_info.target {
-            match platform {
-                cargo_metadata::cargo_platform::Platform::Name(name) => {
-                    cmd.arg("--target").arg(name.as_str());
-                }
-                cargo_metadata::cargo_platform::Platform::Cfg(cfg_expr) => {
-                    let cfg_str = format!("{}", cfg_expr);
-                    cmd.arg("--cfg").arg(cfg_str.as_str());
-                }
-            }
-        }
-
-        cmd.output()
-            .map_err(|e| format!("Failed to execute cargo add: {}", e))?;
 
         Ok(FileEdit {
             path: src_pkg.manifest_path.to_string(),
-            content: String::new(),
+            content: doc.to_string(),
             desp: format!(
                 "Added dependency {}@{} to {}@{}",
                 dep_pkg.name, dep_pkg.version, src_pkg.name, src_pkg.version
@@ -140,18 +99,35 @@ impl DepEditor for CargoDepEditor {
 
         let src_pkg = &self.metadata[&src_pkg_id];
         let dep_pkg = &self.metadata[&dep_pkg_id];
+        let original_content = read_to_string(src_pkg.manifest_path.as_str()).unwrap();
 
-        Command::new("cargo")
-            .arg("remove")
-            .arg(dep_pkg.name.as_str())
-            .arg("--manifest-path")
-            .arg(src_pkg.manifest_path.as_str())
-            .output()
-            .map_err(|e| format!("Failed to execute cargo remove: {}", e))?;
+        let mut doc = original_content.parse::<DocumentMut>().map_err(|e| {
+            format!(
+                "Failed to parse TOML document {}: {:?}",
+                src_pkg.manifest_path.as_str(),
+                e
+            )
+        })?;
+
+        let deps = doc["dependencies"]
+            .as_table_mut()
+            .and_then(|table| table.remove(dep_pkg.name.as_str()));
+
+        let dev_deps = doc["dev-dependencies"]
+            .as_table_mut()
+            .and_then(|table| table.remove(dep_pkg.name.as_str()));
+
+        if deps.is_none() && dev_deps.is_none() {
+            return Err(format!(
+                "Dependency {} not found in {}",
+                dep_pkg.name,
+                src_pkg.manifest_path.as_str()
+            ));
+        }
 
         Ok(FileEdit {
             path: src_pkg.manifest_path.to_string(),
-            content: String::new(),
+            content: doc.to_string(),
             desp: format!(
                 "Removed dependency {}@{} from {}@{}",
                 dep_pkg.name, dep_pkg.version, src_pkg.name, src_pkg.version
