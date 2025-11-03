@@ -27,6 +27,7 @@ pub struct ReduceConfig {
     #[serde(default)]
     pub to: FilterSpecification,
 
+    /// Bazel-specific
     #[serde(default = "HashSet::new")]
     pub readonly_deps_attrs: HashSet<String>,
 

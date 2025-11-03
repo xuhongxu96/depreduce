@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     io::{BufRead, BufReader},
     process::Command,
 };
@@ -10,7 +10,7 @@ use crate::{
     filters::BuildSystemSpecificInfo,
     graph::{
         DependencyGraph,
-        bazel_xml_parser::{BazelQuery, SkyValue, parse_bazel_xml_query},
+        bazel_xml_parser::{BazelQuery, parse_bazel_xml_query},
     },
     supports::BuildSystemSupport,
 };
