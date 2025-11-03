@@ -13,6 +13,7 @@ use crate::{
 pub struct CargoSupport {
     metadata: Rc<Metadata>,
     graph: DependencyGraph,
+    reduce_dev_deps: bool,
 }
 
 fn get_metadata(workspace: &str) -> (Metadata, DependencyGraph) {
@@ -29,7 +30,9 @@ fn get_metadata(workspace: &str) -> (Metadata, DependencyGraph) {
             .add_node(
                 node.id.repr.clone(),
                 NodeProps {
-                    t: NodeType::Target(TargetType { is_alias: false }),
+                    t: NodeType::Target(TargetType {
+                        is_alias: node.id.repr.starts_with("registry+"),
+                    }),
                 },
             )
             .unwrap();
@@ -61,6 +64,7 @@ impl CargoSupport {
         let (metadata, graph) = get_metadata(workspace);
 
         Self {
+            reduce_dev_deps: config.reduce_dev_deps,
             metadata: Rc::new(metadata),
             graph,
         }
@@ -88,8 +92,12 @@ impl BuildSystemSupport for CargoSupport {
         config.to.get_skip_nodes(&self.graph, &self.get_info())
     }
 
-    fn create_editor(&self, _workspace_root: &str) -> Box<dyn DepEditor> {
-        Box::new(CargoDepEditor::new(self.metadata.clone()))
+    fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor> {
+        Box::new(CargoDepEditor::new(
+            workspace_root.to_string(),
+            self.metadata.clone(),
+            self.reduce_dev_deps,
+        ))
     }
 }
 

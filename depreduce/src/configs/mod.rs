@@ -27,12 +27,16 @@ pub struct ReduceConfig {
     #[serde(default)]
     pub to: FilterSpecification,
 
+    #[serde(default)]
+    pub timeout_seconds: u64,
+
     /// Bazel-specific
     #[serde(default = "HashSet::new")]
     pub readonly_deps_attrs: HashSet<String>,
 
+    /// Rust-specific
     #[serde(default)]
-    pub timeout_seconds: u64,
+    pub reduce_dev_deps: bool,
 }
 
 impl FilterType {
