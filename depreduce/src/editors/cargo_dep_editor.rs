@@ -1,12 +1,10 @@
-use std::{collections::HashMap, fs::read_to_string, path::Path, process::Command, rc::Rc};
+use std::{collections::HashMap, fs::read_to_string, path::Path, rc::Rc};
 
 use cargo_metadata::PackageId;
 use normalize_path::NormalizePath;
 use toml_edit::DocumentMut;
 
-use crate::{
-    editors::{DepEditor, FileEdit},
-};
+use crate::editors::{DepEditor, FileEdit};
 
 pub struct CargoDepEditor {
     workspace: String,
