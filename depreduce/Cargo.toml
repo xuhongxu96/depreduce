@@ -17,3 +17,4 @@ toml = "0.8.23"
 utils = { path = "../utils" }
 cargo_metadata = "0.23.0"
 toml_edit = "0.23.7"
+pathdiff = "0.2.3"

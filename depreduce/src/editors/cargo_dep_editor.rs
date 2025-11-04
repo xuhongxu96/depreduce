@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::read_to_string, path::Path, rc::Rc};
 
 use cargo_metadata::PackageId;
 use normalize_path::NormalizePath;
-use toml_edit::DocumentMut;
+use toml_edit::{DocumentMut, Item};
 
 use crate::editors::{DepEditor, FileEdit};
 
@@ -50,6 +50,28 @@ impl CargoDepEditor {
     }
 }
 
+fn normalize_dep_path(
+    mut dep_item: Item,
+    original_pkg_path: &Path,
+    current_pkg_path: &Path,
+) -> Item {
+    if let Some(dep_table) = dep_item.as_table_mut() {
+        if let Some(path_item) = dep_table.get_mut("path") {
+            if let Some(original_path_str) = path_item.as_str() {
+                let original_path = original_pkg_path.parent().unwrap().join(original_path_str);
+                let relative_path =
+                    pathdiff::diff_paths(&original_path, current_pkg_path.parent().unwrap())
+                        .unwrap_or(original_path);
+                *path_item = Item::Value(toml_edit::Value::from(
+                    relative_path.to_str().unwrap().to_string(),
+                ));
+            }
+        }
+    }
+
+    dep_item
+}
+
 impl DepEditor for CargoDepEditor {
     fn add(
         &self,
@@ -95,7 +117,15 @@ impl DepEditor for CargoDepEditor {
         })?;
 
         if let Some(item) = self.target_dep_items.get(&original_dep_pkg.id.repr) {
-            doc["dependencies"][dep_pkg.name.as_str()] = item.clone();
+            doc["dependencies"][dep_pkg.name.as_str()] = normalize_dep_path(
+                item.clone(),
+                original_dep_pkg
+                    .manifest_path
+                    .as_std_path()
+                    .parent()
+                    .unwrap(),
+                src_pkg.manifest_path.as_std_path().parent().unwrap(),
+            );
         } else if let Some(item) = self.target_dev_dep_items.get(&original_dep_pkg.id.repr) {
             if !self.reduce_dev_deps {
                 return Err(format!(
@@ -103,7 +133,15 @@ impl DepEditor for CargoDepEditor {
                     original_dep_pkg.name, original_dependent_label
                 ));
             }
-            doc["dev-dependencies"][dep_pkg.name.as_str()] = item.clone();
+            doc["dev-dependencies"][dep_pkg.name.as_str()] = normalize_dep_path(
+                item.clone(),
+                original_dep_pkg
+                    .manifest_path
+                    .as_std_path()
+                    .parent()
+                    .unwrap(),
+                src_pkg.manifest_path.as_std_path().parent().unwrap(),
+            );
         } else {
             return Err(format!(
                 "Dependency {} not found in target package {}",
