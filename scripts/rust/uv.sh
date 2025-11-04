@@ -5,3 +5,4 @@ export RUST_BACKTRACE=1
     -c $PWD/scripts/rust/uv-build.sh \
     --config $PWD/scripts/rust/uv.toml \
     --output uv-output > uv.stdout 2>uv.stderr
+# nothing reduced

@@ -12,6 +12,20 @@ pub trait BuildSystemSupport {
     fn create_editor(&self, workspace_root: &str) -> Box<dyn DepEditor>;
 }
 
+pub fn create_support(
+    build_system: &str,
+    workspace: &str,
+    target: &str,
+    config: &ReduceConfig,
+) -> Result<Box<dyn BuildSystemSupport>, String> {
+    match build_system {
+        "buck" => Ok(Box::new(BuckSupport::new(workspace, target, config))),
+        "bazel" => Ok(Box::new(BazelSupport::new(workspace, target, config))),
+        "rust" | "cargo" => Ok(Box::new(CargoSupport::new(workspace, target, config))),
+        _ => Err(format!("Unsupported build system: {}", build_system)),
+    }
+}
+
 mod bazel_support;
 mod buck_support;
 mod cargo_support;

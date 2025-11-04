@@ -16,14 +16,18 @@ impl<'a> RebuildCostCalculator<'a> {
         }
     }
 
-    fn cache_nodes_to_rebuild(&mut self, node_id: NodeId) {
+    fn cache_nodes_to_rebuild(&mut self, node_id: NodeId, visited_nodes: &mut HashSet<NodeId>) {
         let mut nodes_to_rebuild = HashSet::new();
+        visited_nodes.insert(node_id);
 
         if self.nodes_to_rebuild_cache[node_id].is_none() {
             if let Some(dependencies) = self.graph.get_in_edges(node_id) {
                 for (dependent_node_id, _) in dependencies {
+                    if visited_nodes.contains(dependent_node_id) {
+                        continue;
+                    }
                     nodes_to_rebuild.insert(*dependent_node_id);
-                    self.cache_nodes_to_rebuild(*dependent_node_id);
+                    self.cache_nodes_to_rebuild(*dependent_node_id, visited_nodes);
                     nodes_to_rebuild.extend(
                         self.nodes_to_rebuild_cache[*dependent_node_id]
                             .as_ref()
@@ -34,10 +38,12 @@ impl<'a> RebuildCostCalculator<'a> {
             }
             self.nodes_to_rebuild_cache[node_id] = Some(nodes_to_rebuild);
         }
+
+        visited_nodes.remove(&node_id);
     }
 
     pub fn calculate_rebuild_cost(&mut self, node_id: NodeId) -> usize {
-        self.cache_nodes_to_rebuild(node_id);
+        self.cache_nodes_to_rebuild(node_id, &mut HashSet::new());
 
         let nodes_to_rebuild = self.nodes_to_rebuild_cache[node_id].as_ref().unwrap();
         nodes_to_rebuild.len()
@@ -83,6 +89,29 @@ mod tests {
         ];
         expected_nodes.sort();
         assert_eq!(rebuild_nodes, expected_nodes);
+        println!(
+            "{:?}",
+            calculator
+                .nodes_to_rebuild_cache
+                .iter()
+                .enumerate()
+                .map(|(src_node_id, opt_set)| {
+                    opt_set
+                        .as_ref()
+                        .map(|set| {
+                            set.iter()
+                                .map(|node_id| {
+                                    (
+                                        graph.nodes[*node_id].label.clone(),
+                                        graph.nodes[src_node_id].label.clone(),
+                                    )
+                                })
+                                .collect::<Vec<_>>()
+                        })
+                        .unwrap_or_default()
+                })
+                .collect::<Vec<_>>()
+        );
 
         assert_eq!(6, calculator.calculate_rebuild_cost_sum());
     }
@@ -106,6 +135,30 @@ mod tests {
         let mut expected_nodes = vec![graph.get_node_id("//main:main").unwrap()];
         expected_nodes.sort();
         assert_eq!(rebuild_nodes, expected_nodes);
+
+        println!(
+            "{:?}",
+            calculator
+                .nodes_to_rebuild_cache
+                .iter()
+                .enumerate()
+                .map(|(src_node_id, opt_set)| {
+                    opt_set
+                        .as_ref()
+                        .map(|set| {
+                            set.iter()
+                                .map(|node_id| {
+                                    (
+                                        graph.nodes[*node_id].label.clone(),
+                                        graph.nodes[src_node_id].label.clone(),
+                                    )
+                                })
+                                .collect::<Vec<_>>()
+                        })
+                        .unwrap_or_default()
+                })
+                .collect::<Vec<_>>()
+        );
 
         assert_eq!(4, calculator.calculate_rebuild_cost_sum());
     }
