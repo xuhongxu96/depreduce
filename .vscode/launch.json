@@ -46,15 +46,18 @@
                 // "/data/h445xu/repo/perses-private/",
                 // "/data/h445xu/repo/flogger",
                 // "/data/h445xu/repo/trpc-cpp",
-                "/data/h445xu/repo/bazel-repos/cloned_repos/JetBrains__hirschgarten",
+                "/data/h445xu/repo/alacritty",
+                // "/data/h445xu/repo/bazel-repos/cloned_repos/JetBrains__hirschgarten",
                 "--command",
                 // "${workspaceFolder}/scripts/build_perses.sh"
                 // "${workspaceFolder}/scripts/experiments/trpc-cpp-build.sh",
-                "${workspaceFolder}/scripts/experiments/hirschgarten-build.sh",
+                "${workspaceFolder}/scripts/rust/alacritty-build.sh",
                 "--config",
-                "${workspaceFolder}/scripts/experiments/hirschgarten.toml",
+                "${workspaceFolder}/scripts/rust/alacritty.toml",
                 "--output",
-                "hir-output"
+                "alacritty-output",
+                "--build-system",
+                "cargo"
             ],
             "cwd": "${workspaceFolder}"
         },

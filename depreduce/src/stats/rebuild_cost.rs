@@ -16,14 +16,18 @@ impl<'a> RebuildCostCalculator<'a> {
         }
     }
 
-    fn cache_nodes_to_rebuild(&mut self, node_id: NodeId) {
+    fn cache_nodes_to_rebuild(&mut self, node_id: NodeId, visited_nodes: &mut HashSet<NodeId>) {
         let mut nodes_to_rebuild = HashSet::new();
+        visited_nodes.insert(node_id);
 
         if self.nodes_to_rebuild_cache[node_id].is_none() {
             if let Some(dependencies) = self.graph.get_in_edges(node_id) {
                 for (dependent_node_id, _) in dependencies {
+                    if visited_nodes.contains(dependent_node_id) {
+                        continue;
+                    }
                     nodes_to_rebuild.insert(*dependent_node_id);
-                    self.cache_nodes_to_rebuild(*dependent_node_id);
+                    self.cache_nodes_to_rebuild(*dependent_node_id, visited_nodes);
                     nodes_to_rebuild.extend(
                         self.nodes_to_rebuild_cache[*dependent_node_id]
                             .as_ref()
@@ -37,7 +41,7 @@ impl<'a> RebuildCostCalculator<'a> {
     }
 
     pub fn calculate_rebuild_cost(&mut self, node_id: NodeId) -> usize {
-        self.cache_nodes_to_rebuild(node_id);
+        self.cache_nodes_to_rebuild(node_id, &mut HashSet::new());
 
         let nodes_to_rebuild = self.nodes_to_rebuild_cache[node_id].as_ref().unwrap();
         nodes_to_rebuild.len()
