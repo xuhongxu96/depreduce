@@ -10,6 +10,7 @@ Currently supports the following build systems:
 
 - Bazel
 - Buck
+- Cargo (for Rust)
 
 See [`depreduce`] for implementation details.
 
@@ -19,7 +20,8 @@ See [`depreduce`] for implementation details.
 depreduce \
     -w <WORKSPACE_DIR> \
     -c <BUILD_SCRIPT> \
-    --config <depreduce.toml>
+    --config <depreduce.toml> \
+    --build-system <bazel|buck|cargo>
 ```
 
 See scripts in [scripts/experiments](scripts/experiments) 
