@@ -11,7 +11,7 @@ use depreduce::{
         top_sort_reducer::TopSortReducer,
     },
     stats::rebuild_cost::RebuildCostCalculator,
-    supports::{BazelSupport, BuckSupport, BuildSystemSupport, CargoSupport},
+    supports::{BazelSupport, BuckSupport, BuildSystemSupport, CargoSupport, create_support},
 };
 use utils::to_json_lines;
 
@@ -44,7 +44,7 @@ struct Args {
         short,
         long,
         default_value = "bazel",
-        help = "Build system to use (currently supports: bazel, buck)"
+        help = "Build system to use (currently supports: bazel, buck, cargo)"
     )]
     build_system: String,
 
@@ -87,23 +87,6 @@ struct Args {
     enable_optimization_if_transitive_deps_exists: bool,
 }
 
-fn create_support(
-    build_system: &str,
-    workspace: &str,
-    target: &str,
-    config: &ReduceConfig,
-) -> Box<dyn BuildSystemSupport> {
-    match build_system {
-        "buck" => Box::new(BuckSupport::new(workspace, target, config)),
-        "bazel" => Box::new(BazelSupport::new(workspace, target, config)),
-        "rust" | "cargo" => Box::new(CargoSupport::new(workspace, target, config)),
-        _ => {
-            eprintln!("Unsupported build system: {}", build_system);
-            exit(1);
-        }
-    }
-}
-
 fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>, usize) {
     let command = args.command.replace("${workspace}", &args.workspace);
 
@@ -138,7 +121,8 @@ fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>, usi
         workspace_root.to_str().unwrap(),
         &args.target,
         &config,
-    );
+    )
+    .expect("Failed to create build system support");
     let editor = support.create_editor(workspace_root.to_str().unwrap());
 
     println!("Parsed dep graph");
@@ -247,7 +231,8 @@ fn run_reducer_test(args: &Args) -> (DependencyGraph, Vec<ReductionAttempt>, usi
         workspace_root.to_str().unwrap(),
         &args.target,
         &config,
-    );
+    )
+    .expect("Failed to create build system support");
     let new_cost = RebuildCostCalculator::new(new_support.get_graph()).calculate_rebuild_cost_sum();
     println!("Rebuild cost: {} -> {}", original_cost, new_cost);
 
