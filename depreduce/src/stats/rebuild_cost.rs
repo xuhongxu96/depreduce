@@ -42,11 +42,14 @@ impl<'a> RebuildCostCalculator<'a> {
         visited_nodes.remove(&node_id);
     }
 
-    pub fn calculate_rebuild_cost(&mut self, node_id: NodeId) -> usize {
+    pub fn compute_rebuild_set(&mut self, node_id: NodeId) -> &HashSet<NodeId> {
         self.cache_nodes_to_rebuild(node_id, &mut HashSet::new());
 
-        let nodes_to_rebuild = self.nodes_to_rebuild_cache[node_id].as_ref().unwrap();
-        nodes_to_rebuild.len()
+        self.nodes_to_rebuild_cache[node_id].as_ref().unwrap()
+    }
+
+    pub fn calculate_rebuild_cost(&mut self, node_id: NodeId) -> usize {
+        self.compute_rebuild_set(node_id).len()
     }
 
     pub fn calculate_rebuild_cost_sum(&mut self) -> usize {

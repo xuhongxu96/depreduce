@@ -34,6 +34,12 @@ enum Commands {
         #[arg(short, long)]
         log_dir: String,
     },
+
+    /// Compute rebuild set
+    ComputeRebuild {
+        #[arg(short, long)]
+        output: String,
+    },
 }
 
 fn main() {
@@ -44,6 +50,21 @@ fn main() {
             Commands::Parse { log_dir } => {
                 let res = parse_logs(&log_dir);
                 println!("{:#?}", res);
+            }
+            Commands::ComputeRebuild { output } => {
+                let support = create_support(
+                    &args.build_system,
+                    &args.workspace,
+                    &args.target,
+                    &ReduceConfig::default(),
+                )
+                .expect("Failed to create build system support");
+
+                let graph = support.get_graph();
+                let rebuild_set = depstat::compute_rebuild_set(&graph);
+                let serialized =
+                    serde_json::to_string_pretty(&rebuild_set).expect("Failed to serialize");
+                std::fs::write(&output, serialized).expect("Failed to write output file");
             }
         }
         return;

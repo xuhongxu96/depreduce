@@ -8,5 +8,9 @@
     "exclude_paths": [
         ".github/"
     ],
-    "result_dir": "/data/h445xu/repo/depreduce/scripts/stats/results/angular"
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/angular/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild.json"
+    ]
 }
