@@ -2,5 +2,11 @@
     "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/angular__angular",
     "default_branch": "main",
     "base_commit": "1f4c5f72aaefc490d0782149c443973dcf50b10f",
-    "n_commits": 100
+    "n_commits": 100,
+    "prerun": "bazel mod deps --lockfile_mode=update",
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/scripts/stats/results/angular"
 }
