@@ -19,6 +19,10 @@ pub struct TargetType {
 pub enum NodeType {
     Unknown,
     Target(TargetType),
+    /// deprecated. only for compatibility (reading old graphs)
+    Source,
+    /// deprecated. only for compatibility (reading old graphs)
+    GeneratedFile,
 }
 
 impl NodeType {
