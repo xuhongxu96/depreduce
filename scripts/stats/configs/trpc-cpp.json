@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/trpc-cpp",
+    "default_branch": "main",
+    "base_commit": "0c7b5928c732132e14864777752f4719c510a79d",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/trpc-cpp/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/trpc-cpp/trpc-cpp-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/trpc-cpp/trpc-cpp-rebuild.json"
+    ]
+}

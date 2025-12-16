@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/typedb__typedb",
+    "default_branch": "master",
+    "base_commit": "7b2ab501822c8b895c8ba66221daf318a880272a",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/typedb/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/typedb/typedb-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/typedb/typedb-rebuild.json"
+    ]
+}

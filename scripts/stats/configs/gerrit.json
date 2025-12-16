@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/gerrit",
+    "default_branch": "master",
+    "base_commit": "ce1df5647b34c0c184ea08a17104c0617216e006",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/gerrit/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/gerrit/gerrit-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/gerrit/gerrit-rebuild.json"
+    ]
+}

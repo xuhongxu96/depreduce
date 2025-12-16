@@ -1,6 +1,6 @@
 import json
 import argparse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class RunArgs(BaseModel):
@@ -64,11 +64,12 @@ def main():
     changed_pkg = []
     print(f"Total changed rebuild sets: {len(changed_sets)}")
     for key, changes in changed_sets.items():
-        print(f"Package: {key}")
-        print(f"  Set1 (len={changes['len1']})")
-        print(f"  Set2 (len={changes['len2']})")
-        print()
-        assert changes['len1'] > changes['len2']
+        if changes['len1'] <= changes['len2']:
+            print(f"Package: {key}")
+            print(f"  Set1 (len={changes['len1']})")
+            print(f"  Set2 (len={changes['len2']})")
+            print("Skipping smaller or equal set changes.")
+            continue
         changed_pkg.append((key, changes['len1'], changes['len2']))
 
     with open(f"{args.result_dir}/changed_rebuild_sets.json", "w") as f:

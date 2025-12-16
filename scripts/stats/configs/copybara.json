@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/google__copybara",
+    "default_branch": "master",
+    "base_commit": "38598c5bcd180cf2e887eccc19b986eebb87f79d",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/copybara/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/copybara/copybara-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/copybara/copybara-rebuild.json"
+    ]
+}

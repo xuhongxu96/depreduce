@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/grpc__grpc-java",
+    "default_branch": "master",
+    "base_commit": "3d5eff99ec7061d56351e098fed1497ebef1992d",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/grpc-java/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/grpc-java/grpc-java-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/grpc-java/grpc-java-rebuild.json"
+    ]
+}

@@ -33,6 +33,9 @@ def extract_targets(target_str: str) -> list[str]:
         line = line.strip()
         if line == "":
             continue
+        if line.startswith("//"):
+            targets.append(line.split(" ")[0])
+            continue
         parts = line.split(" ")
         if len(parts) >= 3:
             targets.append(parts[2])
