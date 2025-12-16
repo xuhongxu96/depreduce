@@ -3,7 +3,7 @@ import argparse
 import subprocess
 
 from pydantic import BaseModel, Field
-from git import Repo, Tree
+from git import Repo
 
 
 class RunArgs(BaseModel):
@@ -113,11 +113,13 @@ def main():
     os.makedirs(args.result_dir, exist_ok=True)
 
     repo = Repo(args.repo_path)
+
     switch_to_commit(repo, args.base_commit)
     commits = get_next_n_commits_from_base(
         repo, args.default_branch, args.base_commit, args.n_commits
     )
     prev_commit = args.base_commit
+    postrun_commands(args.postrun, args.repo_path)
     for commit in commits:
         if os.path.exists(os.path.join(args.result_dir, f"{commit.hexsha}.json")):
             print(f"Skipping already processed commit: {commit.hexsha}")
