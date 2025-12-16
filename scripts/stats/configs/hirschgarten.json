@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/JetBrains__hirschgarten",
+    "default_branch": "252",
+    "base_commit": "5886267596e25f1729bee7bbb8309870cac3baaf",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/hirschgarten/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/hirschgarten/hirschgarten-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/hirschgarten/hirschgarten-rebuild.json"
+    ]
+}

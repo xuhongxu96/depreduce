@@ -3,7 +3,9 @@ use std::collections::{HashMap, HashSet};
 use depreduce::{
     graph::DependencyGraph,
     reducers::reduce_context::{Operation, ReductionAttempt},
+    stats::rebuild_cost::RebuildCostCalculator,
 };
+use serde::{Deserialize, Serialize};
 use utils::from_json_lines;
 
 #[derive(Debug)]
@@ -178,4 +180,26 @@ pub fn parse_logs(log_dir: &str) -> AnalysisResult {
         from_json_lines(&std::fs::read_to_string(&attempts_path).unwrap()).collect();
 
     AnalysisResult::new(&graph, &attempts)
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RebuildSet {
+    pub rebuild_set: Vec<(String, Vec<String>)>,
+}
+
+pub fn compute_rebuild_set(graph: &DependencyGraph) -> RebuildSet {
+    let mut rebuild_set: Vec<(String, Vec<String>)> = Vec::new();
+
+    let mut calc = RebuildCostCalculator::new(graph);
+    let sorted_nodes = graph.topsort();
+    for node_id in sorted_nodes {
+        let nodes_to_rebuild = calc.compute_rebuild_set(node_id);
+        let rebuild_labels: Vec<String> = nodes_to_rebuild
+            .iter()
+            .map(|nid| graph.nodes[*nid].label.clone())
+            .collect();
+        rebuild_set.push((graph.nodes[node_id].label.clone(), rebuild_labels));
+    }
+
+    RebuildSet { rebuild_set }
 }

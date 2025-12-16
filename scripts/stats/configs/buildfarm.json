@@ -1,0 +1,15 @@
+{
+    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/buildfarm__buildfarm",
+    "default_branch": "main",
+    "base_commit": "70fa903ae8c280abb38df93217f18600b1338047",
+    "n_commits": 500,
+    "postrun": "git restore .",
+    "exclude_paths": [
+        ".github/"
+    ],
+    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/buildfarm/stats",
+    "rebuild_sets": [
+        "/data/h445xu/repo/depreduce/data/experiment/buildfarm/buildfarm-rebuild-before.json",
+        "/data/h445xu/repo/depreduce/data/experiment/buildfarm/buildfarm-rebuild.json"
+    ]
+}
