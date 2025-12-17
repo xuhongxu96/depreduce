@@ -9,6 +9,9 @@
         ".github/"
     ],
     "result_dir": "/data/h445xu/repo/depreduce/data/experiment/angular/stats",
+    "extra_build_args": [
+        "--noincompatible_disallow_empty_glob"
+    ],
     "rebuild_sets": [
         "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild-before.json",
         "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild.json"

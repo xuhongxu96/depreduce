@@ -8,24 +8,10 @@ from git import Repo
 from scripts.stats.collect_commits import (
     RunArgs,
     Result,
+    parse_args,
     get_next_n_commits_from_base,
     switch_to_commit,
 )
-
-
-def parse_args():
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "-c",
-        "--config",
-        type=str,
-        required=True,
-        help="Path to the configuration file",
-    )
-    args = argparser.parse_args()
-    with open(args.config, "r") as f:
-        config_data = f.read()
-    return RunArgs.model_validate_json(config_data)
 
 
 def extract_targets(target_str: str) -> list[str]:
