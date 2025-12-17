@@ -23,7 +23,7 @@ def find_prev_commit(repo: Repo, commit: str) -> str | None:
 
 
 def clean_build(cwd: str):
-    sp.run(["bazel", "clean", "--expunge"], check=True, cwd=cwd)
+    sp.run(["bazel", "clean"], check=True, cwd=cwd)
 
 
 def build(
@@ -68,6 +68,12 @@ def test_incre_build(
     if prev_commit == base_commit:
         prev_commit = find_prev_commit(repo, base_commit)
         need_revert = False
+
+    if os.path.exists(
+        os.path.join(result_dir, f"{commit}-before.json")
+    ) and os.path.exists(os.path.join(result_dir, f"{commit}-after.json")):
+        print(f"Skipping {commit} as results already exist.")
+        return
 
     postrun_commands(postrun, repo.working_tree_dir)
 
