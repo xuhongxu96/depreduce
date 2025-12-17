@@ -61,6 +61,8 @@ def test_incre_build(
     postrun: str,
     extra_args: list[str],
 ):
+    os.makedirs(result_dir, exist_ok=True)
+
     prev_commit = find_prev_commit(repo, commit)
     need_revert = True
     if prev_commit == base_commit:
@@ -93,7 +95,7 @@ def test_incre_build(
 
     switch_to_commit(repo, prev_commit)
     if need_revert:
-        revert_commit(repo, commit)
+        revert_commit(repo, base_commit)
     clean_build(repo.working_tree_dir)
 
     prerun_commands(prerun, repo.working_tree_dir)
@@ -126,6 +128,8 @@ def main():
     print(f"Testing incremental builds for {len(commits)} commits...")
 
     for commit in commits:
+        if commit.strip() == "":
+            continue
         test_incre_build(
             repo,
             commit,
