@@ -5,12 +5,15 @@ import subprocess
 from pydantic import BaseModel, Field
 from git import Repo
 
+ENABLE_FETCH = False
+
 
 class RunArgs(BaseModel):
     repo_path: str
     default_branch: str
     base_commit: str
     result_dir: str
+    extra_build_args: list[str] = Field(default_factory=list)
     n_commits: int = Field(default=100)
     prerun: str = Field(default=None)
     postrun: str = Field(default=None)
@@ -44,14 +47,16 @@ def parse_args():
 
 
 def switch_to_commit(repo: Repo, commit_hash: str):
-    repo.remote().fetch(commit_hash)
+    if ENABLE_FETCH:
+        repo.remote().fetch(commit_hash)
     repo.git.checkout(commit_hash)
 
 
 def get_next_n_commits_from_base(
     repo: Repo, default_branch: str, base_commit: str, n: int
 ):
-    repo.remote().fetch(default_branch)
+    if ENABLE_FETCH:
+        repo.remote().fetch(default_branch)
     commits = list(repo.iter_commits(f"{base_commit}..origin/{default_branch}"))[-n:]
     commits.reverse()
     return commits
@@ -143,9 +148,7 @@ def main():
                 continue
             target = get_target(args.repo_path, new_path)
             print(f"  Changed file: {old_path} -> {new_path}, Target: {target}")
-            changes.append(
-                Change(old_path=old_path, new_path=new_path, target=target)
-            )
+            changes.append(Change(old_path=old_path, new_path=new_path, target=target))
 
         prev_commit = commit.hexsha
         postrun_commands(args.postrun, args.repo_path)
