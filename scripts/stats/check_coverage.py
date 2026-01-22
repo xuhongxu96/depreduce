@@ -50,10 +50,12 @@ def main():
         optimized_targets.add(target)
 
     n = 0
-    optimized_commits = []
+    optimized_commits = dict()
     for commit in commits:
         path = os.path.join(args.result_dir, f"{commit.hexsha}.json")
         if path.endswith(CHANGED_REBUILD_SETS_JSON_FILE_NAME):
+            continue
+        if not os.path.exists(path):
             continue
 
         with open(path, "r") as f:
@@ -68,17 +70,15 @@ def main():
             targets = extract_targets(change.target)
             for target in targets:
                 if target in optimized_targets:
-                    optimized_commits.append(result.commit_hash)
-                    break
-
-            if optimized_commits and optimized_commits[-1] == result.commit_hash:
-                break
+                    if result.commit_hash not in optimized_commits:
+                        optimized_commits[result.commit_hash] = set()
+                    optimized_commits[result.commit_hash].add(target)
 
     print(f"Optimized Commits/Total: {len(optimized_commits)}/{n}")
 
     with open(os.path.join(args.result_dir, "optimized_commits.txt"), "w") as f:
-        for commit in optimized_commits:
-            f.write(f"{commit}\n")
+        for commit, targets in optimized_commits.items():
+            f.write(f"{commit}: {len(targets)}\n")
 
     revertible_commits = []
     for commit in optimized_commits:
@@ -90,8 +90,6 @@ def main():
             )
             repo.git.execute("git revert --abort".split(), stdout_as_string=True)
             revertible_commits.append(commit)
-            if len(revertible_commits) == 10:
-                break
         except:
             repo.git.execute("git revert --abort".split(), stdout_as_string=True)
             break
