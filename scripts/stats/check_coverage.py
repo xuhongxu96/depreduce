@@ -108,11 +108,12 @@ def main():
 
     with open(os.path.join(args.result_dir, "revertible_commits.txt"), "w") as f:
         for commit, targets in revertible_commits:
-            delta = 0
+            before = set()
+            after = set()
             for target in targets:
-                before = rebuildset_before_dict.get(target, set())
-                after = rebuildset_dict.get(target, set())
-                delta += len(before) - len(after)
+                before = before.union(rebuildset_before_dict.get(target, set()))
+                after = after.union(rebuildset_dict.get(target, set()))
+            delta = len(before) - len(after)
             print(f"Commit {commit} reduces {delta} targets to rebuild.")
             f.write(f"{commit} {delta} {','.join(targets)}\n")
 
