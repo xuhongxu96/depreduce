@@ -94,6 +94,7 @@ def incremental_build(
     cmd = ""
     cmd += "bazel info\n"
     cmd += pre_git_cmd + "\n"
+    cmd += "git submodule update\n"
     if prerun:
         cmd += prerun + "\n"
     cmd += "mkdir -p " + result_dir + "\n"
@@ -112,6 +113,7 @@ def incremental_build(
         cmd += postrun + "\n"
 
     host_result_dir = result_dir.replace("/app/data/experiment", "/mnt")
+    cmd += f"sudo mkdir -p {host_result_dir}\n"
     cmd += f"sudo cp -f {result_dir}/* {host_result_dir}/\n"
     cmd += f"sudo chmod -R 777 {host_result_dir}\n"
 
@@ -129,7 +131,7 @@ def test_incre_build(
     postrun: str,
     extra_args: list[str],
 ):
-    N_ITERATIONS = 3
+    N_ITERATIONS = 5
 
     prerun = prerun if prerun else ""
     postrun = postrun if postrun else ""
@@ -191,20 +193,26 @@ def main():
     print(f"Testing incremental builds for {len(commits)} commits...")
 
     for commit, prev_commit, need_revert in commits:
-        if commit.strip() == "":
-            continue
-        test_incre_build(
-            os.path.basename(args.repo_path),
-            commit,
-            prev_commit,
-            need_revert == "1",
-            args.base_commit,
-            os.path.join(args.result_dir, "incre_build"),
-            args.prerun,
-            args.postrun,
-            extra_args=args.extra_build_args,
-        )
-        break
+        try:
+            if commit.strip() == "":
+                continue
+            test_incre_build(
+                os.path.basename(args.repo_path),
+                commit,
+                prev_commit,
+                need_revert == "1",
+                args.base_commit,
+                os.path.join(args.result_dir, "incre_build"),
+                args.prerun,
+                args.postrun,
+                extra_args=args.extra_build_args,
+            )
+        except Exception as e:
+            import time
+            with open(
+                os.path.join(result_dir, "incre_build_errors.txt"), "a"
+            ) as ef:
+                ef.write(f"[{time.time()}] Error testing commit {commit}: {e}\n")
 
 
 if __name__ == "__main__":

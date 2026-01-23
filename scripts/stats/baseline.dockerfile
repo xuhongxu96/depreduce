@@ -13,6 +13,7 @@ RUN git checkout ${COMMIT}
 RUN if [ -n "${REVERT_COMMIT}" ]; then \
     git revert ${REVERT_COMMIT}; \
     fi
+RUN git submodule update
 
 RUN ${PRERUN}
 RUN bazel build --spawn_strategy=local \
