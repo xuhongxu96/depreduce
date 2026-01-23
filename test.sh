@@ -1,0 +1,2 @@
+echo haha
+ls /mnt
