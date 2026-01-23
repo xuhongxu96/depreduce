@@ -20,7 +20,7 @@ def build(
 
 
 def run_in_container(tag: str, cmd: str):
-    with open("data/experiment/run.sh", "w") as f:
+    with open("data/experiment/temp.sh", "w") as f:
         f.write(
             """#!/bin/bash
 set -e
@@ -37,7 +37,7 @@ set -e
         "-v",
         "./data/experiment:/mnt",
         tag,
-        "/mnt/run.sh",
+        "/mnt/temp.sh",
     ]
     sp.run(docker_cmd, check=True)
 
