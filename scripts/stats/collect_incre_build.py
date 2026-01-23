@@ -21,7 +21,7 @@ build_metrics = dict()
 for path in sorted(glob.glob("data/experiment/*/stats/incre_build/*.json")):
     project_name = path.split("/")[2]
 
-    is_after = "-after.json" in path
+    is_after = "-after" in path
 
     with open(path, "r") as f:
         for line in f.readlines():

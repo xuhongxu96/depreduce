@@ -25,7 +25,7 @@ def main():
     repo = Repo(args.repo_path)
 
     with open(os.path.join(args.result_dir, "revertible_commits.txt"), "r") as f:
-        commits = [line.strip() for line in f.readlines()]
+        commits = [line.strip().split(" ")[0] for line in f.readlines()]
 
     with open(os.path.join(args.result_dir, "revertible_prev_commits.txt"), "w") as f:
         for commit in commits:
