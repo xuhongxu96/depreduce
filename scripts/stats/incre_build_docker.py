@@ -129,6 +129,8 @@ def test_incre_build(
     postrun: str,
     extra_args: list[str],
 ):
+    N_ITERATIONS = 3
+
     prerun = prerun if prerun else ""
     postrun = postrun if postrun else ""
 
@@ -140,7 +142,7 @@ def test_incre_build(
         postrun=postrun,
     )
 
-    for i in range(10):
+    for i in range(N_ITERATIONS):
         print(f"[After] Running incremental build iteration {i} for commit {commit}...")
         incremental_build(
             pre_git_cmd="git checkout " + commit,
@@ -163,7 +165,7 @@ def test_incre_build(
         revert_commit=base_commit if need_revert else "",
     )
 
-    for i in range(10):
+    for i in range(N_ITERATIONS):
         print(f"[Before] Running incremental build iteration {i} for commit {commit}...")
         incremental_build(
             pre_git_cmd="git cherry-pick " + commit,
