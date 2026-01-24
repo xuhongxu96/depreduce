@@ -2,9 +2,13 @@ import os
 import json
 import numpy as np
 from scipy import stats
+import pandas as pd
 import glob
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-PROJECTS = ["buildfarm", "copybara", "hirschgarten", "typedb"]
+
+PROJECTS = ["buildfarm", "copybara", "hirschgarten", "typedb", "angular"]
 BASE_DIR = "data/experiment"
 
 
@@ -87,6 +91,30 @@ def analyze_project(project):
                 (improvement_ms / median_before) * 100 if median_before > 0 else 0
             )
 
+            # NEW: Calculate mean improvement and CI from independent samples
+            mean_before = np.mean(before_times)
+            mean_after = np.mean(after_times)
+            mean_improvement_ms = mean_before - mean_after
+
+            improvement_error = 0
+            n_before = len(before_times)
+            n_after = len(after_times)
+
+            if n_before > 1 and n_after > 1:
+                var_before = np.var(before_times, ddof=1)
+                var_after = np.var(after_times, ddof=1)
+                
+                # Standard error of the difference of means for independent samples
+                std_err_diff = np.sqrt(var_before / n_before + var_after / n_after)
+                
+                # Degrees of freedom using a conservative estimate: min(n1-1, n2-1)
+                dof = min(n_before - 1, n_after - 1)
+                
+                # t-value for 95% CI
+                t_value = stats.t.ppf(0.975, df=dof)
+                
+                improvement_error = t_value * std_err_diff
+
             results.append(
                 {
                     "commit": commit,
@@ -95,6 +123,8 @@ def analyze_project(project):
                     "median_after": median_after,
                     "improvement_ms": improvement_ms,
                     "improvement_pct": improvement_pct,
+                    "mean_improvement_ms": mean_improvement_ms,
+                    "improvement_error": improvement_error,
                 }
             )
 
@@ -123,7 +153,7 @@ def analyze_project(project):
             scale=stats.sem(improvements_ms),
         )
     else:
-        ci = (improvements_ms[0], improvements_ms[0])
+        ci = (improvements_ms[0], improvements_ms[0]) if improvements_ms else (0, 0)
 
     print(f"  Number of analyzed commits: {len(results)}")
     print(f"  Median Build Time Before: {np.median(median_befores):.2f} ms")
@@ -138,8 +168,11 @@ def analyze_project(project):
 
     # Correlation
     correlation_text = "  Not enough data for correlation analysis."
+    correlation, p_value = None, None
     if len(results) > 1:
-        correlation, p_value = stats.pearsonr(cost_deltas, improvements_ms)
+        # Correlation is calculated on the mean improvement now
+        mean_improvements = [r["mean_improvement_ms"] for r in results]
+        correlation, p_value = stats.pearsonr(cost_deltas, mean_improvements)
         correlation_text = f"  Correlation between Rebuild Cost Delta and Time Improvement (ms): {correlation:.4f} (p-value: {p_value:.4f})"
         print(correlation_text)
     else:
@@ -157,8 +190,9 @@ def analyze_project(project):
         "median_improvement_ms": median_improvement_ms,
         "median_improvement_pct": median_improvement_pct,
         "ci": ci,
-        "correlation": correlation if len(results) > 1 else None,
-        "p_value": p_value if len(results) > 1 else None,
+        "correlation": correlation,
+        "p_value": p_value,
+        "raw_results": results,
     }
 
 
@@ -208,7 +242,7 @@ def print_summary(stats_data):
         )
 
     # 5. Correlation
-    if stats_data["correlation"] is not None:
+    if stats_data["correlation"] is not None and stats_data["p_value"] is not None:
         corr = stats_data["correlation"]
         p = stats_data["p_value"]
         print(
@@ -236,6 +270,100 @@ def print_summary(stats_data):
         print("* **Correlation:** Not enough data points to calculate correlation.")
 
 
+def plot_all_projects(all_stats):
+    """
+    Generate and save plots for all projects.
+    """
+    print("\n" + "=" * 60)
+    print("Generating plots...")
+    
+    # Filter projects with less than or equal to 3 data points for plotting
+    plottable_stats = [s for s in all_stats if s["count"] > 3]
+    
+    plotted_projects = {s['project'] for s in plottable_stats}
+    skipped_projects = {s['project'] for s in all_stats} - plotted_projects
+    
+    if skipped_projects:
+        print(f"Skipping projects with <= 3 data points from plot: {', '.join(skipped_projects)}")
+
+    print("=" * 60)
+
+    if not plottable_stats:
+        print("No projects with sufficient data (> 3 data points) to plot.")
+        return
+
+    # Create a directory for plots
+    output_dir = "plots"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Plot 1: Scatter plot of Cost Delta vs. Time Improvement (combined)
+    plot_scatter_combined(plottable_stats, output_dir)
+
+    print(f"Plots saved to '{output_dir}' directory.")
+
+
+def plot_scatter_combined(all_stats, output_dir):
+    """
+    Generates a scatter plot of Cost Delta vs. Time Improvement for all projects,
+    with error bars for each point representing the confidence interval.
+    """
+    sns.set_theme(style="whitegrid")
+    
+    # Consolidate data
+    all_results = []
+    for s in all_stats:
+        for res in s.get("raw_results", []):
+            res["project"] = s["project"]
+            all_results.append(res)
+    
+    if not all_results:
+        print("No data to plot for scatter plot.")
+        return
+
+    df = pd.DataFrame(all_results)
+
+    # Create plot
+    fig, ax = plt.subplots(figsize=(14, 9))
+
+    projects = df["project"].unique()
+    palette = sns.color_palette("viridis", len(projects))
+    
+    for i, project in enumerate(projects):
+        project_df = df[df["project"] == project]
+        
+        # Plot error bars
+        ax.errorbar(
+            x=project_df["cost_delta"],
+            y=project_df["mean_improvement_ms"],
+            yerr=project_df["improvement_error"],
+            fmt='o',  # 'o' for points, no connecting line
+            color=palette[i],
+            label=project,
+            capsize=3,
+            elinewidth=1,
+            alpha=0.6
+        )
+        
+        # Plot regression line
+        sns.regplot(
+            data=project_df,
+            x="cost_delta",
+            y="mean_improvement_ms",
+            ax=ax,
+            color=palette[i],
+            scatter=False, # Don't plot the scatter points again
+        )
+
+    ax.set_xlabel("Rebuild Cost Delta (Number of Nodes)")
+    ax.set_ylabel("Build Time Improvement (ms)")
+    ax.set_title("Correlation between Rebuild Cost Delta and Build Time Improvement (with 95% CI for each point)")
+    ax.legend()
+    ax.axhline(0, color='grey', linestyle='--')
+
+    plt.savefig(os.path.join(output_dir, "scatter_cost_vs_improvement_combined.png"), bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     all_stats = []
     for project in PROJECTS:
@@ -247,12 +375,26 @@ def main():
     for s in all_stats:
         print_summary(s)
 
+    # Generate and save plots
+    if all_stats:
+        plot_all_projects(all_stats)
+
     # Print Global Summary
     print("\n" + "=" * 60)
     print("GLOBAL OBSERVATIONS")
     print("=" * 60)
 
-    best_project = max(all_stats, key=lambda x: x["count"])
+    if not all_stats:
+        print("No data to analyze.")
+        return
+
+    # Filter for global observations summary
+    valid_stats = [s for s in all_stats if s["count"] > 3]
+    if not valid_stats:
+        print("No projects with sufficient data for global observations.")
+        return
+        
+    best_project = max(valid_stats, key=lambda x: x["count"])
     print(
         f"Across all projects, **{best_project['project'].capitalize()}** provides the most robust dataset with {best_project['count']} commits."
     )

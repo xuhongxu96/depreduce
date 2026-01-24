@@ -15,5 +15,6 @@
     "rebuild_sets": [
         "/app/data/experiment/angular/angular-rebuild-before.json",
         "/app/data/experiment/angular/angular-rebuild.json"
-    ]
+    ],
+    "baseline_docker_cache": false
 }

@@ -23,7 +23,7 @@ def find_prev_commit(repo: Repo, commit: str) -> str | None:
 
 
 def clean_build(cwd: str):
-    sp.run(["bazel", "clean"], check=True, cwd=cwd)
+    sp.run(["bazel", "clean", "--expunge"], check=True, cwd=cwd)
 
 
 def build(
@@ -68,59 +68,60 @@ def test_incre_build(
     if prev_commit == base_commit:
         prev_commit = find_prev_commit(repo, base_commit)
         need_revert = False
+    
+    for iter in range(5):
+        if os.path.exists(
+            os.path.join(result_dir, f"{commit}-before-{iter}.json")
+        ) and os.path.exists(os.path.join(result_dir, f"{commit}-after-{iter}.json")):
+            print(f"Skipping {commit} as results already exist.")
+            return
 
-    if os.path.exists(
-        os.path.join(result_dir, f"{commit}-before.json")
-    ) and os.path.exists(os.path.join(result_dir, f"{commit}-after.json")):
-        print(f"Skipping {commit} as results already exist.")
-        return
+        postrun_commands(postrun, repo.working_tree_dir)
 
-    postrun_commands(postrun, repo.working_tree_dir)
+        switch_to_commit(repo, prev_commit)
+        clean_build(repo.working_tree_dir)
 
-    switch_to_commit(repo, prev_commit)
-    clean_build(repo.working_tree_dir)
+        prerun_commands(prerun, repo.working_tree_dir)
 
-    prerun_commands(prerun, repo.working_tree_dir)
+        build(repo.working_tree_dir, extra_args=extra_args)
 
-    build(repo.working_tree_dir, extra_args=extra_args)
+        postrun_commands(postrun, repo.working_tree_dir)
 
-    postrun_commands(postrun, repo.working_tree_dir)
+        switch_to_commit(repo, commit)
 
-    switch_to_commit(repo, commit)
+        prerun_commands(prerun, repo.working_tree_dir)
 
-    prerun_commands(prerun, repo.working_tree_dir)
+        build(
+            repo.working_tree_dir,
+            extra_args=extra_args,
+            build_event_dir=result_dir,
+            build_event_prefix=f"{commit}-after-{iter}",
+        )
 
-    build(
-        repo.working_tree_dir,
-        extra_args=extra_args,
-        build_event_dir=result_dir,
-        build_event_prefix=f"{commit}-after",
-    )
+        postrun_commands(postrun, repo.working_tree_dir)
 
-    postrun_commands(postrun, repo.working_tree_dir)
+        switch_to_commit(repo, prev_commit)
+        if need_revert:
+            revert_commit(repo, base_commit)
+        clean_build(repo.working_tree_dir)
 
-    switch_to_commit(repo, prev_commit)
-    if need_revert:
-        revert_commit(repo, base_commit)
-    clean_build(repo.working_tree_dir)
+        prerun_commands(prerun, repo.working_tree_dir)
 
-    prerun_commands(prerun, repo.working_tree_dir)
+        build(repo.working_tree_dir, extra_args=extra_args)
 
-    build(repo.working_tree_dir, extra_args=extra_args)
+        postrun_commands(postrun, repo.working_tree_dir)
 
-    postrun_commands(postrun, repo.working_tree_dir)
+        cherrypick_commit(repo, commit)
 
-    cherrypick_commit(repo, commit)
+        prerun_commands(prerun, repo.working_tree_dir)
 
-    prerun_commands(prerun, repo.working_tree_dir)
-
-    build(
-        repo.working_tree_dir,
-        extra_args=extra_args,
-        build_event_dir=result_dir,
-        build_event_prefix=f"{commit}-before",
-    )
-    postrun_commands(postrun, repo.working_tree_dir)
+        build(
+            repo.working_tree_dir,
+            extra_args=extra_args,
+            build_event_dir=result_dir,
+            build_event_prefix=f"{commit}-before-{iter}",
+        )
+        postrun_commands(postrun, repo.working_tree_dir)
 
 
 def main():
@@ -129,11 +130,11 @@ def main():
     repo = Repo(args.repo_path)
 
     with open(os.path.join(args.result_dir, "revertible_commits.txt"), "r") as f:
-        commits = [line.strip() for line in f.readlines()]
+        commits = [line.strip().split(" ") for line in f.readlines()]
 
     print(f"Testing incremental builds for {len(commits)} commits...")
 
-    for commit in commits:
+    for commit, prev_commit, _ in commits:
         if commit.strip() == "":
             continue
         test_incre_build(
