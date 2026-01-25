@@ -52,6 +52,35 @@ def get_wall_time(json_path):
     return None
 
 
+def get_action_summary(json_path):
+    try:
+        with open(json_path, "r") as f:
+            # The file contains multiple JSON objects, one per line.
+            # We need to find the one with buildMetrics.
+            for line in f:
+                if "actionsExecuted" in line:
+                    data = json.loads(line)
+                    if (
+                        "buildMetrics" in data
+                        and "actionSummary" in data["buildMetrics"]
+                    ):
+                        return {
+                            "created": int(
+                                data["buildMetrics"]["actionSummary"].get(
+                                    "actionsCreated", 0
+                                )
+                            ),
+                            "executed": int(
+                                data["buildMetrics"]["actionSummary"].get(
+                                    "actionsExecuted", 0
+                                )
+                            ),
+                        }
+    except Exception as e:
+        print(f"Error reading {json_path}: {e}")
+    return None
+
+
 def analyze_project(project):
     print(f"Analyzing project: {project}")
     commits_data = load_revertible_commits(project)
@@ -61,6 +90,8 @@ def analyze_project(project):
     for commit, cost_delta in commits_data.items():
         before_times = []
         after_times = []
+        before_actions = []
+        after_actions = []
 
         for i in range(5):
             before_json = os.path.join(
@@ -75,11 +106,17 @@ def analyze_project(project):
 
             t_before = get_wall_time(before_json)
             t_after = get_wall_time(after_json)
+            actions_before = get_action_summary(before_json)
+            actions_after = get_action_summary(after_json)
 
             if t_before is not None:
                 before_times.append(t_before)
             if t_after is not None:
                 after_times.append(t_after)
+            if actions_before is not None:
+                before_actions.append(actions_before)
+            if actions_after is not None:
+                after_actions.append(actions_after)
 
         if before_times and after_times:
             median_before = np.median(before_times)
@@ -96,6 +133,16 @@ def analyze_project(project):
             mean_after = np.mean(after_times)
             mean_improvement_ms = mean_before - mean_after
 
+            median_executed_actions_before = np.median(
+                [a["executed"] for a in before_actions]
+            )
+            median_executed_actions_after = np.median(
+                [a["executed"] for a in after_actions]
+            )
+            executed_actions_delta = (
+                median_executed_actions_before - median_executed_actions_after
+            )
+
             improvement_error = 0
             n_before = len(before_times)
             n_after = len(after_times)
@@ -103,16 +150,16 @@ def analyze_project(project):
             if n_before > 1 and n_after > 1:
                 var_before = np.var(before_times, ddof=1)
                 var_after = np.var(after_times, ddof=1)
-                
+
                 # Standard error of the difference of means for independent samples
                 std_err_diff = np.sqrt(var_before / n_before + var_after / n_after)
-                
+
                 # Degrees of freedom using a conservative estimate: min(n1-1, n2-1)
                 dof = min(n_before - 1, n_after - 1)
-                
+
                 # t-value for 95% CI
                 t_value = stats.t.ppf(0.975, df=dof)
-                
+
                 improvement_error = t_value * std_err_diff
 
             results.append(
@@ -125,6 +172,7 @@ def analyze_project(project):
                     "improvement_pct": improvement_pct,
                     "mean_improvement_ms": mean_improvement_ms,
                     "improvement_error": improvement_error,
+                    "executed_actions_delta": executed_actions_delta,
                 }
             )
 
@@ -138,6 +186,7 @@ def analyze_project(project):
     improvements_ms = [r["improvement_ms"] for r in results]
     improvements_pct = [r["improvement_pct"] for r in results]
     cost_deltas = [r["cost_delta"] for r in results]
+    executed_actions_deltas = [r["executed_actions_delta"] for r in results]
 
     avg_improvement_ms = np.mean(improvements_ms)
     median_improvement_ms = np.median(improvements_ms)
@@ -169,12 +218,23 @@ def analyze_project(project):
     # Correlation
     correlation_text = "  Not enough data for correlation analysis."
     correlation, p_value = None, None
+    correlation_created, p_value_created = None, None
+    correlation_executed, p_value_executed = None, None
+    correlation_executed_cost, p_value_executed_cost = None, None
+
     if len(results) > 1:
         # Correlation is calculated on the mean improvement now
         mean_improvements = [r["mean_improvement_ms"] for r in results]
         correlation, p_value = stats.pearsonr(cost_deltas, mean_improvements)
         correlation_text = f"  Correlation between Rebuild Cost Delta and Time Improvement (ms): {correlation:.4f} (p-value: {p_value:.4f})"
         print(correlation_text)
+
+        correlation_executed_cost, p_value_executed_cost = stats.pearsonr(
+            executed_actions_deltas, cost_deltas
+        )
+        correlation_text_executed_cost = f"  Correlation between Executed Actions Delta and Rebuild Cost Delta: {correlation_executed_cost:.4f} (p-value: {p_value_executed_cost:.4f})"
+        print(correlation_text_executed_cost)
+
     else:
         print(correlation_text)
 
@@ -192,6 +252,12 @@ def analyze_project(project):
         "ci": ci,
         "correlation": correlation,
         "p_value": p_value,
+        "correlation_created": correlation_created,
+        "p_value_created": p_value_created,
+        "correlation_executed": correlation_executed,
+        "p_value_executed": p_value_executed,
+        "correlation_executed_cost": correlation_executed_cost,
+        "p_value_executed_cost": p_value_executed_cost,
         "raw_results": results,
     }
 
@@ -276,15 +342,17 @@ def plot_all_projects(all_stats):
     """
     print("\n" + "=" * 60)
     print("Generating plots...")
-    
+
     # Filter projects with less than or equal to 3 data points for plotting
     plottable_stats = [s for s in all_stats if s["count"] > 3]
-    
-    plotted_projects = {s['project'] for s in plottable_stats}
-    skipped_projects = {s['project'] for s in all_stats} - plotted_projects
-    
+
+    plotted_projects = {s["project"] for s in plottable_stats}
+    skipped_projects = {s["project"] for s in all_stats} - plotted_projects
+
     if skipped_projects:
-        print(f"Skipping projects with <= 3 data points from plot: {', '.join(skipped_projects)}")
+        print(
+            f"Skipping projects with <= 3 data points from plot: {', '.join(skipped_projects)}"
+        )
 
     print("=" * 60)
 
@@ -299,69 +367,132 @@ def plot_all_projects(all_stats):
     # Plot 1: Scatter plot of Cost Delta vs. Time Improvement (combined)
     plot_scatter_combined(plottable_stats, output_dir)
 
+    # Plot 2: Scatter plot of Executed Actions Delta vs. Rebuild Cost Delta (combined)
+    plot_scatter_executed_actions_cost(plottable_stats, output_dir)
+
     print(f"Plots saved to '{output_dir}' directory.")
 
 
 def plot_scatter_combined(all_stats, output_dir):
     """
-    Generates a scatter plot of Cost Delta vs. Time Improvement for all projects,
-    with error bars for each point representing the confidence interval.
+    Generates a faceted scatter plot of Cost Delta vs. Time Improvement,
+    with a separate subplot for each project.
     """
     sns.set_theme(style="whitegrid")
-    
+
     # Consolidate data
     all_results = []
     for s in all_stats:
         for res in s.get("raw_results", []):
             res["project"] = s["project"]
             all_results.append(res)
-    
+
     if not all_results:
         print("No data to plot for scatter plot.")
         return
 
     df = pd.DataFrame(all_results)
 
-    # Create plot
-    fig, ax = plt.subplots(figsize=(14, 9))
+    # Set plot aesthetics
+    plt.rcParams["font.size"] = 10.0
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["pdf.fonttype"] = 42
+    plt.rcParams["ps.fonttype"] = 42
 
-    projects = df["project"].unique()
-    palette = sns.color_palette("viridis", len(projects))
-    
-    for i, project in enumerate(projects):
-        project_df = df[df["project"] == project]
-        
-        # Plot error bars
+    # Create a FacetGrid
+    g = sns.FacetGrid(
+        df, col="project", col_wrap=3, sharex=False, height=2.5, aspect=1.0
+    )
+
+    # Define a function to plot error bars and a regression line on each facet
+    def plot_with_error_and_reg(data, **kwargs):
+        ax = plt.gca()
+        color = kwargs.get("color")
         ax.errorbar(
-            x=project_df["cost_delta"],
-            y=project_df["mean_improvement_ms"],
-            yerr=project_df["improvement_error"],
-            fmt='o',  # 'o' for points, no connecting line
-            color=palette[i],
-            label=project,
+            data["cost_delta"],
+            data["mean_improvement_ms"],
+            yerr=data["improvement_error"],
+            fmt="o",
             capsize=3,
             elinewidth=1,
-            alpha=0.6
+            alpha=0.6,
+            color=color,
         )
-        
-        # Plot regression line
         sns.regplot(
-            data=project_df,
+            data=data,
             x="cost_delta",
             y="mean_improvement_ms",
             ax=ax,
-            color=palette[i],
-            scatter=False, # Don't plot the scatter points again
+            scatter=False,
+            color=color,
         )
+        ax.axhline(0, color="grey", linestyle="--")
 
-    ax.set_xlabel("Rebuild Cost Delta (Number of Nodes)")
-    ax.set_ylabel("Build Time Improvement (ms)")
-    ax.set_title("Correlation between Rebuild Cost Delta and Build Time Improvement (with 95% CI for each point)")
-    ax.legend()
-    ax.axhline(0, color='grey', linestyle='--')
+    # Map the plotting function to the FacetGrid
+    g.map_dataframe(plot_with_error_and_reg)
 
-    plt.savefig(os.path.join(output_dir, "scatter_cost_vs_improvement_combined.png"), bbox_inches="tight")
-    plt.close(fig)
+    g.set_axis_labels("Rebuild Cost Delta (Nodes)", "Build Time Improvement (ms)")
+    g.set_titles(col_template="{col_name}")
+    # g.figure.suptitle("Correlation: Rebuild Cost Delta vs. Build Time Improvement", y=1.03)
+
+    plt.savefig(
+        os.path.join(output_dir, "scatter_cost_vs_improvement_faceted.pdf"),
+        bbox_inches="tight",
+    )
+    plt.close(g.fig)
+
+
+def plot_scatter_executed_actions_cost(all_stats, output_dir):
+    """
+    Generates a faceted scatter plot of Executed Actions Delta vs. Rebuild Cost Delta,
+    with a separate subplot for each project.
+    """
+    sns.set_theme(style="whitegrid")
+
+    # Consolidate data
+    all_results = []
+    for s in all_stats:
+        for res in s.get("raw_results", []):
+            res["project"] = s["project"]
+            all_results.append(res)
+
+    if not all_results:
+        print("No data to plot for scatter plot.")
+        return
+
+    df = pd.DataFrame(all_results)
+
+    # Set plot aesthetics
+    plt.rcParams["font.size"] = 10.0
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["pdf.fonttype"] = 42
+    plt.rcParams["ps.fonttype"] = 42
+
+    # Create a FacetGrid
+    g = sns.FacetGrid(
+        df, col="project", col_wrap=3, sharex=False, height=2.5, aspect=1.0
+    )
+
+    # Define a function to plot error bars and a regression line on each facet
+    def plot_with_error_and_reg(data, **kwargs):
+        ax = plt.gca()
+        color = kwargs.get("color")
+        sns.regplot(
+            data=data, y="executed_actions_delta", x="cost_delta", ax=ax, color=color
+        )
+        ax.axhline(0, color="grey", linestyle="--")
+
+    # Map the plotting function to the FacetGrid
+    g.map_dataframe(plot_with_error_and_reg)
+
+    g.set_axis_labels("Rebuild Cost Delta (Nodes)", "Executed Actions Delta")
+    g.set_titles(col_template="{col_name}")
+
+    plt.savefig(
+        os.path.join(output_dir, "scatter_executed_actions_vs_cost_faceted.pdf"),
+        bbox_inches="tight",
+    )
+    plt.close(g.fig)
 
 
 def main():
@@ -393,7 +524,7 @@ def main():
     if not valid_stats:
         print("No projects with sufficient data for global observations.")
         return
-        
+
     best_project = max(valid_stats, key=lambda x: x["count"])
     print(
         f"Across all projects, **{best_project['project'].capitalize()}** provides the most robust dataset with {best_project['count']} commits."
