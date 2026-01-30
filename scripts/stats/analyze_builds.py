@@ -485,7 +485,7 @@ def plot_scatter_executed_actions_cost(all_stats, output_dir):
     # Map the plotting function to the FacetGrid
     g.map_dataframe(plot_with_error_and_reg)
 
-    g.set_axis_labels("Rebuild Cost Reduction", "Executed Actions Delta")
+    g.set_axis_labels("Rebuild Cost Reduction", "Reduced Executed Actions")
     g.set_titles(col_template="{col_name}")
 
     plt.savefig(
