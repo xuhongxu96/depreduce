@@ -81,7 +81,7 @@ def main():
             f.write(f"{commit}: {len(targets)}\n")
 
     revertible_commits = []
-    for commit in optimized_commits:
+    for commit, targets in optimized_commits.items():
         switch_to_commit(repo, commit)
         try:
             repo.git.execute(
@@ -89,14 +89,33 @@ def main():
                 stdout_as_string=True,
             )
             repo.git.execute("git revert --abort".split(), stdout_as_string=True)
-            revertible_commits.append(commit)
+            revertible_commits.append((commit, targets))
         except:
             repo.git.execute("git revert --abort".split(), stdout_as_string=True)
             break
 
+    rebuildset = json.loads(open(glob.glob(os.path.join(args.result_dir, "../*rebuild.json"))[0], "r").read())
+    rebuildset_before = json.loads(open(glob.glob(os.path.join(args.result_dir, "../*rebuild-before.json"))[0], "r").read())
+
+    def rebuildset2dict(rebuildset):
+        res = dict()
+        for src, tgt in rebuildset['rebuild_set']:
+            res[src] = set(tgt)
+        return res
+    
+    rebuildset_dict = rebuildset2dict(rebuildset)
+    rebuildset_before_dict = rebuildset2dict(rebuildset_before)
+
     with open(os.path.join(args.result_dir, "revertible_commits.txt"), "w") as f:
-        for commit in revertible_commits:
-            f.write(f"{commit}\n")
+        for commit, targets in revertible_commits:
+            before = set()
+            after = set()
+            for target in targets:
+                before = before.union(rebuildset_before_dict.get(target, set()))
+                after = after.union(rebuildset_dict.get(target, set()))
+            delta = len(before) - len(after)
+            print(f"Commit {commit} reduces {delta} targets to rebuild.")
+            f.write(f"{commit} {delta} {','.join(targets)}\n")
 
 
 if __name__ == "__main__":

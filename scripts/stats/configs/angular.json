@@ -1,5 +1,5 @@
 {
-    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/angular__angular",
+    "repo_path": "/app/angular",
     "default_branch": "main",
     "base_commit": "1f4c5f72aaefc490d0782149c443973dcf50b10f",
     "n_commits": 500,
@@ -8,12 +8,13 @@
     "exclude_paths": [
         ".github/"
     ],
-    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/angular/stats",
+    "result_dir": "/app/data/experiment/angular/stats",
     "extra_build_args": [
         "--noincompatible_disallow_empty_glob"
     ],
     "rebuild_sets": [
-        "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild-before.json",
-        "/data/h445xu/repo/depreduce/data/experiment/angular/angular-rebuild.json"
-    ]
+        "/app/data/experiment/angular/angular-rebuild-before.json",
+        "/app/data/experiment/angular/angular-rebuild.json"
+    ],
+    "baseline_docker_cache": false
 }

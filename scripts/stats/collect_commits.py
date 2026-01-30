@@ -18,6 +18,7 @@ class RunArgs(BaseModel):
     prerun: str = Field(default=None)
     postrun: str = Field(default=None)
     exclude_paths: list[str] = Field(default_factory=list)
+    baseline_docker_cache: bool = Field(default=True)
 
 
 class Change(BaseModel):

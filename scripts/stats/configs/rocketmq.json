@@ -1,5 +1,5 @@
 {
-    "repo_path": "/data/h445xu/repo/bazel-repos/cloned_repos/rocketmq",
+    "repo_path": "/app/rocketmq",
     "default_branch": "develop",
     "base_commit": "7ab7ddd6d25a2dac37e8bac899c5a73c4de2dbcb",
     "n_commits": 500,
@@ -7,9 +7,9 @@
     "exclude_paths": [
         ".github/"
     ],
-    "result_dir": "/data/h445xu/repo/depreduce/data/experiment/rocketmq/stats",
+    "result_dir": "/app/data/experiment/rocketmq/stats",
     "rebuild_sets": [
-        "/data/h445xu/repo/depreduce/data/experiment/rocketmq/rocketmq-rebuild-before.json",
-        "/data/h445xu/repo/depreduce/data/experiment/rocketmq/rocketmq-rebuild.json"
+        "/app/data/experiment/rocketmq/rocketmq-rebuild-before.json",
+        "/app/data/experiment/rocketmq/rocketmq-rebuild.json"
     ]
 }
