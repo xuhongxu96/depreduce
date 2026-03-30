@@ -1,0 +1,26 @@
+[[from.filters]]
+type = "Rule"
+block.rule_classes = ["td_library"]
+block.target_names = ["regex:^//external/"]
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines"]
+transitive_level = 1
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+block.target_names = ["//risc0/core/test:gtest_main"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

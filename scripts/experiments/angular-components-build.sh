@@ -1,0 +1,3 @@
+set -e
+bazel build --noincompatible_disallow_empty_glob -- //... -//docs/...
+bazel test --noincompatible_disallow_empty_glob --notest_keep_going -- //... -//docs/... -//integration/... -//src/components-examples/material/toolbar:unit_tests_chromium
