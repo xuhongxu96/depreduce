@@ -1,4 +1,0 @@
-nohup ./target/release/depreduce \
-  -w /data/h445xu/repo/perses-1 \
-  -c scripts/build_perses.sh \
-  --output perses-1-output > perses-1-stdout.log 2>perses-1-stderr.log &

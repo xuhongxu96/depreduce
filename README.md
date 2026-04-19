@@ -1,6 +1,6 @@
 # DepReduce
 
-Language-Agnostic Dependency Optimization for Polyglot Build Systems
+Automated Dependency Optimization for Artifact-Based Build Systems
 
 See https://github.com/xuhongxu96/paper-depreduce for more details.
 
@@ -24,7 +24,7 @@ depreduce \
     --build-system <bazel|buck|cargo>
 ```
 
-See scripts in [scripts/experiments](scripts/experiments) 
+See scripts in [scripts/experiments](scripts/experiments)
 or [scripts/buck](scripts/buck) for more examples.
 
 #### Example Build Script
@@ -49,10 +49,10 @@ It turns out that neither of them can do it well.
 
 ### Extending [`mkcheck`] to [`buildfuzz`]
 
-[`buildfuzz`] is the reproduction of the build fuzzing algorithm proposed by 
+[`buildfuzz`] is the reproduction of the build fuzzing algorithm proposed by
 [`mkcheck`] (https://github.com/nandor/mkcheck) with new features:
 
-1. Use **custom touchers** instead of the `touch` file operation, 
+1. Use **custom touchers** instead of the `touch` file operation,
    which will **CHANGE** the file content but not affect the original functionality.
 1. Use **SHA256** instead of timestamp to detect file changes.
 1. **Restore** touched file content after every round.
@@ -80,7 +80,7 @@ The result is a JSONL file like below.
 
 [`strace_parser`] is the reproduction of [`buildfs`] (https://github.com/theosotr/buildfs) with some improvements:
 
-1. **`stat`/`lstat`/`statfs` syscalls were ignored** because we don't know if the accessed file truly exists, 
+1. **`stat`/`lstat`/`statfs` syscalls were ignored** because we don't know if the accessed file truly exists,
    and they are mostly used to detect file changes, i.e., usually not a real sign of file consumption.
 1. **Syscalls returning -1** will be ignored, because they failed mostly for inexistent files.
 1. **`clone3` syscall was added** for tracing. Otherwise there will be many missing `Newproc` operations.
