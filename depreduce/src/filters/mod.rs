@@ -22,8 +22,12 @@ pub struct CommonFilterOptions {
     pub transitive_level: i32,
 }
 
+pub struct BazelInfo<'a> {
+    pub query: &'a BazelQuery,
+}
+
 pub enum BuildSystemSpecificInfo<'a> {
-    Bazel(&'a BazelQuery),
+    Bazel(BazelInfo<'a>),
     Buck(&'a BuckQuery),
     Cargo(Rc<cargo_metadata::Metadata>),
 }

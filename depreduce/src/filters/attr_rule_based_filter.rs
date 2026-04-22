@@ -34,10 +34,11 @@ impl InternalFilterable for AttrRuleBasedFilter {
         let mut res = HashSet::new();
         let rules = ExecutableRules::parse(&self.rules);
 
-        let query = match info {
+        let query = match &info {
             &BuildSystemSpecificInfo::Bazel(q) => q,
             _ => panic!("AttrRuleBasedFilter only supports Bazel"),
-        };
+        }
+        .query;
 
         'outer_loop: for value in &query.values {
             match value {
@@ -83,7 +84,10 @@ impl InternalFilterable for AttrRuleBasedFilter {
 
 #[cfg(test)]
 mod tests {
-    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml_query};
+    use crate::{
+        filters::{BazelInfo, Filterable},
+        graph::bazel_xml_parser::parse_bazel_xml_query,
+    };
 
     use super::*;
 
@@ -115,7 +119,12 @@ mod tests {
         let query = parse_bazel_xml_query(xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
-        let res = filter.filter(&graph, &BuildSystemSpecificInfo::Bazel(&query));
+        let res = filter.filter(
+            &graph,
+            &BuildSystemSpecificInfo::Bazel(BazelInfo {
+                query: &query,
+            }),
+        );
 
         assert!(!res.contains(&graph.get_node_id("//a").unwrap()));
         assert!(res.contains(&graph.get_node_id("//a_type").unwrap()));

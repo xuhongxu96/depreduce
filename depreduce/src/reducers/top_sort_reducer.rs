@@ -355,7 +355,7 @@ impl TopSortReducer {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use std::path::Path;
+    use std::{collections::HashMap, path::Path};
 
     use utils::*;
 
@@ -410,6 +410,7 @@ pub(crate) mod tests {
         let graph = query.to_dep_graph(readonly_deps_attrs).unwrap();
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(&query),
+            HashMap::new(),
             &project_dir,
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),

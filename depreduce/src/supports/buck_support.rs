@@ -1,5 +1,5 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     io::{BufRead, BufReader},
     process::Command,
 };
@@ -97,6 +97,7 @@ impl BuildSystemSupport for BuckSupport {
 
         Box::new(BazelDepEditor::new_with_buck_mode(
             generate_label2location_for_buck(&self.query, workspace_root),
+            HashMap::new(),
             workspace_root,
             keywords_for_deps_insertion,
             keywords_for_deps_removal,

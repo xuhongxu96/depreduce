@@ -1,3 +1,4 @@
+export USE_BAZEL_VERSION=8.5.1
 export RUST_BACKTRACE=1
 ./target/release/depreduce \
     -w /data/h445xu/repo/bazel-repos/cloned_repos/zml__zml \

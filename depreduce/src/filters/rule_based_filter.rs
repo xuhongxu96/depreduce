@@ -76,10 +76,12 @@ impl InternalFilterable for RuleBasedFilter {
         graph: &DependencyGraph,
         info: &BuildSystemSpecificInfo,
     ) -> HashSet<NodeId> {
-        let node_and_rule_class = match info {
-            &BuildSystemSpecificInfo::Bazel(q) => q.to_node_and_rule_class(),
+        let node_and_rule_class = match &info {
+            &BuildSystemSpecificInfo::Bazel(bazel_info) => {
+                bazel_info.query.to_node_and_rule_class()
+            }
             &BuildSystemSpecificInfo::Buck(q) => q.to_node_and_rule_class(),
-            &BuildSystemSpecificInfo::Cargo(ref m) => m
+            &BuildSystemSpecificInfo::Cargo(m) => m
                 .packages
                 .iter()
                 .map(|p| (p.id.repr.to_string(), p.name.to_string()))
@@ -117,7 +119,10 @@ impl InternalFilterable for RuleBasedFilter {
 
 #[cfg(test)]
 mod tests {
-    use crate::{filters::Filterable, graph::bazel_xml_parser::parse_bazel_xml_query};
+    use crate::{
+        filters::{BazelInfo, Filterable},
+        graph::bazel_xml_parser::parse_bazel_xml_query,
+    };
 
     use super::*;
 
@@ -143,7 +148,7 @@ mod tests {
         let query = parse_bazel_xml_query(xml).unwrap();
         let graph = query.to_dep_graph(&HashSet::new()).unwrap();
 
-        let info = BuildSystemSpecificInfo::Bazel(&query);
+        let info = BuildSystemSpecificInfo::Bazel(BazelInfo { query: &query });
         let res = filter.filter(&graph, &info);
 
         assert!(res.contains(&graph.get_node_id("//test:a").unwrap()));

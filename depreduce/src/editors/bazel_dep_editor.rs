@@ -9,18 +9,19 @@ use rustpython_parser::ast::Ranged;
 use serde::{Deserialize, Serialize};
 
 use crate::editors::{DepEditor, FileEdit};
-use crate::graph::bazel_xml_parser::{BazelQuery, SkyValue};
+use crate::graph::bazel_xml_parser::{BazelQuery, SkyValue, VariantProp};
 use crate::graph::buck_json_parser::BuckQuery;
 
 pub struct BazelDepEditor {
     label2location: HashMap<String, String>,
+    label_map: HashMap<BazelLabel, BazelLabel>,
     workspace_root: String,
     keywords_for_deps_removal: HashSet<String>,
     keywords_for_deps_insertion: HashSet<String>,
     buck_mode: bool,
 }
 
-#[derive(PartialEq, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Clone, Serialize, Deserialize, Eq, Hash)]
 pub struct BazelLabel {
     pub name: String,
     pub package: String,
@@ -254,12 +255,14 @@ fn extract_list_items(
 impl BazelDepEditor {
     pub fn new(
         label2location: HashMap<String, String>,
+        label_map: HashMap<BazelLabel, BazelLabel>,
         workspace_root: &str,
         keywords_for_deps_insertion: HashSet<String>,
         keywords_for_deps_removal: HashSet<String>,
     ) -> Self {
         Self::new_with_buck_mode(
             label2location,
+            label_map,
             workspace_root,
             keywords_for_deps_insertion,
             keywords_for_deps_removal,
@@ -269,6 +272,7 @@ impl BazelDepEditor {
 
     pub fn new_with_buck_mode(
         label2location: HashMap<String, String>,
+        label_map: HashMap<BazelLabel, BazelLabel>,
         workspace_root: &str,
         keywords_for_deps_insertion: HashSet<String>,
         keywords_for_deps_removal: HashSet<String>,
@@ -276,6 +280,7 @@ impl BazelDepEditor {
     ) -> Self {
         Self {
             label2location,
+            label_map,
             workspace_root: Path::new(workspace_root)
                 .normalize()
                 .to_str()
@@ -343,7 +348,7 @@ impl BazelDepEditor {
                         } else {
                             BazelLabel::parse(label)
                         };
-                        if label.name == label_name {
+                        if label.name == label_name || self.map_label(&label).name == label_name {
                             res = get_list_insert_pos(&e.value, keywords);
                         }
                     }
@@ -402,7 +407,7 @@ impl BazelDepEditor {
                         } else {
                             BazelLabel::parse(label)
                         };
-                        if label.name == label_name {
+                        if label.name == label_name || self.map_label(&label).name == label_name {
                             res = Some(extract_list_items(&e.value, keywords));
                         }
                     }
@@ -460,6 +465,14 @@ impl BazelDepEditor {
         }
 
         simplified_label
+    }
+
+    fn map_label<'a, 'b: 'a>(&'b self, label: &'a BazelLabel) -> &'a BazelLabel {
+        if let Some(res) = self.label_map.get(&label) {
+            res
+        } else {
+            label
+        }
     }
 }
 
@@ -591,6 +604,49 @@ pub fn generate_label2location_for_bazel(query: &BazelQuery) -> HashMap<String, 
     label2location
 }
 
+pub fn generate_label_map_for_bazel(query: &BazelQuery) -> HashMap<BazelLabel, BazelLabel> {
+    let mut label_map = HashMap::new();
+    for value in &query.values {
+        match value {
+            SkyValue::Rule(rule) => {
+                let label = BazelLabel::parse(&rule.name);
+                if let Some(gen_name) = rule
+                    .props
+                    .as_ref()
+                    .map(|props| {
+                        props
+                            .iter()
+                            .filter_map(|p| match p {
+                                VariantProp::String(string_prop)
+                                    if string_prop
+                                        .name
+                                        .as_ref()
+                                        .map_or(false, |n| n == "generator_name") =>
+                                {
+                                    string_prop.value.clone()
+                                }
+                                _ => None,
+                            })
+                            .next()
+                    })
+                    .flatten()
+                {
+                    label_map.insert(
+                        label.clone(),
+                        BazelLabel {
+                            name: gen_name.clone(),
+                            repo: label.repo.clone(),
+                            package: label.package.clone(),
+                        },
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+    label_map
+}
+
 pub fn generate_label2location_for_buck(
     query: &BuckQuery,
     workspace: &str,
@@ -698,6 +754,7 @@ mod tests {
     fn test_normalize_label(fake_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(fake_query),
+            HashMap::new(),
             "/data/h445xu/repo/bazel-dep-reduce/examples/simple-cxx-project",
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
@@ -722,6 +779,7 @@ mod tests {
     fn test_extract_all_labels(cxx_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(cxx_query),
+            HashMap::new(),
             &get_test_workspace_root(),
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
@@ -746,6 +804,7 @@ mod tests {
     fn test_extract_all_labels_2(fake_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(fake_query),
+            HashMap::new(),
             get_test_data_path!("").to_str().unwrap(),
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
@@ -768,6 +827,7 @@ mod tests {
     fn test_get_insertion_pos(fake_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(fake_query),
+            HashMap::new(),
             get_test_data_path!("").to_str().unwrap(),
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
@@ -786,6 +846,7 @@ mod tests {
     fn test_bazel_dep_editor_remove(cxx_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(cxx_query),
+            HashMap::new(),
             &get_test_workspace_root(),
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),
@@ -808,6 +869,7 @@ mod tests {
     fn test_bazel_dep_editor_add(cxx_query: &BazelQuery) {
         let editor = BazelDepEditor::new(
             generate_label2location_for_bazel(cxx_query),
+            HashMap::new(),
             &get_test_workspace_root(),
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),

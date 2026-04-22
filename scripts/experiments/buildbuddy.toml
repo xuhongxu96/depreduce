@@ -1,0 +1,33 @@
+readonly_deps_attrs = ["exports", "associates", "jars", "embed"]
+timeout_seconds = 600
+
+[[from.filters]]
+type = "Rule"
+allow.rule_classes = ['proto_library']
+scope = "Remove"
+
+[[from.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[from.filters]]
+type = "Alias"
+scope = "Remove"
+
+[[to.filters]]
+type = "Rule"
+block.rule_classes = ['regex:_import$']
+block.target_names = []
+scope = "Remove"
+
+[[to.filters]]
+type = "FunctionCall"
+func = "select"
+keys = ["deps", "defines", "srcs"]
+scope = "Remove"
+
+[[to.filters]]
+type = "Alias"
+scope = "Remove"

@@ -658,6 +658,7 @@ mod tests {
                 values: vec![],
                 version: 0,
             }),
+            HashMap::new(),
             "",
             HashSet::from(["deps".to_string()]),
             HashSet::from(["deps".to_string()]),

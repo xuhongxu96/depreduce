@@ -30,10 +30,11 @@ impl InternalFilterable for FunctionCallFilter {
         graph: &DependencyGraph,
         info: &BuildSystemSpecificInfo,
     ) -> HashSet<NodeId> {
-        let query = match info {
+        let query = match &info {
             &BuildSystemSpecificInfo::Bazel(q) => q,
             _ => panic!("FunctionCallFilter only supports Bazel"),
-        };
+        }
+        .query;
         self.get_targets_containing_select(query, graph)
     }
 
@@ -226,7 +227,7 @@ mod tests {
     use utils::{get_test_data_path, read_or_create_test_data, read_test_data};
 
     use crate::{
-        filters::{FilterOperationScope, Filterable},
+        filters::{BazelInfo, FilterOperationScope, Filterable},
         graph::bazel_xml_parser::parse_bazel_xml_query,
     };
 
@@ -252,7 +253,9 @@ mod tests {
                 transitive_level: 0,
             },
         };
-        let info = BuildSystemSpecificInfo::Bazel(&query);
+        let info = BuildSystemSpecificInfo::Bazel(BazelInfo {
+            query: &query,
+        });
         let res = filter.filter(&graph, &info);
         assert_eq!(res.len(), 1);
         assert_eq!(

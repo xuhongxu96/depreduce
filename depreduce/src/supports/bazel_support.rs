@@ -1,13 +1,15 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     io::{BufRead, BufReader},
     process::Command,
 };
 
 use crate::{
     configs::{ReduceConfig, SkipNodes},
-    editors::{BazelDepEditor, DepEditor, generate_label2location_for_bazel},
-    filters::BuildSystemSpecificInfo,
+    editors::{
+        BazelDepEditor, DepEditor, generate_label_map_for_bazel, generate_label2location_for_bazel,
+    },
+    filters::{BazelInfo, BuildSystemSpecificInfo},
     graph::{
         DependencyGraph,
         bazel_xml_parser::{BazelQuery, parse_bazel_xml_query},
@@ -65,8 +67,8 @@ impl BazelSupport {
         BazelSupport { query, graph }
     }
 
-    fn get_info(&self) -> BuildSystemSpecificInfo {
-        BuildSystemSpecificInfo::Bazel(&self.query)
+    fn get_info(&self) -> BuildSystemSpecificInfo<'_> {
+        BuildSystemSpecificInfo::Bazel(BazelInfo { query: &self.query })
     }
 }
 
@@ -79,11 +81,11 @@ impl BuildSystemSupport for BazelSupport {
         std::mem::swap(&mut self.graph, out_graph);
     }
 
-    fn skip_from_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
+    fn skip_from_node_labels(&self, config: &ReduceConfig) -> SkipNodes<'_> {
         config.from.get_skip_nodes(&self.graph, &self.get_info())
     }
 
-    fn skip_to_node_labels(&self, config: &ReduceConfig) -> SkipNodes {
+    fn skip_to_node_labels(&self, config: &ReduceConfig) -> SkipNodes<'_> {
         config.to.get_skip_nodes(&self.graph, &self.get_info())
     }
 
@@ -93,6 +95,7 @@ impl BuildSystemSupport for BazelSupport {
 
         Box::new(BazelDepEditor::new(
             generate_label2location_for_bazel(&self.query),
+            generate_label_map_for_bazel(&self.query),
             workspace_root,
             keywords_for_deps_insertion,
             keywords_for_deps_removal,
