@@ -373,6 +373,25 @@ def plot_all_projects(all_stats):
     print(f"Plots saved to '{output_dir}' directory.")
 
 
+def build_plot_dataframe(all_stats):
+    """
+    Convert analysis results to plotting rows.
+
+    Analysis stores reductions as positive improvements. For plots, use the
+    conventional delta sign where reductions are negative values on the y-axis.
+    """
+    all_results = []
+    for s in all_stats:
+        for res in s.get("raw_results", []):
+            row = dict(res)
+            row["project"] = s["project"]
+            row["build_time_delta_ms"] = -row["mean_improvement_ms"]
+            row["executed_actions_delta_plot"] = -row["executed_actions_delta"]
+            all_results.append(row)
+
+    return pd.DataFrame(all_results)
+
+
 def plot_scatter_combined(all_stats, output_dir):
     """
     Generates a faceted scatter plot of Cost Delta vs. Time Improvement,
@@ -380,18 +399,10 @@ def plot_scatter_combined(all_stats, output_dir):
     """
     sns.set_theme(style="whitegrid")
 
-    # Consolidate data
-    all_results = []
-    for s in all_stats:
-        for res in s.get("raw_results", []):
-            res["project"] = s["project"]
-            all_results.append(res)
-
-    if not all_results:
+    df = build_plot_dataframe(all_stats)
+    if df.empty:
         print("No data to plot for scatter plot.")
         return
-
-    df = pd.DataFrame(all_results)
 
     # Set plot aesthetics
     plt.rcParams["font.size"] = 10.0
@@ -410,7 +421,7 @@ def plot_scatter_combined(all_stats, output_dir):
         color = kwargs.get("color")
         ax.errorbar(
             data["cost_delta"],
-            data["mean_improvement_ms"],
+            data["build_time_delta_ms"],
             yerr=data["improvement_error"],
             fmt="o",
             capsize=3,
@@ -421,7 +432,7 @@ def plot_scatter_combined(all_stats, output_dir):
         sns.regplot(
             data=data,
             x="cost_delta",
-            y="mean_improvement_ms",
+            y="build_time_delta_ms",
             ax=ax,
             scatter=False,
             color=color,
@@ -431,7 +442,7 @@ def plot_scatter_combined(all_stats, output_dir):
     # Map the plotting function to the FacetGrid
     g.map_dataframe(plot_with_error_and_reg)
 
-    g.set_axis_labels("Rebuild Cost Reduction", "Build Time Improvement (ms)")
+    g.set_axis_labels("Rebuild Cost Reduction", "Build Time Delta (ms)")
     g.set_titles(col_template="{col_name}")
     # g.figure.suptitle("Correlation: Rebuild Cost Delta vs. Build Time Improvement", y=1.03)
 
@@ -439,7 +450,7 @@ def plot_scatter_combined(all_stats, output_dir):
         os.path.join(output_dir, "scatter_cost_vs_improvement_faceted.pdf"),
         bbox_inches="tight",
     )
-    plt.close(g.fig)
+    plt.close(g.figure)
 
 
 def plot_scatter_executed_actions_cost(all_stats, output_dir):
@@ -449,18 +460,10 @@ def plot_scatter_executed_actions_cost(all_stats, output_dir):
     """
     sns.set_theme(style="whitegrid")
 
-    # Consolidate data
-    all_results = []
-    for s in all_stats:
-        for res in s.get("raw_results", []):
-            res["project"] = s["project"]
-            all_results.append(res)
-
-    if not all_results:
+    df = build_plot_dataframe(all_stats)
+    if df.empty:
         print("No data to plot for scatter plot.")
         return
-
-    df = pd.DataFrame(all_results)
 
     # Set plot aesthetics
     plt.rcParams["font.size"] = 10.0
@@ -478,14 +481,18 @@ def plot_scatter_executed_actions_cost(all_stats, output_dir):
         ax = plt.gca()
         color = kwargs.get("color")
         sns.regplot(
-            data=data, y="executed_actions_delta", x="cost_delta", ax=ax, color=color
+            data=data,
+            y="executed_actions_delta_plot",
+            x="cost_delta",
+            ax=ax,
+            color=color,
         )
         ax.axhline(0, color="grey", linestyle="--")
 
     # Map the plotting function to the FacetGrid
     g.map_dataframe(plot_with_error_and_reg)
 
-    g.set_axis_labels("Rebuild Cost Reduction", "Reduced Executed Actions")
+    g.set_axis_labels("Rebuild Cost Reduction", "Executed Actions Delta")
     g.set_titles(col_template="{col_name}")
 
     plt.savefig(
