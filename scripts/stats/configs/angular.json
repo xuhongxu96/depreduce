@@ -3,14 +3,13 @@
     "default_branch": "main",
     "base_commit": "1f4c5f72aaefc490d0782149c443973dcf50b10f",
     "n_commits": 500,
-    "prerun": "bazel mod deps --lockfile_mode=update",
+    "prerun": "if [ \"$(git rev-parse HEAD)\" = \"1f4c5f72aaefc490d0782149c443973dcf50b10f\" ]; then git apply /mnt/angular/a.patch; fi",
     "postrun": "git restore .",
     "exclude_paths": [
         ".github/"
     ],
     "result_dir": "/app/data/experiment/angular/stats",
     "extra_build_args": [
-        "--noincompatible_disallow_empty_glob"
     ],
     "rebuild_sets": [
         "/app/data/experiment/angular/angular-rebuild-before.json",
