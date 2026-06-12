@@ -2,7 +2,185 @@
 
 Automated Dependency Optimization for Artifact-Based Build Systems
 
-See https://github.com/xuhongxu96/paper-depreduce for more details.
+## Artifact Evaluation
+
+Artifact for "Automated Dependency Optimization for Artifact-Based Build
+Systems". Reviewers should use the prebuilt Docker archives; image builds are
+author-only.
+
+The main archive, `depreduce-artifact-issta2026.tar.gz`, contains the tool,
+examples, paper experiment scripts, paper-project data, and precomputed plots.
+
+### Getting Started (Estimated 10 minutes)
+
+```sh
+docker load -i depreduce-artifact-issta2026.tar.gz
+docker run --rm -it depreduce-artifact:issta2026
+```
+
+Inside the container:
+
+```sh
+cd /artifact/depreduce
+depreduce --help
+depstat --help
+bazel --version
+buck2 --version
+```
+
+Now, try running DepReduce on the simple C++ Bazel example:
+
+```sh
+cp -a examples/simple-cxx-project /tmp/depreduce-simple-bazel
+cat > /tmp/depreduce-simple-bazel/build.sh <<'EOF'
+set -e
+bazel build //...
+EOF
+chmod +x /tmp/depreduce-simple-bazel/build.sh
+
+depreduce \
+    --build-system bazel \
+    -w /tmp/depreduce-simple-bazel \
+    -c /tmp/depreduce-simple-bazel/build.sh \
+    --config depreduce.toml \
+    --output /tmp/depreduce-simple-bazel/logs
+
+ls /tmp/depreduce-simple-bazel/logs
+head -5 /tmp/depreduce-simple-bazel/logs/01-attempts.jsonl
+```
+
+Expected: `depreduce` completes and creates `00-graph.json` and
+`01-attempts.jsonl`.
+
+Inspect the build-file edits:
+
+```sh
+git diff --no-index \
+    examples/simple-cxx-project/main/BUILD \
+    /tmp/depreduce-simple-bazel/main/BUILD || true
+
+git diff --no-index \
+    examples/simple-cxx-project/libb/BUILD \
+    /tmp/depreduce-simple-bazel/libb/BUILD || true
+```
+
+Expected: `//libb` is removed from `//main:main`, and `//liba` is removed from
+`//libb:libb`, while the Bazel build still passes.
+
+### Reproduce Paper Analyses from Bundled Data
+
+```sh
+python3 scripts/stats/analyze_builds.py
+python3 scripts/stats/analyze_clean_build.py \
+    --data-root data/experiment \
+    --out-dir /tmp/depreduce-clean-plots
+```
+
+The precomputed publication plots and clean-build summary are also included:
+
+```sh
+ls plots
+cat plots/clean_build_summary.md
+```
+
+Useful data paths: `data/experiment/*/*-output/01-attempts.jsonl`,
+`data/experiment/*/*-rebuild*.json`, and
+`data/experiment/*/stats/{incre_build,clean_build}`.
+
+### Optional Zirgen Case Study Image (Estimated 2-3 hours)
+
+The optional archive, `depreduce-artifact-zirgen-issta2026.tar.gz`, adds a
+real-world project case study with
+[Zirgen](https://github.com/risc0/zirgen)
+checkout at the paper baseline.
+
+```sh
+docker load -i depreduce-artifact-zirgen-issta2026.tar.gz
+docker run --rm -it depreduce-artifact-zirgen:issta2026
+```
+
+Inside the container:
+
+```sh
+cd /artifact/zirgen
+git reset --hard df6fb9dda1c20209058d6ee90a8912351b741081
+git clean -fd
+```
+
+Prepare the build script:
+
+```sh
+cat > /tmp/zirgen-full-build.sh <<'EOF'                                                                                                              set -e
+cd /artifact/zirgen
+bazel build //zirgen/dsl:zirgen
+bazel test --notest_keep_going //...
+EOF
+```
+
+Run DepReduce:
+
+```sh
+depreduce \
+    --build-system bazel \
+    -w /artifact/zirgen \
+    -c /tmp/zirgen-full-build.sh \
+    --config /artifact/depreduce/scripts/experiments/zirgen.toml \
+    --output /tmp/zirgen-full-depreduce-output
+```
+
+Summarize the DepReduce log:
+
+```sh
+depstat parse -l /tmp/zirgen-full-depreduce-output/
+```
+
+Expected Zirgen summary: `n_removals: 24`, `n_lifting: 10`,
+`n_flattening: 5`.
+
+> It is possible that the numbers differ from the paper due to build flakiness.
+
+### Full Experiment Reruns (Not Bundled)
+
+Scripts are under [scripts/experiments](scripts/experiments),
+[scripts/buck](scripts/buck), [scripts/rust](scripts/rust), and
+[scripts/stats](scripts/stats). Full real-project reruns require external
+checkouts, network access, project dependencies, and substantial runtime.
+
+### Author Packaging Commands (For Developer Reference; Not for Reviewers)
+
+```sh
+git submodule update --init
+docker build -t depreduce-artifact:issta2026 .
+docker save depreduce-artifact:issta2026 | gzip -1 > depreduce-artifact-issta2026.tar.gz
+sha256sum depreduce-artifact-issta2026.tar.gz > depreduce-artifact-issta2026.tar.gz.sha256
+
+docker build -f Dockerfile.zirgen -t depreduce-artifact-zirgen:issta2026 .
+docker save depreduce-artifact-zirgen:issta2026 | gzip -1 > depreduce-artifact-zirgen-issta2026.tar.gz
+sha256sum depreduce-artifact-zirgen-issta2026.tar.gz > depreduce-artifact-zirgen-issta2026.tar.gz.sha256
+```
+
+### Paper Claims Supported by This Artifact
+
+| Paper claim | Artifact support | How to evaluate |
+|---|---|---|
+| DepReduce edits dependency declarations and validates changes by rebuilding. | Supported by code and example run. | Run Getting Started; inspect generated `01-attempts.jsonl` and diffs. |
+| DepReduce supports Bazel, Buck, and Cargo. | Supported by implementation, examples, and scripts. | Run tool help; inspect `depreduce/src/supports/` and example scripts. |
+| DepReduce performs direct removal, lifting, and flattening. | Supported by reducer code and bundled logs. | Inspect `depreduce/src/reducers/` and `data/experiment/*/*-output/01-attempts.jsonl`. |
+| Paper Bazel evaluation and aggregate results. | Supported by paper-project scripts plus available bundled outputs. | Inspect `scripts/experiments`, `data/experiment`, and run analysis scripts. |
+| Build-time/action-count analyses. | Supported by bundled build-event logs and plots. | Run `scripts/stats/analyze_builds.py` and `analyze_clean_build.py`; inspect `plots/`. |
+| DepReduce results on Zirgen. | Supported by optional image with Zirgen checkout, build script, and bundled log. | Run the optional Zirgen section; inspect the summary and compare to paper. |
+
+### Paper Claims Not Fully Supported by This Artifact
+
+| Claim or result | Why it is not fully supported in the packaged artifact |
+|---|---|
+| Full rerun of all real-project experiments during review. | Requires external checkouts, network access, project-specific dependencies, and long runtimes. |
+
+### Recommended Reviewer Scope
+
+Default 30-minute review: run Getting Started and bundled-data analyses.
+
+Deeper (may take hours): load the Zirgen image, run DepReduce, and summarize the bundled Zirgen log.
 
 ## Overview
 
@@ -42,6 +220,9 @@ See [depreduce.toml](depreduce.toml)
 ---
 
 ## Extensions to Related Tools
+
+> This part is out of the scope of the artifact evaluation or our paper,
+> but we include it here for completeness and to share our efforts in applying related tools to Bazel.
 
 We also extend two related tools to support Bazel build system and
 investigate their effectiveness on redundant dependency detection.

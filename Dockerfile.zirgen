@@ -1,0 +1,37 @@
+FROM depreduce-artifact:issta2026
+
+ARG ZIRGEN_BASE_COMMIT=df6fb9dda1c20209058d6ee90a8912351b741081
+ARG ZIRGEN_PR_COMMIT=6d6965f051bdce0ee8f59727933ac1f7d091f634
+ARG ZIRGEN_REPO=https://github.com/risc0/zirgen.git
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV USE_BAZEL_VERSION=
+
+RUN git clone "${ZIRGEN_REPO}" /artifact/zirgen \
+    && git -C /artifact/zirgen checkout "${ZIRGEN_BASE_COMMIT}" \
+    && git -C /artifact/zirgen submodule update --init --recursive \
+    && git -C /artifact/zirgen fetch --depth=1 origin "${ZIRGEN_PR_COMMIT}"
+
+RUN find /artifact/zirgen -type f \
+        ! -path '*/.git/*' \
+        -print0 \
+    | xargs -0r grep -IlZ -E 'github[.]com/[^[:space:])]+/pull/[0-9]+|pull[[:space:]]+request[[:space:]]+[0-9]+' \
+    | xargs -0r perl -pi -e 's{https://github[.]com/[^\s)]+/pull/[0-9]+}{[upstream change]}g; s{pull\s+request\s+[0-9]+}{upstream change}gi'
+
+RUN cd /artifact/zirgen \
+    && bazel build //zirgen/dsl:zirgen \
+    && output_base="$(bazel info output_base)" \
+    && bazel shutdown \
+    && rm -rf \
+        "${output_base}/action_cache" \
+        "${output_base}/bazel-workers" \
+        "${output_base}/command.log" \
+        "${output_base}/command.profile.gz" \
+        "${output_base}/execroot" \
+        "${output_base}/java.log"* \
+        "${output_base}/sandbox" \
+        "${output_base}/server"
+
+WORKDIR /artifact/depreduce
+
+CMD ["/bin/bash"]
