@@ -110,7 +110,8 @@ git clean -fd
 Prepare the build script:
 
 ```sh
-cat > /tmp/zirgen-full-build.sh <<'EOF'                                                                                                              set -e
+cat > /tmp/zirgen-full-build.sh <<'EOF'
+set -e
 cd /artifact/zirgen
 bazel build //zirgen/dsl:zirgen
 bazel test --notest_keep_going //...
