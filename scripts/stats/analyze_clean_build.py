@@ -203,6 +203,10 @@ def make_plot(df, out_path_png, out_path_pdf, figsize=(2.5, 1.2), dpi=300):
     legend_font_prop = FontProperties(family="Times New Roman", size=5)
     font_prop = FontProperties(family="Times New Roman", size=6)
     mpl.rcParams["font.family"] = font_prop.get_name()
+    # Matplotlib's PDF/PS backends default to Type 3 fonts. Embed TrueType
+    # outlines instead so the generated figure meets publication requirements.
+    mpl.rcParams["pdf.fonttype"] = 42
+    mpl.rcParams["ps.fonttype"] = 42
 
     sns.set_style("whitegrid")
 
