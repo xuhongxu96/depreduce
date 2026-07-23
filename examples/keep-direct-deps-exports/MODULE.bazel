@@ -1,5 +1,5 @@
 """
 Module dependencies for the simple Kotlin project.
 """
-bazel_dep(name = "rules_kotlin", version = "2.3.20")
-bazel_dep(name = "rules_java", version = "9.3.0")
+bazel_dep(name = "rules_kotlin", version = "2.4.0")
+bazel_dep(name = "rules_java", version = "9.7.0")
