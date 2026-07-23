@@ -4,6 +4,9 @@ Automated Dependency Optimization for Artifact-Based Build Systems
 
 ## Artifact Evaluation
 
+<details>
+<summary>Click here to expand</summary>
+
 Artifact for "Automated Dependency Optimization for Artifact-Based Build
 Systems". Reviewers should use the prebuilt Docker archives; image builds are
 author-only.
@@ -28,7 +31,8 @@ bazel --version
 buck2 --version
 ```
 
-Expected output:
+<details>
+<summary>Expected output</summary>
 
 ```
 Usage: depreduce [OPTIONS] --workspace <WORKSPACE>
@@ -77,6 +81,8 @@ bazel 8.3.1
 buck2 2026-06-11-b940e81e7287c20131248edcc25c93c4e56cc8b9
 ```
 
+</details>
+
 Now, try running DepReduce on the simple C++ Bazel example:
 
 ```sh
@@ -96,7 +102,8 @@ depreduce \
 echo $?
 ```
 
-Expected output:
+<details>
+<summary>Expected output</summary>
 
 ```
 Starting reduction test at 2026-07-07T22:31:08.936581221+00:00
@@ -249,6 +256,8 @@ Expected output:
 {"candidates":{"node_id":0,"dependent":1},"ops":[{"Backup":{"path":"/tmp/depreduce-simple-bazel/libb/BUILD"}},{"Apply":{"edit":{"path":"/tmp/depreduce-simple-bazel/libb/BUILD","desp":"Remove dependency '//liba:liba' from label '//libb:libb'"}}},{"Build":{"exit_code":0,"stdout":"","stderr":"Computing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 0 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 0 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 3 targets configured).\nINFO: Found 3 targets...\nINFO: Elapsed time: 0.168s, Critical Path: 0.02s\nINFO: 2 processes: 2 action cache hit, 1 internal, 1 processwrapper-sandbox.\nINFO: Build completed successfully, 2 total actions\n"}},{"Remove":{"node_id":0,"dependent_node_id":1}},{"Commit":{"paths":["/tmp/depreduce-simple-bazel/libb/BUILD"]}}]}
 {"candidates":{"node_id":0,"dependent":2},"ops":[{"Backup":{"path":"/tmp/depreduce-simple-bazel/main/BUILD"}},{"Apply":{"edit":{"path":"/tmp/depreduce-simple-bazel/main/BUILD","desp":"Remove dependency '//liba:liba' from label '//main:main'"}}},{"Build":{"exit_code":1,"stdout":"","stderr":"Computing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 0 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 0 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 2 targets configured).\nERROR: /tmp/depreduce-simple-bazel/main/BUILD:3:10: Compiling main/main.cpp failed: (Exit 1): gcc failed: error executing CppCompile command (from target //main:main) /usr/bin/gcc -U_FORTIFY_SOURCE -fstack-protector -Wall -Wunused-but-set-parameter -Wno-free-nonheap-object -fno-omit-frame-pointer '-std=c++17' -MD -MF ... (remaining 24 arguments skipped)\n\nUse --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging\nmain/main.cpp:3:10: fatal error: a.h: No such file or directory\n    3 | #include \"a.h\"\n      |          ^~~~~\ncompilation terminated.\nUse --verbose_failures to see the command lines of failed build steps.\nINFO: Elapsed time: 0.182s, Critical Path: 0.05s\nINFO: 3 processes: 2 action cache hit, 3 internal.\nERROR: Build did NOT complete successfully\n"}},{"Restore":{"paths":["/tmp/depreduce-simple-bazel/main/BUILD"]}}]}
 ```
+
+</details>
 
 Inspect the build-file edit:
 
@@ -430,6 +439,8 @@ sha256sum depreduce-artifact-zirgen-issta2026.tar.gz > depreduce-artifact-zirgen
 Default 30-minute review: run Getting Started and bundled-data analyses.
 
 Deeper (may take hours): load the Zirgen image, run DepReduce, and summarize the bundled Zirgen log.
+
+</details>
 
 ## Overview
 
